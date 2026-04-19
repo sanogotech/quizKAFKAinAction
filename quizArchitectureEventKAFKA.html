@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Expert · Architectures Event-Driven & CQRS (50 questions)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --event-color: #0ea5e9;
+            --cqrs-color: #10b981;
+            --kafka-color: #8b5cf6;
+            --sourcing-color: #ef4444;
+            --outbox-color: #f59e0b;
+            --cdc-color: #6366f1;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        .quiz-container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .quiz-header {
+            background: linear-gradient(135deg, #0f172a 0%, #0f2c3f 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .quiz-header h1 {
+            font-weight: 800;
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, var(--event-color), var(--kafka-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .badge-theme {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .badge-cqrs { background: #d1fae5; color: #065f46; }
+        .badge-kafka { background: #ede9fe; color: #5b21b6; }
+        .badge-sourcing { background: #fee2e2; color: #991b1b; }
+        .badge-outbox { background: #fef3c7; color: #92400e; }
+        .badge-cdc { background: #e0e7ff; color: #3730a3; }
+        .badge-rex { background: #f1f5f9; color: #1e293b; }
+        .option-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 1rem 1.5rem;
+            margin-bottom: 0.75rem;
+            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--event-color);
+            background: #f0f9ff;
+            transform: translateY(-2px);
+        }
+        .option-btn.correct { background: #d1fae5; border-color: #10b981; }
+        .option-btn.incorrect { background: #fee2e2; border-color: #ef4444; }
+        .explanation-box {
+            padding: 1.25rem;
+            border-radius: 20px;
+            margin-top: 1.5rem;
+            border-left: 4px solid;
+        }
+        .explanation-correct { background: #f0fdf4; border-left-color: #10b981; }
+        .explanation-incorrect { background: #fef2f2; border-left-color: #ef4444; }
+        .progress-bar { background: linear-gradient(90deg, var(--event-color), var(--kafka-color)); }
+        .btn-audit { background: linear-gradient(135deg, var(--event-color), var(--kafka-color)); border: none; color: white; font-weight: 600; }
+        .btn-audit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .theme-card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 1rem;
+            transition: 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+        .final-score { font-size: 4rem; font-weight: 800; background: linear-gradient(135deg, var(--event-color), var(--kafka-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body>
+<div class="container py-3">
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1><i class="fas fa-bolt me-2"></i>Event-Driven & CQRS · Quiz Expert</h1>
+            <p>50 questions basées sur des cas réels DSI (énergie, banque, e‑commerce) – explications détaillées et conseils d'architecte</p>
+            <div><span class="badge-theme badge-cqrs">CQRS+DB</span> <span class="badge-theme badge-kafka">Kafka-first</span> <span class="badge-theme badge-sourcing">Event Sourcing</span> <span class="badge-theme badge-outbox">Outbox</span> <span class="badge-theme badge-cdc">CDC</span> <span class="badge-theme badge-rex">REX & Cas pratiques</span></div>
+        </div>
+
+        <!-- Configuration panel -->
+        <div id="settings-panel" class="p-4">
+            <h4 class="mb-3"><i class="fas fa-sliders-h"></i> Paramètres du quiz</h4>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label>Nombre de questions :</label>
+                    <select id="question-count" class="form-select">
+                        <option value="20">20 questions</option>
+                        <option value="50" selected>50 questions (expert complet)</option>
+                    </select>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <button id="start-quiz-btn" class="btn btn-audit w-100"><i class="fas fa-play"></i> Démarrer le quiz</button>
+                </div>
+            </div>
+            <div class="mb-3">
+                <h5><i class="fas fa-filter"></i> Thématiques (toutes sélectionnées par défaut)</h5>
+                <div class="row">
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="th-cqrs" checked> <label>CQRS + DB Write</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="th-kafka" checked> <label>Kafka-first</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="th-eventsourcing" checked> <label>Event Sourcing</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="th-outbox" checked> <label>Outbox Pattern</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="th-cdc" checked> <label>CDC / Debezium</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="th-rex" checked> <label>REX & Cas pratiques</label></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz content -->
+        <div id="quiz-content" class="d-none p-4">
+            <div class="mb-4">
+                <div class="d-flex justify-content-between mb-1"><span id="question-counter">Question 1 / 50</span><span id="current-score">Score: 0</span></div>
+                <div class="progress"><div id="progress-bar" class="progress-bar" style="width: 2%"></div></div>
+            </div>
+            <div id="question-card">
+                <div class="badge-theme" id="thematic-badge">CQRS</div>
+                <h3 id="question-text" class="mb-3"></h3>
+                <div id="options-container"></div>
+                <div id="explanation-box" class="explanation-box d-none">
+                    <h5 id="explanation-title"></h5>
+                    <p id="explanation-text"></p>
+                    <div id="tip-box" class="mt-2 p-2 bg-light rounded d-none"><i class="fas fa-lightbulb text-warning"></i> <strong>Conseil :</strong> <span id="tip-text"></span></div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                <button id="prev-btn" class="btn btn-outline-secondary" disabled><i class="fas fa-arrow-left"></i> Précédent</button>
+                <button id="next-btn" class="btn btn-audit">Suivant <i class="fas fa-arrow-right"></i></button>
+                <button id="finish-btn" class="btn btn-success d-none">Terminer <i class="fas fa-trophy"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal résultats -->
+<div class="modal fade" id="resultsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white"><h5 class="modal-title"><i class="fas fa-chart-line"></i> Vos résultats – Architecte Event-Driven</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="text-center"><div class="final-score" id="final-score-percentage">0%</div><p><span id="final-score-correct">0</span> / <span id="final-score-total">0</span> bonnes réponses</p></div>
+                <div class="row mb-3"><div class="col-6"><div class="progress"><div id="tech-skills" class="progress-bar bg-primary" style="width:0%"></div></div><p id="tech-skills-text" class="mt-1 small">Maîtrise technique</p></div>
+                <div class="col-6"><div class="progress"><div id="strategic-skills" class="progress-bar bg-success" style="width:0%"></div></div><p id="strategic-skills-text" class="mt-1 small">Vision architecturale</p></div></div>
+                <div id="final-recommendations"></div>
+                <hr><h6><i class="fas fa-road"></i> Feuille de route</h6>
+                <p id="short-term" class="small"></p><p id="long-term" class="small"></p>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button><button id="restart-quiz-btn" class="btn btn-audit">Recommencer</button></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ---------- 50 QUESTIONS UNIQUES ----------
+const FULL_QUIZ = [
+    { thematic: "CQRS+DB", question: "Dans une architecture CQRS classique avec DB Write + Kafka, quelle est la source de vérité ?", options: ["Kafka", "La base de données d'écriture", "La base de données de lecture", "Le cache Redis"], correct: "La base de données d'écriture", explanation: "La source de vérité est la Write DB (base transactionnelle). Les commandes y sont écrites de manière ACID, puis des événements sont publiés dans Kafka. Cela garantit une cohérence forte et un audit simple.", tip: "Pour les systèmes critiques (facturation, finance), privilégiez CQRS+DB." },
+    { thematic: "Kafka-first", question: "Quel est le principal risque d'une architecture Kafka-first pure (sans DB centrale) ?", options: ["Cohérence faible (eventual consistency)", "Manque de scalabilité", "Latence trop élevée", "Impossible de faire du replay"], correct: "Cohérence faible (eventual consistency)", explanation: "Sans base de données centrale, chaque consommateur construit son propre état. Les données peuvent diverger temporairement. C'est acceptable pour de l'analytique ou de l'IoT, mais dangereux pour des transactions financières.", tip: "Pour des besoins de cohérence forte, combinez Kafka-first avec CQRS+DB." },
+    { thematic: "Event Sourcing", question: "Quel est l'avantage fondamental de l'Event Sourcing par rapport à un stockage d'état classique ?", options: ["Traçabilité complète et possibilité de rejouer l'historique", "Meilleures performances en écriture", "Moins de stockage", "Simplification des requêtes"], correct: "Traçabilité complète et possibilité de rejouer l'historique", explanation: "L'Event Sourcing stocke chaque événement métier immuable. On peut reconstruire l'état à n'importe quel moment et auditer toutes les modifications.", tip: "Idéal pour les systèmes réglementés (banque, assurance) mais complexe." },
+    { thematic: "Outbox", question: "À quel problème l'Outbox pattern répond‑il ?", options: ["Perte d'événements lors de la double écriture (DB + Kafka)", "Latence trop élevée", "Scalabilité limitée", "Manque de monitoring"], correct: "Perte d'événements lors de la double écriture (DB + Kafka)", explanation: "L'Outbox pattern garantit qu'un événement est publié dans Kafka seulement après un commit réussi en base, via une table outbox et un processus de relay.", tip: "Utilisez l'Outbox dès que vous devez publier des événements de manière fiable." },
+    { thematic: "CDC", question: "Quel outil est le plus utilisé pour implémenter du CDC (Change Data Capture) vers Kafka ?", options: ["Debezium", "Logstash", "Fluentd", "Telegraf"], correct: "Debezium", explanation: "Debezium est un connecteur Kafka Connect qui capture les changements depuis les journaux des bases (binlog, WAL) et les transforme en événements Kafka.", tip: "CDC permet d'alimenter Kafka sans modifier l'application legacy." },
+    { thematic: "CQRS+DB", question: "Dans CQRS, que signifie la séparation des modèles de commande et de requête ?", options: ["Utiliser des bases différentes pour les écritures et les lectures", "Séparer les équipes de développement", "Avoir deux APIs différentes", "Utiliser des formats de données différents"], correct: "Utiliser des bases différentes pour les écritures et les lectures", explanation: "Le modèle de commande (write) est optimisé pour les transactions ACID, le modèle de requête (read) est dénormalisé pour des requêtes rapides.", tip: "CQRS apporte une scalabilité indépendante, mais augmente la complexité." },
+    { thematic: "Kafka-first", question: "Quel cas d'usage est le plus adapté à une architecture Kafka-first ?", options: ["Ingestion massive de données IoT (smart meters)", "Système de facturation bancaire", "Gestion de stocks en temps réel avec cohérence stricte", "Application de comptabilité"], correct: "Ingestion massive de données IoT (smart meters)", explanation: "Kafka-first excelle pour les flux à très haut volume où l'eventual consistency est acceptable : logs, IoT, clickstream.", tip: "Pour 1M events/s, Kafka-first est le seul pattern viable." },
+    { thematic: "Event Sourcing", question: "Quel est le principal défi de l'Event Sourcing ?", options: ["La gestion des versions d'événements et les snapshots", "Le manque d'outils", "Les performances en lecture", "L'impossibilité de faire du replay"], correct: "La gestion des versions d'événements et les snapshots", explanation: "Les événements évoluent ; il faut gérer la compatibilité (upcasting). Les snapshots sont nécessaires pour éviter de rejouer des milliers d'événements.", tip: "Utilisez un Schema Registry et des snapshots périodiques." },
+    { thematic: "Outbox", question: "Quel mécanisme peut remplacer le polling dans un Outbox pattern pour réduire la latence ?", options: ["CDC sur la table outbox", "Webhook", "gRPC streaming", "Kafka Connect source"], correct: "CDC sur la table outbox", explanation: "Au lieu de poller, on utilise Debezium pour capturer les insertions dans la table outbox, réduisant la latence à quelques centaines de ms.", tip: "Combinez Outbox et CDC pour fiabilité et faible latence." },
+    { thematic: "REX", question: "Dans le REX d'une banque ayant adopté Event Sourcing, quel bénéfice majeur a été observé ?", options: ["Temps d'audit réduit de 3 jours à 15 minutes", "Diminution de la latence des paiements", "Suppression des bases de données", "Réduction du nombre de microservices"], correct: "Temps d'audit réduit de 3 jours à 15 minutes", explanation: "Grâce à la traçabilité complète et au rejeu, les auditeurs peuvent reconstruire rapidement l'état d'un compte à une date donnée.", tip: "Event Sourcing est un atout majeur pour la conformité réglementaire." },
+    { thematic: "CQRS+DB", question: "Quel pattern doit-on associer à CQRS+DB pour éviter la double écriture non transactionnelle ?", options: ["Outbox", "Saga", "Circuit Breaker", "API Gateway"], correct: "Outbox", explanation: "L'Outbox garantit que l'événement Kafka n'est publié qu'après le commit DB. Sinon, une panne entre l'écriture DB et la publication peut entraîner une perte.", tip: "Implémentez toujours l'Outbox pour les événements critiques." },
+    { thematic: "Kafka-first", question: "Comment garantir l'ordre des événements dans Kafka pour un agrégat donné ?", options: ["Utiliser une clé de partition (ex: ID agrégat)", "Un seul topic global", "Un consumer unique", "Un timeout"], correct: "Utiliser une clé de partition (ex: ID agrégat)", explanation: "Kafka garantit l'ordre au sein d'une même partition. En choisissant la clé = ID agrégat, tous les événements d'un même agrégat vont dans la même partition.", tip: "Choisissez des clés de partition pertinentes pour l'ordre." },
+    { thematic: "Event Sourcing", question: "Qu'est-ce qu'un snapshot dans Event Sourcing ?", options: ["Une sauvegarde périodique de l'état d'un agrégat", "Un événement de correction", "Un index de recherche", "Un log de transaction"], correct: "Une sauvegarde périodique de l'état d'un agrégat", explanation: "Le snapshot enregistre l'état complet d'un agrégat à un instant T. Lors de la reconstruction, on part du snapshot puis on rejoue les événements postérieurs.", tip: "Prenez des snapshots tous les 1000 événements." },
+    { thematic: "CDC", question: "Debezium utilise quel mécanisme pour capturer les changements ?", options: ["Les journaux de transaction (binlog/WAL)", "Les triggers SQL", "Le polling de la table", "Les webhooks"], correct: "Les journaux de transaction (binlog/WAL)", explanation: "Debezium se connecte en tant que client réplica aux logs de la base, ce qui est non intrusif et garantit la capture de toutes les modifications.", tip: "Surveillez la rétention des logs pour éviter la perte." },
+    { thematic: "REX", question: "Dans une DSI énergie, quel pattern a été utilisé pour l'ingestion de 5 millions de compteurs ?", options: ["Kafka-first", "CQRS+DB", "Outbox", "Event Sourcing"], correct: "Kafka-first", explanation: "L'ingestion massive de données IoT nécessite un débit extrême ; Kafka-first a permis de traiter 200k events/s.", tip: "Pour l'IoT, associez Kafka-first à un data lake." },
+    { thematic: "CQRS+DB", question: "Quelle base de données est souvent utilisée pour le modèle de lecture (Read DB) dans CQRS ?", options: ["Elasticsearch", "Oracle (même que write)", "Redis (seulement cache)", "Neo4j"], correct: "Elasticsearch", explanation: "Elasticsearch est idéal pour des recherches full-text et des agrégations rapides. On peut aussi utiliser MongoDB ou une réplication PostgreSQL.", tip: "Choisissez la Read DB en fonction des patterns de requête." },
+    { thematic: "Kafka-first", question: "Comment gérer la relecture (replay) d'événements dans Kafka-first ?", options: ["En réinitialisant l'offset du consumer group", "En recréant le topic", "En redémarrant Kafka", "En supprimant les consommateurs"], correct: "En réinitialisant l'offset du consumer group", explanation: "Kafka stocke les événements pendant une durée configurable. Un consommateur peut demander à relire depuis un offset antérieur.", tip: "Configurez une rétention suffisante (ex: 7 jours) pour permettre le replay." },
+    { thematic: "Outbox", question: "Quelle table est ajoutée dans le pattern Outbox ?", options: ["Une table 'outbox' dans la même base transactionnelle", "Une base de données séparée", "Un topic Kafka dédié", "Un cache Redis"], correct: "Une table 'outbox' dans la même base transactionnelle", explanation: "La table outbox est créée dans la même base que les données métier, afin de bénéficier de la transaction ACID.", tip: "Indexez la colonne 'published' pour un polling efficace." },
+    { thematic: "Event Sourcing", question: "Que signifie 'upcasting' dans Event Sourcing ?", options: ["Migration des anciens événements vers un nouveau schéma", "Ajout d'un snapshot", "Suppression d'événements", "Compression des événements"], correct: "Migration des anciens événements vers un nouveau schéma", explanation: "Lorsque la structure d'un événement change, l'upcasting convertit les anciennes versions à la volée lors de la lecture, sans réécrire l'event store.", tip: "Utilisez des upcasters pour rester compatible." },
+    { thematic: "CDC", question: "Quel est l'avantage de CDC par rapport à l'Outbox pattern ?", options: ["Aucune modification du code applicatif", "Latence plus faible", "Moins de consommation CPU", "Support de plus de bases"], correct: "Aucune modification du code applicatif", explanation: "CDC capture les changements directement dans les logs de la base, donc l'application n'a pas besoin d'écrire dans une table outbox.", tip: "Attention à la charge sur les logs de la base." },
+    { thematic: "REX", question: "Dans un REX e-commerce, l'Outbox pattern a permis de réduire les pertes d'événements de combien ?", options: ["0,5% → 0,001%", "10% → 1%", "5% → 0%", "1% → 0,5%"], correct: "0,5% → 0,001%", explanation: "Le passage à l'Outbox a quasi éliminé les pertes, passant de 0,5% des commandes non facturées à un taux infime.", tip: "L'Outbox est une solution éprouvée pour la fiabilité." },
+    { thematic: "CQRS+DB", question: "Quel est le principal inconvénient de CQRS+DB par rapport à Kafka-first ?", options: ["Latence plus élevée (double écriture)", "Moins de scalabilité", "Plus complexe à déployer", "Moins de sécurité"], correct: "Latence plus élevée (double écriture)", explanation: "L'écriture en base puis la publication dans Kafka ajoute une latence de plusieurs centaines de ms.", tip: "Pour des besoins de latence ultra faible, préférez Kafka-first si la cohérence le permet." },
+    { thematic: "Kafka-first", question: "Que se passe-t-il si un consumer Kafka-first tombe en panne pendant plusieurs heures ?", options: ["Il devra relire les événements depuis le dernier offset enregistré", "Les événements sont perdus", "Il faut recréer le topic", "Le consumer est blacklisté"], correct: "Il devra relire les événements depuis le dernier offset enregistré", explanation: "Kafka conserve les événements selon la politique de rétention. Le consumer reprendra là où il s'était arrêté.", tip: "Surveillez le lag et alertez en cas de dérive." },
+    { thematic: "Event Sourcing", question: "Quel outil est spécifiquement conçu pour l'Event Sourcing ?", options: ["EventStoreDB", "PostgreSQL", "MongoDB", "Redis"], correct: "EventStoreDB", explanation: "EventStoreDB est une base de données optimisée pour le stockage d'événements, avec projections, snapshots et subscriptions.", tip: "Pour un projet en Event Sourcing, EventStoreDB est un excellent choix." },
+    { thematic: "Outbox", question: "Quel est le risque si le process de relay de l'Outbox échoue ?", options: ["Les événements ne sont pas publiés (mais la transaction est sécurisée)", "La base est corrompue", "Kafka est arrêté", "Les consommateurs doublent"], correct: "Les événements ne sont pas publiés (mais la transaction est sécurisée)", explanation: "Le relay peut retenter plus tard. La table outbox conserve les événements non publiés. Aucune donnée n'est perdue.", tip: "Surveillez la taille de la table outbox." },
+    { thematic: "CDC", question: "Debezium peut-il capturer les suppressions (DELETE) ?", options: ["Oui, via un événement avec un champ 'op' = 'd'", "Non, seulement les insert/update", "Uniquement avec une configuration spéciale", "Avec un trigger"], correct: "Oui, via un événement avec un champ 'op' = 'd'", explanation: "Debezium produit un événement de suppression contenant les clés primaires de la ligne supprimée.", tip: "Attention : les données supprimées ne sont pas incluses dans l'événement." },
+    { thematic: "REX", question: "Dans le REX d'un opérateur télécom, quelle solution a permis de migrer un CRM legacy sans changer le code ?", options: ["CDC (Debezium)", "Outbox", "Event Sourcing", "Kafka-first"], correct: "CDC (Debezium)", explanation: "Debezium a capturé les changements de l'ancienne base Oracle et les a poussés vers Kafka, alimentant ainsi les nouveaux services.", tip: "CDC est idéal pour les migrations en strangler pattern." },
+    { thematic: "CQRS+DB", question: "Dans CQRS, comment les vues de lecture (Read DB) sont-elles mises à jour ?", options: ["Via des événements Kafka consommés par un worker", "Via des jointures en temps réel", "Via des triggers SQL", "Via l'API Gateway"], correct: "Via des événements Kafka consommés par un worker", explanation: "Un consumer écoute les événements Kafka (produits par la Write DB) et applique les mises à jour dans la Read DB.", tip: "Surveillez le lag entre write et read." },
+    { thematic: "Kafka-first", question: "Quelle est la commande Kafka pour réinitialiser l'offset d'un consumer group au début ?", options: ["kafka-consumer-groups --reset-offsets --to-earliest", "kafka-topics --alter", "kafka-console-consumer --from-beginning", "kafka-configs --alter"], correct: "kafka-consumer-groups --reset-offsets --to-earliest", explanation: "Cette commande permet de repositionner les offsets d'un groupe de consommateurs, utile pour rejouer tous les événements depuis le début.", tip: "Testez le replay en préproduction." },
+    { thematic: "Event Sourcing", question: "Qu'est-ce qu'un événement compensatoire (compensating event) ?", options: ["Un événement qui annule les effets d'un précédent événement", "Un événement de snapshot", "Un événement de validation", "Un événement de logging"], correct: "Un événement qui annule les effets d'un précédent événement", explanation: "Dans les sagas, si une étape échoue, on publie des événements compensatoires pour annuler les modifications déjà effectuées.", tip: "Les compensations sont immuables comme tous les événements." },
+    { thematic: "Outbox", question: "Quel est le format typique d'une ligne dans une table outbox ?", options: ["id, aggregateId, eventType, payload, published", "id, name, value", "timestamp, level, message", "key, value, topic"], correct: "id, aggregateId, eventType, payload, published", explanation: "La table outbox contient généralement un identifiant unique, l'identifiant de l'agrégat, le type d'événement, le payload JSON, et un flag de publication.", tip: "Ajoutez un index sur (published, created_at) pour le polling." },
+    { thematic: "CDC", question: "Quel protocole Debezium utilise-t-il pour se connecter à PostgreSQL ?", options: ["Logical decoding (slot réplication)", "JDBC", "ODBC", "REST"], correct: "Logical decoding (slot réplication)", explanation: "Debezium pour PostgreSQL utilise les slots de réplication logique pour lire le WAL sans impacter les performances.", tip: "Configurez la rétention des slots pour éviter la surcharge disque." },
+    { thematic: "REX", question: "Dans le cas d'une facturation énergétique, quel pattern a été choisi pour garantir la cohérence des soldes ?", options: ["CQRS+DB avec Outbox", "Kafka-first pur", "Event Sourcing sans snapshot", "CDC seulement"], correct: "CQRS+DB avec Outbox", explanation: "La facturation nécessite une cohérence forte et une traçabilité. CQRS+DB avec Outbox assure qu'aucun événement n'est perdu.", tip: "Ne sacrifiez jamais la cohérence pour la facturation." },
+    { thematic: "CQRS+DB", question: "Quel est le rôle du bus d'événements (Kafka) dans CQRS ?", options: ["Diffuser les événements aux consommateurs (Read DB, cache, etc.)", "Stocker l'état final", "Remplacer la base d'écriture", "Faire de l'ETL"], correct: "Diffuser les événements aux consommateurs (Read DB, cache, etc.)", explanation: "Kafka est utilisé pour propager les événements de la Write DB vers les différentes vues de lecture de manière asynchrone.", tip: "Assurez-vous que les événements contiennent toutes les données nécessaires." },
+    { thematic: "Kafka-first", question: "Quelle propriété de Kafka permet de garantir la non‑perte de messages en cas de panne broker ?", options: ["acks=all et min.insync.replicas=2", "acks=0", "enable.idempotence=false", "compression.type=gzip"], correct: "acks=all et min.insync.replicas=2", explanation: "Avec acks=all, le leader attend les accusés de tous les ISR. min.insync.replicas=2 garantit qu'au moins deux réplicas ont le message.", tip: "Utilisez cette configuration pour les données critiques." },
+    { thematic: "Event Sourcing", question: "Comment reconstruire l'état d'un agrégat après une longue période ?", options: ["En rejouant tous les événements depuis l'origine", "En utilisant une base de données classique", "En interrogeant une API externe", "En lisant le dernier snapshot"], correct: "En rejouant tous les événements depuis l'origine", explanation: "On rejoue les événements depuis le début ou depuis le dernier snapshot pour retrouver l'état actuel.", tip: "Utilisez des snapshots pour limiter le nombre d'événements à rejouer." },
+    { thematic: "Outbox", question: "Quel outil peut remplacer le polling worker dans Outbox ?", options: ["Debezium (CDC)", "Kafka Connect JDBC", "Elasticsearch", "Redis Streams"], correct: "Debezium (CDC)", explanation: "Debezium peut capturer les insertions dans la table outbox et les envoyer directement à Kafka, supprimant le polling.", tip: "Cette approche est plus réactive mais ajoute une dépendance à Debezium." },
+    { thematic: "CDC", question: "Quel est l'inconvénient de CDC sur une base legacy très sollicitée ?", options: ["Charge supplémentaire sur les logs (binlog/WAL)", "Impossible de capturer les DELETE", "Latence de plusieurs minutes", "Nécessite de modifier le code"], correct: "Charge supplémentaire sur les logs (binlog/WAL)", explanation: "L'activation de CDC augmente la quantité de données écrites dans les logs, ce qui peut impacter les performances si la base est déjà saturée.", tip: "Testez en préproduction l'impact sur les IO." },
+    { thematic: "REX", question: "Dans une grande DSI, quelle architecture hybride est souvent retenue ?", options: ["CQRS+DB pour le cœur transactionnel + Kafka-first pour les flux massifs", "100% Kafka-first", "100% Event Sourcing", "Microservices synchrones seulement"], correct: "CQRS+DB pour le cœur transactionnel + Kafka-first pour les flux massifs", explanation: "Les DSI combinent les deux : la cohérence forte pour la facturation, la scalabilité pour l'IoT.", tip: "Adoptez l'hybridation intelligente." },
+    { thematic: "CQRS+DB", question: "Que signifie 'eventual consistency' dans CQRS ?", options: ["Les vues de lecture peuvent être légèrement en retard sur l'écriture", "Les écritures sont immédiates", "Les lectures sont toujours à jour", "Les événements sont perdus"], correct: "Les vues de lecture peuvent être légèrement en retard sur l'écriture", explanation: "À cause de l'asynchronisme, la Read DB peut ne pas encore refléter la dernière écriture. C'est acceptable pour beaucoup de cas.", tip: "Communiquez cette latence au métier." },
+    { thematic: "Kafka-first", question: "Quel est le rôle de ksqlDB dans une architecture Kafka-first ?", options: ["Traitement de flux en SQL temps réel", "Stockage d'état", "Orchestration de conteneurs", "Monitoring"], correct: "Traitement de flux en SQL temps réel", explanation: "ksqlDB permet d'écrire des requêtes SQL sur les topics Kafka pour des agrégations, fenêtres et jointures, sans code.", tip: "Idéal pour des pipelines d'analyse rapides." },
+    { thematic: "Event Sourcing", question: "Qu'est-ce qu'une projection dans Event Sourcing ?", options: ["Une vue construite à partir des événements", "Un événement à venir", "Un snapshot", "Un index de base de données"], correct: "Une vue construite à partir des événements", explanation: "Les projections sont des modèles de lecture (souvent dans une base dédiée) construits en consommant les événements.", tip: "Plusieurs projections peuvent coexister pour différents usages." },
+    { thematic: "Outbox", question: "Comment nettoyer la table outbox après publication ?", options: ["Supprimer les lignes avec published=true", "Truncate chaque jour", "Laisser toutes les lignes", "Utiliser un trigger"], correct: "Supprimer les lignes avec published=true", explanation: "Pour éviter une croissance infinie, on supprime périodiquement les événements déjà publiés.", tip: "Utilisez un job planifié pour nettoyer les lignes de plus de 24h." },
+    { thematic: "CDC", question: "Quelle est l'alternative open source à Debezium pour CDC ?", options: ["Maxwell", "Logstash", "Filebeat", "Vector"], correct: "Maxwell", explanation: "Maxwell est un autre outil CDC pour MySQL qui écrit les changements dans Kafka ou d'autres sinks.", tip: "Debezium reste le plus complet (multi‑bases)." },
+    { thematic: "REX", question: "Dans le REX d'une plateforme e‑commerce, quel problème l'Outbox a‑t‑il résolu ?", options: ["Pertes d'événements lors de pics de charge", "Latence des requêtes", "Sécurité des paiements", "Scalabilité des bases"], correct: "Pertes d'événements lors de pics de charge", explanation: "Avant Outbox, lors des pics, des événements étaient perdus entre la DB et Kafka. L'Outbox a garanti la fiabilité.", tip: "L'Outbox est particulièrement utile sous forte charge." },
+    { thematic: "CQRS+DB", question: "Peut-on utiliser la même base pour Write et Read dans CQRS ?", options: ["Oui, mais on perd l'optimisation indépendante", "Non, c'est interdit", "Uniquement avec des vues matérialisées", "Uniquement en mode lecture seule"], correct: "Oui, mais on perd l'optimisation indépendante", explanation: "Techniquement possible, mais on ne bénéficie plus de la séparation des modèles (scalabilité, indexation dédiée).", tip: "Pour commencer, on peut utiliser la même base, puis séparer." },
+    { thematic: "Kafka-first", question: "Quelle métrique est critique pour un consumer Kafka ?", options: ["Le lag (retard)", "Le nombre de partitions", "La taille du topic", "Le nombre de brokers"], correct: "Le lag (retard)", explanation: "Le lag indique combien de messages non consommés s'accumulent. Un lag trop élevé peut entraîner des dépassements de rétention ou des obsolescences.", tip: "Alertez si le lag dépasse 10 000 messages." },
+    { thematic: "Event Sourcing", question: "Que se passe-t-il si on modifie un événement déjà stocké ?", options: ["Cela casse l'immuabilité et peut invalider les projections", "C'est sans conséquence", "Il faut recréer l'event store", "Les snapshots sont automatiquement mis à jour"], correct: "Cela casse l'immuabilité et peut invalider les projections", explanation: "Les événements sont immuables. Les modifier rendrait le rejeu incohérent. On publie plutôt un événement de correction.", tip: "Ne jamais modifier un événement en base ; ajoutez un événement compensatoire." },
+    { thematic: "Outbox", question: "Quelle est la latence typique d'un Outbox avec polling toutes les 200 ms ?", options: ["300–900 ms", "50 ms", "10 ms", "2 secondes"], correct: "300–900 ms", explanation: "Entre le commit DB et la publication, il y a le délai de polling + traitement. En pratique 300–900 ms.", tip: "Pour une latence plus faible, passez à un CDC sur la table outbox." },
+    { thematic: "CDC", question: "Debezium peut‑il fonctionner avec des bases managées cloud (RDS, Cloud SQL) ?", options: ["Oui, avec des configurations spécifiques (ex: rds.logical_replication)", "Non, jamais", "Uniquement sur site", "Avec une licence spéciale"], correct: "Oui, avec des configurations spécifiques (ex: rds.logical_replication)", explanation: "Les bases managées supportent généralement le CDC via des paramètres (ex: rds.logical_replication pour PostgreSQL RDS).", tip: "Vérifiez la documentation du fournisseur cloud." },
+    { thematic: "REX", question: "Quelle leçon est tirée du REX d'une startup ayant échoué avec Event Sourcing ?", options: ["Ne pas l'utiliser pour des cas simples sans expertise", "Event Sourcing est toujours une erreur", "Il faut plus de serveurs", "Kafka est mieux"], correct: "Ne pas l'utiliser pour des cas simples sans expertise", explanation: "La startup a sous‑estimé la complexité de versioning et de snapshots, entraînant des retards. Pour un simple CRUD, mieux vaut un monolithe.", tip: "Event Sourcing n'est pas une solution par défaut." }
+];
+
+// Fusion et sélection aléatoire
+let selectedQuestions = [];
+let currentIndex = 0, score = 0, userAnswers = [], totalQuestions = 50;
+const settingsDiv = document.getElementById('settings-panel');
+const quizDiv = document.getElementById('quiz-content');
+const qCounter = document.getElementById('question-counter');
+const scoreSpan = document.getElementById('current-score');
+const progressBar = document.getElementById('progress-bar');
+const questionText = document.getElementById('question-text');
+const thematicBadge = document.getElementById('thematic-badge');
+const optionsDiv = document.getElementById('options-container');
+const explanationBox = document.getElementById('explanation-box');
+const explanationTitle = document.getElementById('explanation-title');
+const explanationText = document.getElementById('explanation-text');
+const tipBox = document.getElementById('tip-box');
+const tipText = document.getElementById('tip-text');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const finishBtn = document.getElementById('finish-btn');
+const startBtn = document.getElementById('start-quiz-btn');
+
+function shuffle(arr) { for(let i=arr.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+
+function getSelectedThematics() {
+    let thematics = [];
+    if(document.getElementById('th-cqrs')?.checked) thematics.push("CQRS+DB");
+    if(document.getElementById('th-kafka')?.checked) thematics.push("Kafka-first");
+    if(document.getElementById('th-eventsourcing')?.checked) thematics.push("Event Sourcing");
+    if(document.getElementById('th-outbox')?.checked) thematics.push("Outbox");
+    if(document.getElementById('th-cdc')?.checked) thematics.push("CDC");
+    if(document.getElementById('th-rex')?.checked) thematics.push("REX");
+    return thematics;
+}
+
+function startQuiz() {
+    let thematics = getSelectedThematics();
+    let filtered = FULL_QUIZ.filter(q => thematics.includes(q.thematic));
+    if(filtered.length === 0) { alert("Sélectionnez au moins une thématique."); return; }
+    let count = parseInt(document.getElementById('question-count').value);
+    selectedQuestions = shuffle(filtered).slice(0, Math.min(count, filtered.length));
+    totalQuestions = selectedQuestions.length;
+    currentIndex = 0; score = 0; userAnswers = new Array(totalQuestions).fill(null);
+    settingsDiv.classList.add('d-none');
+    quizDiv.classList.remove('d-none');
+    displayQuestion(0);
+    updateScore();
+}
+function displayQuestion(idx) {
+    explanationBox.classList.add('d-none');
+    tipBox.classList.add('d-none');
+    let q = selectedQuestions[idx];
+    questionText.innerText = q.question;
+    thematicBadge.innerText = q.thematic;
+    thematicBadge.className = "badge-theme";
+    if(q.thematic === "CQRS+DB") thematicBadge.classList.add("badge-cqrs");
+    else if(q.thematic === "Kafka-first") thematicBadge.classList.add("badge-kafka");
+    else if(q.thematic === "Event Sourcing") thematicBadge.classList.add("badge-sourcing");
+    else if(q.thematic === "Outbox") thematicBadge.classList.add("badge-outbox");
+    else if(q.thematic === "CDC") thematicBadge.classList.add("badge-cdc");
+    else thematicBadge.classList.add("badge-rex");
+    optionsDiv.innerHTML = '';
+    let shuffledOps = shuffle([...q.options]);
+    shuffledOps.forEach(opt => {
+        let btn = document.createElement('button');
+        btn.className = 'btn option-btn';
+        btn.innerText = opt;
+        btn.onclick = () => selectAnswer(btn, opt, idx);
+        optionsDiv.appendChild(btn);
+    });
+    if(userAnswers[idx] !== null) { showFeedback(idx); }
+    updateProgress();
+}
+function selectAnswer(btn, selected, idx) {
+    if(userAnswers[idx] !== null) return;
+    let q = selectedQuestions[idx];
+    let isCorrect = (selected === q.correct);
+    if(isCorrect) score++;
+    userAnswers[idx] = { selected, correct: q.correct, isCorrect };
+    updateScore();
+    showFeedback(idx);
+    document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+    document.querySelectorAll('.option-btn').forEach(b => {
+        if(b.innerText === q.correct) b.classList.add('correct');
+        else if(b.innerText === selected && !isCorrect) b.classList.add('incorrect');
+    });
+}
+function showFeedback(idx) {
+    let q = selectedQuestions[idx];
+    let ans = userAnswers[idx];
+    explanationText.innerText = q.explanation;
+    explanationTitle.innerText = ans.isCorrect ? "✅ Correct !" : "❌ Incorrect – La bonne réponse était : " + ans.correct;
+    explanationBox.classList.remove('d-none');
+    explanationBox.className = "explanation-box " + (ans.isCorrect ? "explanation-correct" : "explanation-incorrect");
+    if(q.tip) { tipText.innerText = q.tip; tipBox.classList.remove('d-none'); }
+}
+function updateScore() { scoreSpan.innerText = `Score: ${score}/${totalQuestions}`; }
+function updateProgress() { let percent = ((currentIndex+1)/totalQuestions)*100; progressBar.style.width = percent+'%'; qCounter.innerText = `Question ${currentIndex+1} / ${totalQuestions}`; }
+prevBtn.onclick = () => { if(currentIndex>0) { currentIndex--; displayQuestion(currentIndex); } };
+nextBtn.onclick = () => { if(currentIndex < totalQuestions-1) { currentIndex++; displayQuestion(currentIndex); } };
+finishBtn.onclick = () => showResults();
+function showResults() {
+    let percentage = (score/totalQuestions)*100;
+    document.getElementById('final-score-percentage').innerText = percentage.toFixed(0)+'%';
+    document.getElementById('final-score-correct').innerText = score;
+    document.getElementById('final-score-total').innerText = totalQuestions;
+    let tech = percentage>=80?100:percentage>=60?70:40;
+    document.getElementById('tech-skills').style.width = tech+'%';
+    document.getElementById('tech-skills-text').innerText = `Maîtrise technique : ${tech}%`;
+    document.getElementById('strategic-skills').style.width = tech+'%';
+    document.getElementById('strategic-skills-text').innerText = `Vision architecturale : ${tech}%`;
+    let recos = percentage>=80 ? "<p>Excellent ! Vous maîtrisez les architectures event-driven. Postulez comme architecte solution.</p>" : (percentage>=60 ? "<p>Bon niveau. Approfondissez les patterns avancés (Event Sourcing, CDC).</p>" : "<p>Reprenez les bases : CQRS, Outbox, Kafka. Entraînez-vous sur des cas concrets.</p>");
+    document.getElementById('final-recommendations').innerHTML = recos;
+    document.getElementById('short-term').innerText = percentage>=70 ? "Mettez en place un POC avec Outbox + Kafka." : "Suivez une formation sur Apache Kafka et CQRS.";
+    document.getElementById('long-term').innerText = percentage>=80 ? "Devenez référent technique event-driven." : "Obtenez une certification Confluent.";
+    new bootstrap.Modal(document.getElementById('resultsModal')).show();
+}
+document.getElementById('restart-quiz-btn').onclick = () => { location.reload(); };
+startBtn.onclick = startQuiz;
+</script>
+</body>
+</html>
