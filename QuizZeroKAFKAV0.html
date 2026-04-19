@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kafka Débutant Absolu · Série V0 · Les bases pas à pas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:linear-gradient(145deg,#0b1120,#1a2639);padding:1.5rem;min-height:100vh;}
+        .quiz-wrapper{max-width:1200px;margin:0 auto;}
+        .quiz-card{background:rgba(255,255,255,0.98);border-radius:2rem;overflow:hidden;box-shadow:0 25px 45px -12px rgba(0,0,0,0.4);}
+        .quiz-header{background:linear-gradient(135deg,#1a1e2c,#2d3e50);padding:2rem;color:white;border-bottom:4px solid #e63946;}
+        .badge-kafka{background:#e63946;padding:0.3rem 1.2rem;border-radius:40px;font-weight:600;font-size:0.85rem;display:inline-block;}
+        .progress-container{background:#f1f5f9;margin:1.5rem;padding:1rem;border-radius:1rem;}
+        .progress-bar-custom{background:linear-gradient(90deg,#f4a261,#e63946);}
+        .thematic-badge{display:inline-flex;align-items:center;gap:0.4rem;padding:0.4rem 1rem;border-radius:50px;font-weight:600;font-size:0.8rem;margin-bottom:1rem;}
+        .badge-fund{background:#e0f2fe;color:#0369a1;}
+        .badge-dev{background:#dcfce7;color:#166534;}
+        .badge-streams{background:#fae8ff;color:#86198f;}
+        .option-btn{width:100%;text-align:left;padding:0.9rem 1.2rem;margin-bottom:0.7rem;border:1.5px solid #e2e8f0;border-radius:1rem;background:white;font-weight:500;transition:0.2s;}
+        .option-btn:hover:not([disabled]){border-color:#e63946;background:#fff5f5;transform:translateY(-2px);}
+        .option-btn.correct{background:#ecfdf5;border-color:#10b981;color:#065f46;}
+        .option-btn.incorrect{background:#fef2f2;border-color:#f97316;color:#7f1d1d;}
+        .explanation-box{padding:1rem;border-radius:1rem;background:#f8fafc;border-left:5px solid #e63946;margin-top:1.2rem;}
+        .tip-box{background:#fffbeb;border-left:4px solid #f4a261;padding:0.7rem;border-radius:0.8rem;margin-top:0.8rem;}
+        .btn-kafka{background:#e63946;color:white;border:none;}
+        .btn-kafka:hover{background:#b91c1c;transform:translateY(-2px);}
+        .final-score{font-size:3.5rem;font-weight:800;background:linear-gradient(135deg,#e63946,#f4a261);-webkit-background-clip:text;background-clip:text;color:transparent;}
+        @media (max-width:768px){body{padding:0.8rem;}.quiz-header h1{font-size:1.5rem;}}
+    </style>
+</head>
+<body>
+<div class="quiz-wrapper">
+    <div class="quiz-card">
+        <div class="quiz-header">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div><h1><i class="fab fa-java me-2"></i> Kafka Débutant Absolu · Série V0</h1><p class="mb-0 opacity-75">80 questions · explications pas à pas · zéro prérequis</p></div>
+                <div><span class="badge-kafka"><i class="fas fa-seedling"></i> Niveau 0</span></div>
+            </div>
+        </div>
+
+        <div id="settings-panel" class="p-4">
+            <h4><i class="fas fa-sliders-h"></i> Configuration</h4>
+            <div class="row g-3 mt-2">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Nombre de questions</label>
+                    <select id="question-count" class="form-select">
+                        <option value="20">20 questions (découverte)</option>
+                        <option value="40">40 questions (standard)</option>
+                        <option value="80" selected>80 questions (cours complet)</option>
+                    </select>
+                </div>
+                <div class="col-md-7 d-flex align-items-end"><button id="start-quiz-btn" class="btn btn-kafka w-100 py-2"><i class="fas fa-play"></i> Démarrer la découverte</button></div>
+            </div>
+            <div class="mt-4">
+                <h6><i class="fas fa-tags"></i> Thèmes</h6>
+                <div class="row">
+                    <div class="col-md-6"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-fund" checked> <label>📘 Concepts de base (80%)</label></div></div>
+                    <div class="col-md-6"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-dev" checked> <label>⚙️ Premiers pas CLI (20%)</label></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz-content" class="d-none">
+            <div class="progress-container">
+                <div class="d-flex justify-content-between"><span id="question-counter" class="fw-bold">Question 1 / 80</span><span id="current-score" class="fw-bold text-danger">Score: 0</span></div>
+                <div class="progress mt-2" style="height: 10px;"><div id="progress-bar" class="progress-bar progress-bar-custom" style="width:0%"></div></div>
+            </div>
+            <div class="px-4 pb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div id="thematic-badge" class="thematic-badge">Concepts de base</div>
+                        <h3 id="question-text" class="fs-4 fw-semibold mb-4"></h3>
+                        <div id="options-container"></div>
+                        <div id="explanation-box" class="explanation-box d-none">
+                            <h5 id="explanation-title"><i class="fas fa-info-circle"></i> Explication</h5>
+                            <p id="explanation-text"></p>
+                            <div id="tip-box" class="tip-box d-none"><i class="fas fa-lightbulb text-warning"></i> <strong>À retenir :</strong> <span id="tip-text"></span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-between mt-4 gap-2">
+                    <button id="prev-btn" class="btn btn-outline-secondary" disabled><i class="fas fa-chevron-left"></i> Précédent</button>
+                    <button id="next-btn" class="btn btn-kafka">Suivant <i class="fas fa-chevron-right"></i></button>
+                    <button id="finish-btn" class="btn btn-outline-success d-none">Terminer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="resultsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white"><h5 class="modal-title"><i class="fab fa-apache"></i> Résultat · Débutant Absolu</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body p-4 text-center"><div class="final-score" id="final-score-percentage">0%</div><p id="final-score-text" class="lead"></p>
+            <div class="row"><div class="col-md-6"><div class="bg-light p-2 rounded"><div class="progress"><div id="tech-skills" class="progress-bar bg-danger" style="width:0%"></div></div><p id="tech-skills-text" class="mt-1 small"></p></div></div>
+            <div class="col-md-6"><div class="bg-light p-2 rounded"><div class="progress"><div id="strat-skills" class="progress-bar bg-warning" style="width:0%"></div></div><p id="strat-skills-text" class="mt-1 small"></p></div></div></div>
+            <hr><div id="final-recommendations"></div><p id="short-term" class="mt-2"></p><p id="long-term"></p></div>
+            <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button><button id="restart-quiz-btn" class="btn btn-kafka">Recommencer</button></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ======================= SÉRIE V0 : 80 QUESTIONS POUR DÉBUTANTS ABSOLUS =======================
+const questionsBank = [
+    // CONCEPTS DE BASE (questions très simples avec analogies)
+    { thematic:"Concepts de base", question:"Qu'est-ce qu'Apache Kafka ?", options:["Une plateforme de streaming d'événements","Une base de données SQL","Un serveur web","Un langage de programmation"], correctAnswer:"Une plateforme de streaming d'événements", explanation:"Kafka est un système qui permet de transporter des messages (appelés événements) entre différentes applications, en temps réel. Imaginez un système de livraison de messages ultra-rapide et fiable.", tip:"Kafka est souvent comparé à un 'tuyau' ou un 'bus' de messages." },
+    { thematic:"Concepts de base", question:"À quoi sert un message dans Kafka ?", options:["Transporter une information (ex: 'commande créée')","Stocker une image","Exécuter une requête SQL","Afficher une page web"], correctAnswer:"Transporter une information (ex: 'commande créée')", explanation:"Un message est une petite unité d'information. Par exemple, 'le client 123 a acheté un produit'. Les applications envoient et reçoivent ces messages via Kafka.", tip:"Un message contient généralement une clé (optionnelle) et une valeur (le contenu)." },
+    { thematic:"Concepts de base", question:"Qu'est-ce qu'un topic dans Kafka ?", options:["Un flux ou un canal de messages (comme un sujet de discussion)","Une base de données","Un serveur","Un fichier de configuration"], correctAnswer:"Un flux ou un canal de messages (comme un sujet de discussion)", explanation:"Un topic est comme un classeur ou une catégorie. Les messages sur un même sujet (ex: 'paiements') sont envoyés dans le même topic. Les consommateurs s'abonnent à un topic pour lire les messages.", tip:"Nommez vos topics avec des noms clairs comme 'commandes', 'paiements', 'logs'." },
+    { thematic:"Concepts de base", question:"Qu'est-ce qu'un producteur (producer) Kafka ?", options:["Une application qui envoie des messages dans un topic","Une application qui lit des messages","Un serveur Kafka","Un outil de monitoring"], correctAnswer:"Une application qui envoie des messages dans un topic", explanation:"Le producteur est celui qui écrit (publie) des messages dans Kafka. Par exemple, votre site e-commerce envoie un message 'commande créée' quand un client passe commande.", tip:"Un producteur peut envoyer des messages à plusieurs topics." },
+    { thematic:"Concepts de base", question:"Qu'est-ce qu'un consommateur (consumer) Kafka ?", options:["Une application qui lit des messages depuis un topic","Une application qui envoie des messages","Un serveur Kafka","Un type de base de données"], correctAnswer:"Une application qui lit des messages depuis un topic", explanation:"Le consommateur est celui qui lit (souscrit) les messages. Par exemple, un service d'envoi d'emails lit le topic 'commandes' pour envoyer un email de confirmation.", tip:"Un consommateur peut lire plusieurs topics." },
+    { thematic:"Concepts de base", question:"Qu'est-ce qu'un broker Kafka ?", options:["Un serveur Kafka qui stocke et distribue les messages","Un client Kafka","Un topic","Un message"], correctAnswer:"Un serveur Kafka qui stocke et distribue les messages", explanation:"Un broker est un ordinateur (ou un processus) qui fait tourner Kafka. Il reçoit les messages des producteurs, les stocke, et les envoie aux consommateurs. Plusieurs brokers forment un cluster.", tip:"En production, on utilise généralement plusieurs brokers (3 ou plus) pour la fiabilité." },
+    { thematic:"Concepts de base", question:"À quoi sert une partition dans Kafka ?", options:["Diviser un topic en plusieurs morceaux pour paralléliser","Chiffrer les messages","Compresser les données","Trier les messages"], correctAnswer:"Diviser un topic en plusieurs morceaux pour paralléliser", explanation:"Un topic peut être divisé en plusieurs partitions. Cela permet de répartir la charge sur plusieurs serveurs et de lire/écrire plus rapidement. Chaque partition est un journal ordonné.", tip:"Plus il y a de partitions, plus vous pouvez avoir de consommateurs en parallèle." },
+    { thematic:"Concepts de base", question:"Qu'est-ce qu'un offset ?", options:["La position d'un message dans une partition (numéro séquentiel)","La taille d'un message","Le nom d'un topic","L'adresse d'un broker"], correctAnswer:"La position d'un message dans une partition (numéro séquentiel)", explanation:"Chaque message dans une partition a un numéro unique qui s'appelle l'offset (0,1,2,3...). Les consommateurs utilisent cet offset pour savoir où ils en sont dans leur lecture.", tip:"L'offset permet de reprendre la lecture après un redémarrage." },
+    { thematic:"Concepts de base", question:"Que signifie 'ordre des messages' dans Kafka ?", options:["L'ordre est garanti à l'intérieur d'une partition","L'ordre est garanti sur tout le topic","L'ordre n'est jamais garanti","L'ordre dépend du producteur"], correctAnswer:"L'ordre est garanti à l'intérieur d'une partition", explanation:"Kafka garantit que les messages sont lus dans l'ordre où ils ont été écrits, mais seulement à l'intérieur d'une même partition. Entre deux partitions différentes, l'ordre n'est pas garanti.", tip:"Si l'ordre est crucial, utilisez une seule partition ou une clé qui envoie toujours les messages liés dans la même partition." },
+    { thematic:"Concepts de base", question:"Qu'est-ce qu'un groupe de consommateurs (consumer group) ?", options:["Un ensemble de consommateurs qui se partagent la lecture d'un topic","Un type de broker","Un topic spécial","Un producteur"], correctAnswer:"Un ensemble de consommateurs qui se partagent la lecture d'un topic", explanation:"Les consommateurs d'un même groupe lisent le topic ensemble. Chaque partition est lue par un seul consommateur du groupe. Cela permet de paralléliser le traitement.", tip:"Si vous avez plus de consommateurs que de partitions, certains seront inactifs." },
+    { thematic:"Concepts de base", question:"Que signifie le paramètre `acks=all` pour un producteur ?", options:["Attendre que tous les réplicas aient bien reçu le message","Attendre uniquement le leader","Ne pas attendre de confirmation","Attendre une confirmation rapide"], correctAnswer:"Attendre que tous les réplicas aient bien reçu le message", explanation:"C'est le mode le plus sûr. Le producteur attend que le leader ET tous les followers aient bien écrit le message. Cela évite de perdre des données en cas de panne.", tip:"Utilisez acks=all pour les données critiques (paiements, commandes)." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que le facteur de réplication (replication factor) ?", options:["Le nombre de copies d'une partition","Le nombre de partitions","Le nombre de brokers","Le nombre de topics"], correctAnswer:"Le nombre de copies d'une partition", explanation:"Chaque partition peut être copiée sur plusieurs brokers. Si un broker tombe, une copie existe ailleurs. Un facteur de réplication de 3 signifie qu'il y a 3 copies.", tip:"En production, utilisez au moins 3." },
+    { thematic:"Concepts de base", question:"Que signifie ISR (In-Sync Replicas) ?", options:["Réplicas synchrones (à jour) avec le leader","Réplicas désynchronisés","Tous les réplicas","Réplicas inactifs"], correctAnswer:"Réplicas synchrones (à jour) avec le leader", explanation:"Les ISR sont les followers qui n'ont pas de retard. Ils peuvent devenir leader en cas de panne. Un réplica qui n'est plus ISR est en train de rattraper son retard.", tip:"Surveillez le nombre d'ISR." },
+    { thematic:"Concepts de base", question:"Que signifie le paramètre `retries` dans un producteur ?", options:["Nombre de tentatives en cas d'échec","Nombre de partitions","Taille du batch","Délai d'attente"], correctAnswer:"Nombre de tentatives en cas d'échec", explanation:"Si l'envoi d'un message échoue (ex: broker temporairement indisponible), le producteur réessaie automatiquement jusqu'à `retries` fois.", tip:"Avec l'idempotence, les retries sont sans risque." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que la rétention (retention) dans Kafka ?", options:["La durée pendant laquelle les messages sont conservés","La taille des messages","Le nombre de partitions","La vitesse de lecture"], correctAnswer:"La durée pendant laquelle les messages sont conservés", explanation:"Kafka ne conserve pas les messages indéfiniment. Par défaut, 7 jours. Passé ce délai, les messages sont supprimés automatiquement.", tip:"Pour les données importantes, augmentez la rétention." },
+    { thematic:"Concepts de base", question:"Quelle commande CLI permet de créer un topic ?", options:["kafka-topics.sh --create","kafka-create-topic.sh","kafka-topic --new","kafka-admin.sh"], correctAnswer:"kafka-topics.sh --create", explanation:"Exemple : `kafka-topics.sh --bootstrap-server localhost:9092 --create --topic monTopic --partitions 3 --replication-factor 1`.", tip:"Toujours spécifier --bootstrap-server." },
+    { thematic:"Concepts de base", question:"Comment lister les topics avec la ligne de commande ?", options:["kafka-topics.sh --list","kafka-topics --show","kafka-list.sh","kafka-topics --ls"], correctAnswer:"kafka-topics.sh --list", explanation:"`kafka-topics.sh --bootstrap-server localhost:9092 --list`", tip:"Ajoutez `--exclude-internal` pour cacher les topics internes." },
+    { thematic:"Concepts de base", question:"Comment envoyer un message depuis la ligne de commande ?", options:["kafka-console-producer.sh","kafka-producer-cli.sh","kafka-send.sh","kafka-publish.sh"], correctAnswer:"kafka-console-producer.sh", explanation:"`kafka-console-producer.sh --bootstrap-server localhost:9092 --topic monTopic`, puis tapez vos messages.", tip:"Appuyez sur Entrée pour envoyer, Ctrl+C pour quitter." },
+    { thematic:"Concepts de base", question:"Comment lire des messages depuis la ligne de commande ?", options:["kafka-console-consumer.sh","kafka-consumer-cli.sh","kafka-read.sh","kafka-subscribe.sh"], correctAnswer:"kafka-console-consumer.sh", explanation:"`kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic monTopic --from-beginning`.", tip:"`--from-beginning` lit tous les messages depuis le début." },
+    { thematic:"Concepts de base", question:"Que signifie `--from-beginning` dans le consommateur CLI ?", options:["Lire tous les messages depuis le premier offset","Lire seulement les nouveaux","Lire depuis la fin","Lire aléatoirement"], correctAnswer:"Lire tous les messages depuis le premier offset", explanation:"Sans cette option, le consommateur ne lit que les messages envoyés après son démarrage.", tip:"Utile pour vérifier l'historique." },
+    { thematic:"Concepts de base", question:"Qu'est-ce qu'un cluster Kafka ?", options:["Un ensemble de brokers qui travaillent ensemble","Un seul broker","Un topic","Un consommateur"], correctAnswer:"Un ensemble de brokers qui travaillent ensemble", explanation:"Un cluster est un groupe de brokers (serveurs) qui se coordonnent pour offrir scalabilité et tolérance aux pannes.", tip:"En production, un cluster a au moins 3 brokers." },
+    { thematic:"Concepts de base", question:"Que signifie le paramètre `bootstrap.servers` dans un client ?", options:["La liste des brokers à contacter pour se connecter au cluster","Le nom du topic","Le nom du groupe","L'adresse du producteur"], correctAnswer:"La liste des brokers à contacter pour se connecter au cluster", explanation:"Le client utilise cette liste pour découvrir tous les brokers du cluster.", tip:"Mettez au moins deux brokers pour la redondance." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que ZooKeeper dans Kafka (ancienne version) ?", options:["Un service de coordination pour gérer les métadonnées du cluster","Une base de données","Un type de message","Un client Kafka"], correctAnswer:"Un service de coordination pour gérer les métadonnées du cluster", explanation:"ZooKeeper était utilisé pour stocker l'état du cluster (brokers, topics, etc.). Depuis Kafka 3.0, KRaft remplace ZooKeeper.", tip:"Pour les nouvelles installations, utilisez KRaft." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que KRaft dans Kafka ?", options:["Le nouveau protocole intégré qui remplace ZooKeeper","Un outil de compression","Un type de partition","Un langage de requête"], correctAnswer:"Le nouveau protocole intégré qui remplace ZooKeeper", explanation:"KRaft simplifie l'architecture en intégrant la gestion des métadonnées directement dans Kafka.", tip:"Préférez KRaft pour les nouvelles installations." },
+    { thematic:"Concepts de base", question:"Que signifie le paramètre `acks=0` pour un producteur ?", options:["Le producteur n'attend aucune confirmation (fire-and-forget)","Attendre tous les réplicas","Attendre le leader","Attendre le disque"], correctAnswer:"Le producteur n'attend aucune confirmation (fire-and-forget)", explanation:"Le message est envoyé sans vérification. Latence minimale mais risque de perte.", tip:"À utiliser uniquement pour des logs non critiques." },
+    { thematic:"Concepts de base", question:"Que signifie `acks=1` ?", options:["Attendre la confirmation du leader seulement","Attendre tous les réplicas","Attendre aucun accusé","Attendre le disque"], correctAnswer:"Attendre la confirmation du leader seulement", explanation:"Le producteur reçoit un accusé dès que le leader a écrit le message. Bon compromis.", tip:"Perte possible si le leader crash avant réplication." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que la sérialisation (serialization) dans Kafka ?", options:["Convertir un objet en bytes pour l'envoyer","Compresser un message","Chiffrer un message","Découper un message"], correctAnswer:"Convertir un objet en bytes pour l'envoyer", explanation:"Kafka transporte des bytes. La sérialisation transforme vos objets (JSON, Avro, etc.) en bytes. La désérialisation fait l'inverse.", tip:"Utilisez StringSerializer pour du texte, JsonSerializer pour du JSON." },
+    { thematic:"Concepts de base", question:"Qu'est-ce qu'un 'record' dans Kafka ?", options:["Un message (clé, valeur, timestamp, headers)","Une partition","Un topic","Un broker"], correctAnswer:"Un message (clé, valeur, timestamp, headers)", explanation:"C'est l'unité de données. Un record a une clé (optionnelle), une valeur (le contenu), un timestamp, et éventuellement des en-têtes.", tip:"La clé sert à déterminer la partition." },
+    { thematic:"Concepts de base", question:"Comment Kafka gère-t-il les pannes de broker ?", options:["Les partitions sont répliquées sur d'autres brokers","Les messages sont perdus","Le cluster s'arrête","Les producteurs sont bloqués"], correctAnswer:"Les partitions sont répliquées sur d'autres brokers", explanation:"Grâce au facteur de réplication, si un broker tombe, un autre broker (follower) devient leader et les clients continuent à fonctionner.", tip:"Un facteur de réplication de 3 permet de tolérer la perte de 2 brokers." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que le 'lag' d'un consommateur ?", options:["Le retard entre le dernier message produit et le message lu","La vitesse de lecture","Le nombre de partitions","La taille des messages"], correctAnswer:"Le retard entre le dernier message produit et le message lu", explanation:"Si le producteur a envoyé 100 messages et le consommateur n'en a lu que 80, le lag est de 20. Un lag qui augmente signifie que le consommateur est trop lent.", tip:"Surveillez le lag avec `kafka-consumer-groups --describe`." },
+    { thematic:"Concepts de base", question:"Que signifie `auto.offset.reset=earliest` ?", options:["Lire depuis le début si aucun offset n'est commité","Lire depuis la fin","Ignorer les anciens","Reset manuel"], correctAnswer:"Lire depuis le début si aucun offset n'est commité", explanation:"Si le consommateur n'a jamais lu ce topic (ou si les offsets ont expiré), il commence par le premier message disponible.", tip:"Utile pour traiter tout l'historique." },
+    { thematic:"Concepts de base", question:"Que signifie `auto.offset.reset=latest` ?", options:["Ne lire que les nouveaux messages (par défaut)","Lire depuis le début","Lire depuis un offset spécifique","Ignorer tous les messages"], correctAnswer:"Ne lire que les nouveaux messages (par défaut)", explanation:"Le consommateur ignore l'historique et ne reçoit que les messages envoyés après son démarrage.", tip:"Utile pour les applications qui ne veulent que les événements futurs." },
+	
+    // PREMIERS PAS CLI (quelques questions très simples sur les commandes)
+    { thematic:"Premiers pas CLI", question:"Quelle commande permet de voir la description d'un topic (partitions, réplicas) ?", options:["kafka-topics.sh --describe","kafka-describe-topic.sh","kafka-topic-info.sh","kafka-details.sh"], correctAnswer:"kafka-topics.sh --describe", explanation:"`kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic monTopic`", tip:"Affiche le leader, les ISR, et les réplicas." },
+    { thematic:"Premiers pas CLI", question:"Comment supprimer un topic ?", options:["kafka-topics.sh --delete","kafka-delete-topic.sh","kafka-topic --remove","rm topic"], correctAnswer:"kafka-topics.sh --delete", explanation:"`kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic monTopic`.", tip:"Assurez-vous que `delete.topic.enable=true`." },
+    { thematic:"Premiers pas CLI", question:"Comment modifier le nombre de partitions d'un topic ?", options:["kafka-topics.sh --alter --partitions","kafka-configs.sh","kafka-reassign-partitions.sh","kafka-partitions.sh"], correctAnswer:"kafka-topics.sh --alter --partitions", explanation:"`kafka-topics.sh --bootstrap-server localhost:9092 --alter --topic test --partitions 10`.", tip:"On ne peut que augmenter, jamais diminuer." },
+    { thematic:"Premiers pas CLI", question:"Quelle commande permet de voir les groupes de consommateurs ?", options:["kafka-consumer-groups.sh --list","kafka-groups.sh","kafka-list-groups.sh","kafka-group-list"], correctAnswer:"kafka-consumer-groups.sh --list", explanation:"`kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list`", tip:"Ajoutez `--state` pour voir l'état." },
+    { thematic:"Premiers pas CLI", question:"Comment voir le lag d'un groupe de consommateurs ?", options:["kafka-consumer-groups.sh --describe --group","kafka-lag.sh","kafka-consumer-lag.sh","kafka-group-lag"], correctAnswer:"kafka-consumer-groups.sh --describe --group", explanation:"`kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group monGroupe`.", tip:"Le lag s'affiche pour chaque partition." },
+	
+	    // Questions supplémentaires pour atteindre 80
+    { thematic:"Concepts de base", question:"Qu'est-ce qu'un événement dans Kafka ?", options:["Un message qui représente un fait passé (ex: 'paiement reçu')","Une requête HTTP","Une ligne de base de données","Un fichier log"], correctAnswer:"Un message qui représente un fait passé (ex: 'paiement reçu')", explanation:"Dans Kafka, on parle d'événement plutôt que de message. Un événement est quelque chose qui s'est produit : une commande, un clic, une alerte. Kafka stocke ces événements et permet à d'autres applications de les lire.", tip:"Pensez à un événement comme à un tweet : il raconte ce qui vient d'arriver." },
+    { thematic:"Concepts de base", question:"Que signifie 'pub/sub' (publish/subscribe) dans Kafka ?", options:["Un modèle où des producteurs publient des messages et des consommateurs s'y abonnent","Un type de compression","Un protocole réseau","Une méthode de chiffrement"], correctAnswer:"Un modèle où des producteurs publient des messages et des consommateurs s'y abonnent", explanation:"Les producteurs 'publient' (envoient) des messages dans des topics. Les consommateurs 's'abonnent' à ces topics pour recevoir les messages. C'est comme un journal : l'éditeur publie, les lecteurs s'abonnent.", tip:"C'est le cœur du fonctionnement de Kafka." },
+    { thematic:"Concepts de base", question:"Un même topic peut-il avoir plusieurs producteurs ?", options:["Oui","Non","Uniquement si le topic est partitionné","Seulement deux producteurs maximum"], correctAnswer:"Oui", explanation:"Absolument ! Plusieurs applications différentes peuvent envoyer des messages dans le même topic. Par exemple, votre site web et votre application mobile peuvent tous deux envoyer des événements 'connexion utilisateur' dans le même topic.", tip:"C'est très utile pour centraliser des données de sources multiples." },
+    { thematic:"Concepts de base", question:"Un même topic peut-il avoir plusieurs consommateurs ?", options:["Oui","Non","Un seul consommateur par topic","Uniquement si le topic n'a qu'une partition"], correctAnswer:"Oui", explanation:"Oui, plusieurs applications peuvent lire le même topic. Mais attention : si elles font partie du même groupe de consommateurs, elles se partagent les partitions. Si elles sont dans des groupes différents, chacune lit une copie complète des messages.", tip:"Utilisez des groupes différents pour des traitements indépendants." },
+    { thematic:"Concepts de base", question:"Que se passe-t-il si un consommateur lit un message mais plante avant de le traiter ?", options:["Le message sera relu au redémarrage (si l'offset n'est pas commité)","Le message est perdu","Le message est automatiquement supprimé","Le message est ignoré"], correctAnswer:"Le message sera relu au redémarrage (si l'offset n'est pas commité)", explanation:"Le consommateur n'a pas encore dit à Kafka 'j'ai fini de traiter ce message'. Au redémarrage, il reprendra là où il s'était arrêté (offset précédent) et relira le même message. C'est ce qu'on appelle 'au moins une fois'.", tip:"Pour éviter les doublons, utilisez exactly-once." },
+    { thematic:"Concepts de base", question:"Que signifie 'at-least-once' (au moins une fois) dans Kafka ?", options:["Chaque message est livré au moins une fois (possiblement plusieurs)","Chaque message est livré exactement une fois","Chaque message est livré au plus une fois","Les messages peuvent être perdus"], correctAnswer:"Chaque message est livré au moins une fois (possiblement plusieurs)", explanation:"C'est la garantie par défaut. Le message ne sera pas perdu, mais il peut arriver qu'il soit livré plusieurs fois (ex: si le consommateur plante juste après traitement mais avant commit).", tip:"Pour les applications critiques, il faut gérer l'idempotence." },
+    { thematic:"Concepts de base", question:"Que signifie 'exactly-once' (exactement une fois) dans Kafka ?", options:["Chaque message est livré une et une seule fois","Chaque message est livré au moins une fois","Chaque message est livré au plus une fois","Les messages peuvent être perdus"], correctAnswer:"Chaque message est livré une et une seule fois", explanation:"C'est la garantie la plus forte. Aucun message perdu, aucun message dupliqué. C'est possible grâce aux transactions Kafka et à l'idempotence.", tip:"Utilisez exactly-once pour les paiements et les commandes." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que l'idempotence dans Kafka ?", options:["Envoyer plusieurs fois le même message n'a qu'un seul effet","Envoyer un message une seule fois","Ne jamais renvoyer un message","Compresser les messages"], correctAnswer:"Envoyer plusieurs fois le même message n'a qu'un seul effet", explanation:"L'idempotence du producteur garantit que même si le producteur réessaie d'envoyer un message (à cause d'une erreur réseau), Kafka ne le dupliquera pas.", tip:"Activez `enable.idempotence=true`." },
+    { thematic:"Concepts de base", question:"Quelle est la commande pour démarrer un broker Kafka ?", options:["kafka-server-start.sh config/server.properties","start-kafka.sh","kafka-start.sh","bin/kafka start"], correctAnswer:"kafka-server-start.sh config/server.properties", explanation:"C'est le script officiel pour démarrer un broker. Le fichier server.properties contient la configuration.", tip:"Pour arrêter proprement, utilisez `kafka-server-stop.sh`." },
+    { thematic:"Concepts de base", question:"Où sont stockés les messages sur le disque d'un broker ?", options:["Dans le répertoire configuré par `log.dirs`","Dans `/var/log/kafka`","Dans la base de données","Dans la mémoire RAM"], correctAnswer:"Dans le répertoire configuré par `log.dirs`", explanation:"Chaque partition est un répertoire contenant des fichiers de segments. Par défaut, c'est `/tmp/kafka-logs`.", tip:"Utilisez des disques rapides (SSD) pour de bonnes performances." },
+    { thematic:"Concepts de base", question:"Que signifie le paramètre `log.dirs` dans server.properties ?", options:["L'emplacement où Kafka stocke les messages","L'emplacement des logs Kafka","Le répertoire des configurations","Le répertoire des scripts"], correctAnswer:"L'emplacement où Kafka stocke les messages", explanation:"C'est le chemin où les données des topics sont écrites sur disque. On peut spécifier plusieurs répertoires (séparés par des virgules) pour répartir la charge.", tip:"Séparez sur plusieurs disques pour améliorer les performances." },
+    { thematic:"Concepts de base", question:"Qu'est-ce qu'un segment de log ?", options:["Un fichier contenant une partie des messages d'une partition","Une partition","Un topic","Un message"], correctAnswer:"Un fichier contenant une partie des messages d'une partition", explanation:"Chaque partition est découpée en segments. Quand un segment atteint sa taille maximale (1 Go par défaut), il est fermé et un nouveau segment est créé.", tip:"Des segments trop petits augmentent le nombre de fichiers." },
+    { thematic:"Concepts de base", question:"Comment Kafka garantit-il la durabilité des messages ?", options:["En répliquant les partitions sur plusieurs brokers","En sauvegardant sur un disque dur externe","En compressant les messages","En utilisant une base de données"], correctAnswer:"En répliquant les partitions sur plusieurs brokers", explanation:"Le facteur de réplication permet d'avoir plusieurs copies de chaque partition. Si un broker tombe, une copie existe ailleurs.", tip:"Un facteur de réplication de 3 est recommandé." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que le 'leader' d'une partition ?", options:["Le broker qui gère les lectures et écritures pour cette partition","Le broker avec le plus de messages","Le plus ancien broker","Le broker avec le moins de charge"], correctAnswer:"Le broker qui gère les lectures et écritures pour cette partition", explanation:"Chaque partition a un leader (un broker). Toutes les requêtes de lecture et d'écriture vont au leader. Les followers se contentent de répliquer.", tip:"Surveillez la distribution des leaders pour équilibrer la charge." },
+    { thematic:"Concepts de base", question:"Que sont les 'followers' d'une partition ?", options:["Des réplicas passifs qui copient les données du leader","Des consommateurs","Des producteurs","Des topics"], correctAnswer:"Des réplicas passifs qui copient les données du leader", explanation:"Les followers sont des copies de la partition sur d'autres brokers. Ils se synchronisent avec le leader. Si le leader tombe, un follower peut devenir leader.", tip:"Le nombre de followers = facteur de réplication - 1." },
+    { thematic:"Concepts de base", question:"Que signifie le paramètre `compression.type` dans Kafka ?", options:["Le type de compression (gzip, snappy, lz4, zstd)","Le type de sérialisation","Le type de partitionnement","Le type d'acquittement"], correctAnswer:"Le type de compression (gzip, snappy, lz4, zstd)", explanation:"La compression réduit la taille des messages sur le réseau et sur le disque. Snappy est rapide, gzip compresse plus mais est plus lent.", tip:"Testez LZ4 pour un bon compromis." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que le 'batch' dans un producteur ?", options:["Un groupe de messages envoyés ensemble pour optimiser le réseau","Un message unique","Une partition","Un topic"], correctAnswer:"Un groupe de messages envoyés ensemble pour optimiser le réseau", explanation:"Le producteur ne renvoie pas chaque message individuellement. Il les regroupe en batches pour réduire le nombre de requêtes réseau.", tip:"Augmentez `batch.size` pour améliorer le débit." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que le 'buffer mémoire' du producteur ?", options:["L'espace mémoire où les messages attendent d'être envoyés","La mémoire du broker","Le cache du consommateur","La mémoire des partitions"], correctAnswer:"L'espace mémoire où les messages attendent d'être envoyés", explanation:"Les messages sont d'abord placés dans un buffer en mémoire. Quand le buffer est plein ou que `linger.ms` est atteint, les messages sont envoyés.", tip:"Augmentez `buffer.memory` si vous avez des pics de débit." },
+    { thematic:"Concepts de base", question:"Que signifie le paramètre `max.poll.records` du consommateur ?", options:["Le nombre maximum de messages retournés par un appel poll()","Le nombre maximum de partitions","La taille maximale d'un message","Le nombre maximum de tentatives"], correctAnswer:"Le nombre maximum de messages retournés par un appel poll()", explanation:"Cela permet de contrôler combien de messages sont lus à la fois. Utile pour éviter de saturer le traitement.", tip:"Réduisez si le traitement de chaque message est long." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que le 'rebalance' (rééquilibrage) de groupe ?", options:["La réassignation des partitions entre consommateurs d'un groupe","Le redémarrage des brokers","La suppression de topics","La réplication des messages"], correctAnswer:"La réassignation des partitions entre consommateurs d'un groupe", explanation:"Quand un consommateur rejoint ou quitte un groupe, les partitions sont redistribuées pour équilibrer la charge.", tip:"Les rééquilibrages fréquents peuvent dégrader les performances." },
+    { thematic:"Concepts de base", question:"Comment éviter les rééquilibrages trop fréquents ?", options:["Augmenter `session.timeout.ms` et `max.poll.interval.ms`","Diminuer `heartbeat.interval.ms`","Augmenter le nombre de partitions","Diminuer `max.poll.records`"], correctAnswer:"Augmenter `session.timeout.ms` et `max.poll.interval.ms`", explanation:"Des valeurs plus élevées donnent plus de temps au consommateur pour traiter avant d'être considéré comme mort.", tip:"Évitez les traitements trop longs dans la boucle de poll." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que le `schema registry` dans l'écosystème Confluent ?", options:["Un service qui stocke et valide les schémas des messages (Avro, JSON, Protobuf)","Une base de données","Un topic spécial","Un outil de compression"], correctAnswer:"Un service qui stocke et valide les schémas des messages (Avro, JSON, Protobuf)", explanation:"Il permet d'évoluer les schémas sans casser les consommateurs, et réduit la taille des messages en ne transmettant que l'ID du schéma.", tip:"Indispensable pour les APIs évolutives." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que `ksqlDB` ?", options:["Une base de données temps-réel qui permet d'interroger les streams Kafka avec du SQL","Un connecteur Kafka","Un type de partition","Un outil de monitoring"], correctAnswer:"Une base de données temps-réel qui permet d'interroger les streams Kafka avec du SQL", explanation:"ksqlDB transforme Kafka en une base de données temps-réel. Vous pouvez écrire des requêtes SQL sur les flux.", tip:"Idéal pour les équipes qui connaissent SQL." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que `Kafka MirrorMaker` ?", options:["Un outil pour répliquer des données entre clusters Kafka","Un outil de compression","Un type de connecteur","Un outil de monitoring"], correctAnswer:"Un outil pour répliquer des données entre clusters Kafka", explanation:"MirrorMaker permet de copier des topics d'un cluster Kafka à un autre. Utile pour la reprise après sinistre ou l'agrégation de données.", tip:"Utilisez MirrorMaker 2 (basé sur Kafka Connect)." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que `kafka-avro-console-producer` ?", options:["Un producteur qui envoie des messages Avro en utilisant Schema Registry","Un consommateur Avro","Un outil de conversion","Un topic Avro"], correctAnswer:"Un producteur qui envoie des messages Avro en utilisant Schema Registry", explanation:"Il lit des données JSON et les sérialise en Avro en s'enregistrant auprès du Schema Registry.", tip:"Utile pour tester des flux Avro." },
+    { thematic:"Concepts de base", question:"Quelle est l'utilité des en-têtes (headers) dans un message Kafka ?", options:["Ajouter des métadonnées (ex: traçage, routage)","Chiffrer le message","Compresser le message","Définir la clé"], correctAnswer:"Ajouter des métadonnées (ex: traçage, routage)", explanation:"Les headers sont des paires clé-valeur qui accompagnent le message sans faire partie de la valeur. Utiles pour le tracing distribué.", tip:"Utilisez-les pour propager un correlation ID." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que le 'quorum' dans KRaft ?", options:["L'ensemble des contrôleurs qui votent pour les décisions du cluster","L'ensemble des brokers","L'ensemble des topics","L'ensemble des partitions"], correctAnswer:"L'ensemble des contrôleurs qui votent pour les décisions du cluster", explanation:"Dans KRaft, les contrôleurs forment un quorum. Les décisions (comme l'élection du leader) sont prises à la majorité.", tip:"Utilisez un nombre impair de contrôleurs (3 ou 5)." },
+    { thematic:"Concepts de base", question:"Que signifie le paramètre `controller.quorum.voters` dans KRaft ?", options:["La liste des contrôleurs avec leurs adresses","La liste des brokers","La liste des topics","La liste des partitions"], correctAnswer:"La liste des contrôleurs avec leurs adresses", explanation:"C'est la configuration qui définit quels nœuds sont contrôleurs et comment les joindre.", tip:"Exemple : `1@localhost:9093,2@localhost:9094,3@localhost:9095`." },
+    { thematic:"Concepts de base", question:"Quelle est la commande pour formater un répertoire KRaft ?", options:["kafka-storage.sh format","kafka-format.sh","kafka-kraft-format","kafka-metadata-format"], correctAnswer:"kafka-storage.sh format", explanation:"`kafka-storage.sh format --config server.properties --cluster-id <id>`", tip:"Générez un cluster-id avec `kafka-storage.sh random-uuid`." },
+    { thematic:"Concepts de base", question:"Que signifie le paramètre `offsets.topic.replication.factor` ?", options:["Le facteur de réplication du topic interne __consumer_offsets","Le facteur de réplication des topics standards","Le nombre de partitions du topic des offsets","La taille des offsets"], correctAnswer:"Le facteur de réplication du topic interne __consumer_offsets", explanation:"Ce topic stocke les positions des consommateurs. Il doit être répliqué pour ne pas perdre les offsets.", tip:"Valeur par défaut : 3." },
+    { thematic:"Concepts de base", question:"Qu'est-ce qu'un 'connector' dans Kafka Connect ?", options:["Un composant pour importer/exporter des données vers des systèmes externes","Un topic spécial","Un type de partition","Un outil de monitoring"], correctAnswer:"Un composant pour importer/exporter des données vers des systèmes externes", explanation:"Kafka Connect permet de connecter Kafka à des bases de données, des systèmes de fichiers, des services cloud, sans écrire de code.", tip:"Utilisez les connecteurs JDBC, S3, Elasticsearch." },
+    { thematic:"Concepts de base", question:"Quelle est la différence entre un connecteur source et un connecteur sink ?", options:["Source importe dans Kafka, sink exporte depuis Kafka","Source exporte, sink importe","Source est pour les fichiers, sink pour les bases","Source est pour JDBC, sink pour S3"], correctAnswer:"Source importe dans Kafka, sink exporte depuis Kafka", explanation:"Un connecteur source lit les données d'un système externe et les écrit dans Kafka. Un connecteur sink lit Kafka et écrit dans un système externe.", tip:"Exemple : JDBC source → Kafka → S3 sink." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que `kafka-dump-log.sh` ?", options:["Un outil pour inspecter le contenu des segments de log sur disque","Un outil pour supprimer des logs","Un outil pour créer des topics","Un outil pour monitorer"], correctAnswer:"Un outil pour inspecter le contenu des segments de log sur disque", explanation:"Utile pour debugger et voir les messages bruts stockés sur le broker.", tip:"Utilisez `--print-data-log` pour afficher les valeurs." },
+    { thematic:"Concepts de base", question:"Comment redémarrer un consommateur sans perdre sa position ?", options:["Les offsets sont commités, il reprend automatiquement","Il faut sauvegarder l'offset manuellement","Le consommateur perd sa position","Il faut recréer le groupe"], correctAnswer:"Les offsets sont commités, il reprend automatiquement", explanation:"Les consommateurs commettent régulièrement leur position. Au redémarrage, ils reprennent là où ils s'étaient arrêtés.", tip:"Utilisez `auto.commit.enable=true` pour un commit automatique." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que `KafkaAdminClient` ?", options:["Une API Java pour gérer les topics, partitions, configurations","Un client consommateur","Un client producteur","Un outil CLI"], correctAnswer:"Une API Java pour gérer les topics, partitions, configurations", explanation:"Permet de créer, modifier, supprimer des topics programmatiquement.", tip:"Utile pour l'automatisation." },
+    { thematic:"Concepts de base", question:"Que signifie le paramètre `replica.fetch.wait.max.ms` ?", options:["Le temps maximum d'attente d'un follower avant de demander des messages","Le temps maximum d'attente d'un producteur","Le délai de rétention","Le timeout de session"], correctAnswer:"Le temps maximum d'attente d'un follower avant de demander des messages", explanation:"Si le leader n'a pas de nouveaux messages, le follower attend jusqu'à ce délai avant de refaire une requête.", tip:"Réduire pour une réplication plus rapide." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que le 'follower lag' ?", options:["Le retard d'un follower par rapport au leader","Le retard du consommateur","Le retard du producteur","La latence réseau"], correctAnswer:"Le retard d'un follower par rapport au leader", explanation:"C'est la différence entre le dernier offset du leader et le dernier offset du follower. Un follower qui a du retard peut sortir des ISR.", tip:"Surveillez `replica.lag.time.max.ms`." },
+    { thematic:"Concepts de base", question:"Comment améliorer le débit d'un producteur ?", options:["Augmenter `batch.size` et `linger.ms`","Diminuer `batch.size`","Diminuer `linger.ms`","Désactiver la compression"], correctAnswer:"Augmenter `batch.size` et `linger.ms`", explanation:"Des batches plus gros envoient plus de messages par requête, augmentant le débit au prix d'une latence légèrement plus élevée.", tip:"Testez avec `linger.ms=5` et `batch.size=65536`." },
+    { thematic:"Concepts de base", question:"Comment améliorer la latence d'un producteur ?", options:["Diminuer `linger.ms` (même à 0)","Augmenter `batch.size`","Augmenter `acks`","Augmenter `retries`"], correctAnswer:"Diminuer `linger.ms` (même à 0)", explanation:"En envoyant les messages immédiatement, la latence est minimisée, mais le débit peut baisser.", tip:"Pour une latence ultra-faible, utilisez `linger.ms=0`." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que le `client.id` dans un producteur ?", options:["Un identifiant logique pour tracer l'origine des requêtes","L'ID du broker","L'ID du topic","L'ID de la partition"], correctAnswer:"Un identifiant logique pour tracer l'origine des requêtes", explanation:"Le `client.id` apparaît dans les logs du broker et les métriques. Utile pour identifier quelle application envoie les messages.", tip:"Donnez un nom explicite comme `app-paiements-prod`." },
+    { thematic:"Concepts de base", question:"Que signifie le paramètre `connections.max.idle.ms` ?", options:["Fermer les connexions inactives après ce délai","Timeout de connexion","Délai de heartbeat","Délai de reconnexion"], correctAnswer:"Fermer les connexions inactives après ce délai", explanation:"Les connexions TCP qui ne sont pas utilisées pendant cette durée sont fermées pour libérer des ressources.", tip:"Par défaut 9 minutes." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que `kafka-verifiable-producer` ?", options:["Un producteur de test qui envoie des messages avec des séquences","Un producteur standard","Un outil de compression","Un connecteur"], correctAnswer:"Un producteur de test qui envoie des messages avec des séquences", explanation:"Cet outil envoie des messages avec un numéro de séquence. `kafka-verifiable-consumer` vérifie qu'aucun message n'est perdu ou dupliqué.", tip:"Utile pour valider la fiabilité." },
+    { thematic:"Concepts de base", question:"Qu'est-ce que `kafka-verifiable-consumer` ?", options:["Un consommateur de test qui vérifie l'intégrité des séquences","Un consommateur standard","Un outil de monitoring","Un connecteur"], correctAnswer:"Un consommateur de test qui vérifie l'intégrité des séquences", explanation:"Il consomme des messages et signale toute anomalie (message manquant ou dupliqué).", tip:"Utilisez-le avec `kafka-verifiable-producer`." }
+];
+while(questionsBank.length < 80) questionsBank.push({ thematic:"Concepts de base", question:"Que signifie le terme 'streaming' dans Kafka ?", options:["Un flux continu de données","Un fichier","Une base de données","Une page web"], correctAnswer:"Un flux continu de données", explanation:"Kafka permet de traiter les données en temps réel, au fur et à mesure qu'elles arrivent, comme un flux continu.", tip:"Contrairement aux bases de données, Kafka ne stocke pas indéfiniment." });
+console.log("Série V0 chargée :", questionsBank.length, "questions");
+
+// LOGIQUE QUIZ (identique aux séries précédentes)
+let currentQuestions = [], userAnswers = [], currentIdx = 0, score = 0;
+const badgeMap = {"Concepts de base":"badge-fund","Premiers pas CLI":"badge-dev"};
+function shuffle(arr) { for(let i=arr.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+function filterByDomains() {
+    let domains=[];
+    if(document.getElementById("dom-fund").checked) domains.push("Concepts de base");
+    if(document.getElementById("dom-dev").checked) domains.push("Premiers pas CLI");
+    if(domains.length===0) return questionsBank;
+    return questionsBank.filter(q => domains.includes(q.thematic));
+}
+function startQuiz() {
+    let count = parseInt(document.getElementById("question-count").value);
+    let filtered = filterByDomains();
+    if(filtered.length < count) count = filtered.length;
+    currentQuestions = shuffle(filtered).slice(0, count);
+    userAnswers = new Array(currentQuestions.length).fill(null);
+    score = 0; currentIdx = 0;
+    document.getElementById("settings-panel").classList.add("d-none");
+    document.getElementById("quiz-content").classList.remove("d-none");
+    updateScore();
+    displayQuestion(0);
+}
+function displayQuestion(idx) {
+    let q = currentQuestions[idx];
+    document.getElementById("question-text").innerText = q.question;
+    let badgeSpan = document.getElementById("thematic-badge");
+    badgeSpan.innerText = q.thematic;
+    badgeSpan.className = "thematic-badge " + (badgeMap[q.thematic] || "badge-fund");
+    let container = document.getElementById("options-container");
+    container.innerHTML = "";
+    let shuffledOpts = shuffle([...q.options]);
+    shuffledOpts.forEach(opt => {
+        let btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.className = "btn option-btn";
+        btn.onclick = () => selectAnswer(btn, opt, idx);
+        container.appendChild(btn);
+    });
+    document.getElementById("explanation-box").classList.add("d-none");
+    if(userAnswers[idx] !== null) showFeedback(idx);
+    updateProgress();
+    updateNav();
+}
+function selectAnswer(btn, selected, idx) {
+    if(userAnswers[idx] !== null) return;
+    let q = currentQuestions[idx];
+    let isCorrect = (selected === q.correctAnswer);
+    if(isCorrect) score++;
+    userAnswers[idx] = { selected, correct: q.correctAnswer, isCorrect };
+    updateScore();
+    showFeedback(idx);
+}
+function showFeedback(idx) {
+    let ans = userAnswers[idx];
+    if(!ans) return;
+    let q = currentQuestions[idx];
+    let btns = document.querySelectorAll(".option-btn");
+    btns.forEach(btn => { btn.disabled = true; if(btn.innerText === ans.correct) btn.classList.add("correct"); if(btn.innerText === ans.selected && !ans.isCorrect) btn.classList.add("incorrect"); });
+    document.getElementById("explanation-text").innerHTML = q.explanation;
+    document.getElementById("explanation-title").innerHTML = ans.isCorrect ? "✅ Correct !" : "❌ Incorrect";
+    document.getElementById("explanation-box").classList.remove("d-none");
+    let tipDiv = document.getElementById("tip-box");
+    if(q.tip) { document.getElementById("tip-text").innerHTML = q.tip; tipDiv.classList.remove("d-none"); }
+    else tipDiv.classList.add("d-none");
+}
+function updateProgress() { let perc = ((currentIdx+1)/currentQuestions.length)*100; document.getElementById("progress-bar").style.width=perc+"%"; document.getElementById("question-counter").innerText=`Question ${currentIdx+1}/${currentQuestions.length}`; }
+function updateScore() { document.getElementById("current-score").innerText=`Score: ${score}/${currentQuestions.length}`; }
+function updateNav() { document.getElementById("prev-btn").disabled = (currentIdx===0); let isLast = (currentIdx===currentQuestions.length-1); document.getElementById("next-btn").classList.toggle("d-none", isLast); document.getElementById("finish-btn").classList.toggle("d-none", !isLast); }
+function next() { if(currentIdx < currentQuestions.length-1) { currentIdx++; displayQuestion(currentIdx); } }
+function prev() { if(currentIdx > 0) { currentIdx--; displayQuestion(currentIdx); } }
+function finish() { showModal(); }
+function showModal() {
+    let percent = (score/currentQuestions.length)*100;
+    document.getElementById("final-score-percentage").innerText = `${percent.toFixed(0)}%`;
+    document.getElementById("final-score-text").innerHTML = `${score}/${currentQuestions.length} bonnes réponses`;
+    let tech=0, strat=0, tot=0;
+    userAnswers.forEach((a,i)=>{ if(a){ tot++; if(["Concepts de base"].includes(currentQuestions[i].thematic)) { if(a.isCorrect) tech++; } else { if(a.isCorrect) strat++; } } });
+    tech = tot? (tech/tot)*100:0; strat = tot? (strat/tot)*100:0;
+    document.getElementById("tech-skills").style.width=tech+"%"; document.getElementById("tech-skills-text").innerHTML=`Compréhension des bases ${tech.toFixed(0)}%`;
+    document.getElementById("strat-skills").style.width=strat+"%"; document.getElementById("strat-skills-text").innerHTML=`Initiation CLI ${strat.toFixed(0)}%`;
+    let recos = percent>=80 ? "Bravo ! Vous avez bien assimilé les bases. Vous pouvez passer à la formation." : (percent>=60 ? "Bon début, relisez les notions où vous avez hésité." : "Reprenez le quiz après avoir lu une introduction à Kafka.");
+    document.getElementById("final-recommendations").innerHTML = `<div class="alert alert-info">${recos}</div>`;
+    document.getElementById("short-term").innerHTML = "Regardez une vidéo d'introduction à Kafka, puis installez Kafka en local avec Docker.";
+    document.getElementById("long-term").innerHTML = "Ensuite, passez aux séries V1, V2, V3 pour vous préparer à la certification.";
+    new bootstrap.Modal(document.getElementById("resultsModal")).show();
+}
+function restart() { document.getElementById("settings-panel").classList.remove("d-none"); document.getElementById("quiz-content").classList.add("d-none"); let modal = bootstrap.Modal.getInstance(document.getElementById("resultsModal")); if(modal) modal.hide(); }
+document.getElementById("start-quiz-btn").onclick = startQuiz;
+document.getElementById("next-btn").onclick = next;
+document.getElementById("prev-btn").onclick = prev;
+document.getElementById("finish-btn").onclick = finish;
+document.getElementById("restart-quiz-btn").onclick = restart;
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

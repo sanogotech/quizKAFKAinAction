@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kafka Quiz – Concepts fondamentaux (80 questions)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --kafka-primary: #0e8c8c;
+            --kafka-dark: #0b2b35;
+            --success: #10b981;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0e8c8c 0%, #0b2b35 100%);
+            min-height: 100vh;
+            padding: 1rem;
+            background-attachment: fixed;
+        }
+        .quiz-container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .quiz-header {
+            background: linear-gradient(135deg, var(--kafka-dark) 0%, #1e4a5f 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .badge-kafka { background: var(--kafka-primary); padding: 0.5rem 1rem; border-radius: 40px; font-weight: 600; }
+        .progress-container { background: #eef2fa; padding: 1.5rem; border-radius: 20px; margin-bottom: 1.5rem; }
+        .option-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 1rem 1.5rem;
+            margin-bottom: 0.75rem;
+            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .option-btn:hover:not([disabled]) { border-color: var(--kafka-primary); background: #f0fdf4; transform: translateY(-2px); }
+        .option-btn.correct { background: #d1fae5; border-color: var(--success); color: #065f46; }
+        .option-btn.incorrect { background: #fee2e2; border-color: var(--danger); color: #7f1d1d; }
+        .explanation-box { padding: 1.5rem; border-radius: 16px; margin-top: 1rem; }
+        .explanation-correct { background: #ecfdf5; border-left: 5px solid var(--success); }
+        .explanation-incorrect { background: #fef2f2; border-left: 5px solid var(--danger); }
+        .tip-box { background: #e0f2fe; border-left: 5px solid var(--info); padding: 1rem; border-radius: 12px; margin-top: 1rem; }
+        .btn-kafka { background: var(--kafka-primary); color: white; border: none; }
+        .btn-kafka:hover { background: #0a6c6c; }
+        @media (max-width: 768px) { .option-btn { font-size: 0.9rem; } }
+    </style>
+</head>
+<body>
+<div class="quiz-container">
+    <div class="quiz-header">
+        <h1><i class="fab fa-apache"></i> Kafka – Concepts fondamentaux</h1>
+        <p>80 questions sur Topic, Partition, Offset, Broker, Cluster, Producer, Consumer</p>
+        <div class="badge-kafka d-inline-block">📘 100% fondamentaux</div>
+    </div>
+
+    <!-- Panneau de configuration -->
+    <div id="settings-panel" class="p-4">
+        <h4><i class="fas fa-sliders-h"></i> Configuration</h4>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label class="form-label">Nombre de questions :</label>
+                <select id="question-count" class="form-select">
+                    <option value="20">20 questions (Rapide)</option>
+                    <option value="40">40 questions (Standard)</option>
+                    <option value="80" selected>80 questions (Complet – Expert)</option>
+                </select>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <button id="start-quiz-btn" class="btn btn-kafka w-100"><i class="fas fa-play"></i> Démarrer le quiz</button>
+            </div>
+        </div>
+        <div class="alert alert-primary">
+            <i class="fas fa-info-circle"></i> Ce quiz couvre uniquement les concepts fondamentaux : topic, partition, offset, broker, cluster, producteur, consommateur, garanties de base.
+        </div>
+    </div>
+
+    <!-- Contenu du quiz (caché initialement) -->
+    <div id="quiz-content" class="d-none">
+        <div class="progress-container">
+            <div class="d-flex justify-content-between mb-2">
+                <span id="question-counter">Question 1 / 80</span>
+                <span id="current-score">Score: 0</span>
+            </div>
+            <div class="progress"><div id="progress-bar" class="progress-bar" style="width: 0%"></div></div>
+        </div>
+        <div class="p-4 pt-0">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-3"><span id="thematic-badge" class="badge bg-primary">Concepts fondamentaux</span></div>
+                    <h3 id="question-text" class="mb-4">Chargement...</h3>
+                    <div id="options-container"></div>
+                    <div id="explanation-box" class="d-none mt-3 explanation-box">
+                        <h5 id="explanation-title"></h5>
+                        <p id="explanation-text"></p>
+                        <div id="tip-box" class="tip-box d-none"><strong><i class="fas fa-lightbulb"></i> Conseil :</strong> <span id="tip-text"></span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                <button id="prev-btn" class="btn btn-outline-secondary" disabled><i class="fas fa-arrow-left"></i> Précédent</button>
+                <button id="next-btn" class="btn btn-kafka">Suivant <i class="fas fa-arrow-right"></i></button>
+                <button id="finish-btn" class="btn btn-success d-none"><i class="fas fa-trophy"></i> Terminer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal résultats -->
+<div class="modal fade" id="resultsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-chart-line"></i> Résultats – Kafka fondamentaux</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center mb-3">
+                    <span id="final-score-percentage" class="display-4 fw-bold text-primary">0%</span>
+                    <p><span id="final-score-correct">0</span> bonnes réponses sur <span id="final-score-total">0</span></p>
+                </div>
+                <div id="final-recommendations"></div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6"><div class="alert alert-primary"><i class="fas fa-road"></i> <strong>Prochaine étape</strong><br><span id="short-term"></span></div></div>
+                    <div class="col-md-6"><div class="alert alert-success"><i class="fas fa-rocket"></i> <strong>Vision long terme</strong><br><span id="long-term"></span></div></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button id="restart-quiz-btn" class="btn btn-kafka">Recommencer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// 80 questions exclusivement sur les concepts fondamentaux (topic, partition, offset, broker, cluster, producer, consumer)
+const questions = [
+    // -------- 1-10 : Topic, Partition, Offset --------
+    { q: "Qu'est-ce qu'un topic dans Kafka ?", options: ["Un flux logique d'événements", "Une machine physique", "Un fichier de configuration", "Un type de consommateur"], correct: "Un flux logique d'événements", explanation: "Un topic est une catégorie ou un nom logique sous lequel les messages sont publiés et consommés. Il regroupe des événements de même nature (ex: 'commandes', 'logs'). Il est divisé en partitions pour la scalabilité.", tip: "Nommez vos topics avec une convention claire (ex: [équipe].[domaine].[entité])." },
+    { q: "Que représente une partition dans Kafka ?", options: ["Un sous-ensemble ordonné d'un topic", "Un serveur Kafka", "Un type de message", "Un groupe de consommateurs"], correct: "Un sous-ensemble ordonné d'un topic", explanation: "Chaque topic est divisé en partitions, qui sont des journaux append-only. L'ordre des messages est garanti à l'intérieur d'une partition, et elles permettent le parallélisme.", tip: "Le nombre de partitions détermine le parallélisme maximal de consommation." },
+    { q: "Qu'est-ce qu'un offset ?", options: ["Un identifiant séquentiel unique dans une partition", "Une adresse IP", "Un paramètre de compression", "Un type de commit"], correct: "Un identifiant séquentiel unique dans une partition", explanation: "L'offset est un entier 64 bits qui indique la position d'un message dans sa partition. Il est incrémenté automatiquement par le broker. Les consommateurs utilisent les offsets pour reprendre la lecture.", tip: "Surveillez le lag = dernier offset produit - dernier offset commis." },
+    { q: "Peut-on avoir deux messages avec le même offset dans la même partition ?", options: ["Non, chaque offset est unique", "Oui, s'ils ont des clés différentes", "Oui, si la partition est répliquée", "Non, sauf en mode exactly‑once"], correct: "Non, chaque offset est unique", explanation: "L'offset est la clé primaire du message dans une partition. Il est garanti unique et séquentiel. Cela permet de positionner précisément les consommateurs.", tip: "Les offsets ne sont jamais réutilisés, même après suppression des messages." },
+    { q: "Que garantit Kafka concernant l'ordre des messages ?", options: ["Ordre garanti à l'intérieur d'une partition", "Ordre garanti globalement", "Ordre garanti par clé uniquement", "Aucune garantie"], correct: "Ordre garanti à l'intérieur d'une partition", explanation: "Kafka garantit l'ordre FIFO au sein d'une partition. Pour ordonner les événements d'une même entité, utilisez une clé de partitionnement qui les envoie dans la même partition.", tip: "Ne dépendez pas de l'ordre entre partitions différentes." },
+    { q: "Comment un producteur choisit-il la partition d'un message ?", options: ["Par défaut, hash(key) % nombre_de_partitions", "Round‑robin systématique", "Selon le contenu du message", "Au hasard"], correct: "Par défaut, hash(key) % nombre_de_partitions", explanation: "Si une clé est fournie, Kafka calcule le hash de la clé modulo le nombre de partitions. Sans clé, le partitionneur sticky (ou round‑robin) répartit les messages.", tip: "Utilisez une clé métier (userId, orderId) pour préserver l'ordre." },
+    { q: "Quelle est la conséquence d'un nombre de partitions trop faible ?", options: ["Goulot d'étranglement (limite de parallélisme)", "Meilleure compression", "Perte de messages", "Latence réduite"], correct: "Goulot d'étranglement (limite de parallélisme)", explanation: "Le parallélisme maximal de consommation est limité par le nombre de partitions. Avec trop peu de partitions, vous ne pourrez pas ajouter suffisamment de consommateurs pour traiter un haut débit.", tip: "Sur‑partitionnez (prévoyez 30% de marge) – on ne peut pas réduire le nombre de partitions." },
+    { q: "Peut-on augmenter le nombre de partitions d'un topic après sa création ?", options: ["Oui, mais cela peut casser l'ordre des clés", "Non, c'est définitif", "Oui, sans aucun impact", "Seulement en recréant le topic"], correct: "Oui, mais cela peut casser l'ordre des clés", explanation: "On peut augmenter le nombre de partitions via kafka-topics --alter. Cependant, la fonction de hash change, donc les messages avec la même clé peuvent atterrir dans des partitions différentes après l'augmentation, brisant l'ordre pour cette clé.", tip: "Planifiez le nombre de partitions dès le début." },
+    { q: "Que représente le LEO (Log End Offset) ?", options: ["Le dernier offset écrit sur un broker", "Le premier offset disponible", "L'offset du consommateur", "L'offset du leader"], correct: "Le dernier offset écrit sur un broker", explanation: "LEO est le prochain offset qui sera attribué au prochain message. C'est la fin du journal. Il est utilisé pour calculer le lag avec l'offset commis.", tip: "LEO est une métrique interne, mais importante pour le monitoring." },
+    { q: "Qu'est-ce qu'un segment dans Kafka ?", options: ["Un fichier physique contenant une partie du log", "Une partition", "Un groupe de messages", "Un type d'index"], correct: "Un fichier physique contenant une partie du log", explanation: "Un segment est un fichier (par défaut 1 Go) qui contient une portion des messages d'une partition. Les anciens segments sont supprimés ou compactés selon la politique de rétention.", tip: "Des segments trop petits peuvent dégrader les performances ; ajustez log.segment.bytes." },
+    // -------- 11-20 : Broker & Cluster --------
+    { q: "Qu'est-ce qu'un broker Kafka ?", options: ["Un serveur qui stocke des partitions", "Un client producteur", "Un outil de monitoring", "Une base de données"], correct: "Un serveur qui stocke des partitions", explanation: "Un broker est une instance Kafka (processus JVM). Un cluster est composé de plusieurs brokers. Chaque partition a un leader (broker) et des followers.", tip: "En production, utilisez au moins 3 brokers pour la tolérance aux pannes." },
+    { q: "Quel est le rôle du leader d'une partition ?", options: ["Gère toutes les lectures et écritures pour cette partition", "Stocke une copie de secours", "Gère les métadonnées", "Compresse les messages"], correct: "Gère toutes les lectures et écritures pour cette partition", explanation: "Le leader est le broker responsable des requêtes de production et de consommation pour une partition. Les followers répliquent passivement.", tip: "La charge n'est pas forcément équilibrée ; utilisez kafka-reassign-partitions pour rééquilibrer." },
+    { q: "Que sont les followers dans Kafka ?", options: ["Des répliques passives qui copient les données du leader", "Des consommateurs secondaires", "Des producteurs de secours", "Des topics internes"], correct: "Des répliques passives qui copient les données du leader", explanation: "Les followers (ou répliques) sont des brokers qui maintiennent une copie des partitions. Ils ne servent pas le trafic client (sauf lecture spécifique). En cas de panne du leader, un follower devient leader.", tip: "Le facteur de réplication détermine le nombre de followers." },
+    { q: "Comment les clients découvrent-ils le leader d'une partition ?", options: ["En interrogeant les métadonnées du cluster (bootstrap.servers)", "En contactant tous les brokers", "Par DNS", "Par fichier de configuration statique"], correct: "En interrogeant les métadonnées du cluster (bootstrap.servers)", explanation: "Le client se connecte à un broker de la liste bootstrap.servers, télécharge les métadonnées (qui est leader pour chaque partition), puis se connecte directement au leader.", tip: "Fournissez au moins 2 brokers dans bootstrap.servers pour la redondance." },
+    { q: "Qu'est-ce qu'un cluster Kafka ?", options: ["Un ensemble de brokers travaillant ensemble", "Un seul broker", "Un topic", "Un groupe de consommateurs"], correct: "Un ensemble de brokers travaillant ensemble", explanation: "Un cluster est un groupe de brokers interconnectés qui partagent la charge et assurent la réplication. Ils sont coordonnés via KRaft (ou anciennement ZooKeeper).", tip: "Un cluster peut avoir des centaines de brokers." },
+    { q: "Que se passe-t-il si le leader d'une partition tombe en panne ?", options: ["Un follower (dans l'ISR) devient leader", "La partition devient inaccessible", "Le cluster s'arrête", "Le producteur réessaie sur un autre broker"], correct: "Un follower (dans l'ISR) devient leader", explanation: "Grâce à la réplication, un follower à jour (dans l'ISR) est promu leader. Le temps de basculement (failover) est généralement inférieur à quelques secondes.", tip: "Configurez min.insync.replicas pour garantir la durabilité." },
+    { q: "Comment identifier un broker dans un cluster ?", options: ["Par son broker.id", "Par son adresse MAC", "Par son nom DNS", "Par son port"], correct: "Par son broker.id", explanation: "Chaque broker possède un identifiant entier unique (broker.id) défini dans server.properties. Il est utilisé dans les métadonnées et les outils d'administration.", tip: "N'utilisez jamais le même broker.id dans un cluster." },
+    { q: "Quel est le rôle de l'ISR (In‑Sync Replicas) dans un cluster ?", options: ["Ensemble des followers à jour", "Tous les brokers", "Les partitions sous‑répliquées", "Les consommateurs actifs"], correct: "Ensemble des followers à jour", explanation: "L'ISR est la liste des répliques qui sont synchronisées avec le leader (pas de retard > replica.lag.time.max.ms). Seuls les ISR peuvent être élus leaders.", tip: "Surveillez UnderReplicatedPartitions pour détecter des ISR insuffisants." },
+    { q: "Qu'est‑ce qu'un controller dans un cluster Kafka (avant KRaft) ?", options: ["Un broker responsable de la gestion des métadonnées (élection des leaders)", "Un type de producteur", "Un outil de monitoring", "Une partition spéciale"], correct: "Un broker responsable de la gestion des métadonnées (élection des leaders)", explanation: "Le controller est un broker élu qui gère les opérations administratives : création de topics, modification des partitions, élection des leaders. En cas de panne, un nouveau controller est élu.", tip: "Avec KRaft, les controllers forment un quorum Raft." },
+    { q: "Que signifie KRaft ?", options: ["Kafka Raft (consensus intégré, remplace ZooKeeper)", "Kafka Rapid Framework", "Kafka Replication Algorithm", "Kafka Raft protocol"], correct: "Kafka Raft (consensus intégré, remplace ZooKeeper)", explanation: "KRaft est le nouveau mode de gestion des métadonnées de Kafka, basé sur l'algorithme Raft. Il supprime la dépendance à ZooKeeper et permet plus de partitions.", tip: "Depuis Kafka 3.5, KRaft est stable pour la production." },
+    // -------- 21-30 : Producer --------
+    { q: "Quel est le rôle d'un producteur Kafka ?", options: ["Publier des messages vers un topic", "Lire des messages", "Administrer le cluster", "Compresser les données"], correct: "Publier des messages vers un topic", explanation: "Le producteur est une application cliente qui envoie des enregistrements (messages) à un ou plusieurs topics. Il peut spécifier une clé, des en‑têtes et choisir la partition.", tip: "Utilisez des callbacks pour gérer les erreurs d'envoi." },
+    { q: "Que fait le paramètre `acks` dans un producteur ?", options: ["Contrôle le niveau d'accusé de réception (0, 1, all)", "Active la compression", "Définit le timeout", "Gère le batching"], correct: "Contrôle le niveau d'accusé de réception (0, 1, all)", explanation: "acks=0 : pas d'accusé (perte possible). acks=1 : accusé du leader. acks=all : accusé de tous les ISR (max durabilité).", tip: "Pour les données critiques, utilisez acks=all." },
+    { q: "Que signifie `enable.idempotence=true` ?", options: ["Évite les doublons en cas de retry", "Active la compression", "Augmente le débit", "Désactive les accusés"], correct: "Évite les doublons en cas de retry", explanation: "L'idempotence garantit qu'un message n'est écrit qu'une seule fois, même si le producteur réessaie. Le broker utilise des numéros de séquence pour détecter les doublons.", tip: "Toujours activer pour les exactly‑once." },
+    { q: "Quel est l'effet de `linger.ms` ?", options: ["Temps d'attente pour remplir le batch avant envoi", "Timeout de connexion", "Durée de vie du message", "Délai avant retry"], correct: "Temps d'attente pour remplir le batch avant envoi", explanation: "linger.ms permet d'accumuler plus de messages dans un batch, augmentant le débit au prix d'une latence supplémentaire. Une valeur de 0 envoie immédiatement.", tip: "Pour un haut débit, utilisez 10-20 ms ; pour une faible latence, 0." },
+    { q: "Que se passe-t-il si le producteur envoie un message sans clé ?", options: ["Le partitionneur sticky (ou round‑robin) choisit une partition", "Le message est rejeté", "Il va toujours dans la partition 0", "La clé est générée automatiquement"], correct: "Le partitionneur sticky (ou round‑robin) choisit une partition", explanation: "Sans clé, Kafka utilise un partitionneur qui répartit les messages pour équilibrer la charge. Depuis Kafka 2.4, le sticky partitioner remplit une partition avant de passer à la suivante.", tip: "Pour une distribution uniforme, c'est efficace." },
+    { q: "Que fait `batch.size` ?", options: ["Taille maximale d'un lot avant envoi", "Taille d'un message", "Taille du buffer mémoire", "Taille de la partition"], correct: "Taille maximale d'un lot avant envoi", explanation: "batch.size (en octets) est la limite de taille d'un lot de messages. Un lot plus grand améliore le débit mais augmente la latence.", tip: "Ajustez batch.size selon la taille de vos messages." },
+    { q: "Qu'est‑ce qu'un callback dans un producteur ?", options: ["Une fonction exécutée après la livraison (succès/erreur)", "Un type de partition", "Un paramètre de compression", "Une file d'attente"], correct: "Une fonction exécutée après la livraison (succès/erreur)", explanation: "Le callback asynchrone permet à l'application de réagir à l'accusé de réception ou à l'échec d'un message. C'est essentiel pour la journalisation et les reprises.", tip: "Toujours implémenter un callback pour détecter les erreurs." },
+    { q: "Que signifie `max.in.flight.requests.per.connection` ?", options: ["Nombre de requêtes simultanées non acquittées", "Nombre de connexions max", "Nombre de retries", "Nombre de partitions"], correct: "Nombre de requêtes simultanées non acquittées", explanation: "Ce paramètre limite le nombre de requêtes envoyées en parallèle avant d'avoir reçu un accusé. Avec idempotence, il peut être ≤5 sans risque de réordonnancement.", tip: "Avec idempotence=true, réglez‑le à 5." },
+    { q: "Que se passe-t-il si `retries` est trop bas ?", options: ["Les messages peuvent être perdus en cas d'erreur transitoire", "Les doublons augmentent", "Le débit chute", "La compression échoue"], correct: "Les messages peuvent être perdus en cas d'erreur transitoire", explanation: "Si un broker est temporairement indisponible, le producteur peut réessayer. Un nombre de retries insuffisant entraîne l'abandon du message et une exception.", tip: "Utilisez retries=MAX_INT (2147483647) avec idempotence." },
+    { q: "Que fait `compression.type` dans un producteur ?", options: ["Compresse les batches (snappy, lz4, zstd)", "Compresse chaque message individuellement", "Désactive la compression", "Compresse les clés"], correct: "Compresse les batches (snappy, lz4, zstd)", explanation: "La compression réduit la taille des données sur le réseau et le disque. lz4 offre un bon compromis CPU/compression, zstd un meilleur taux.", tip: "Activez la compression pour les gros volumes." },
+    // -------- 31-40 : Consumer & Consumer Group --------
+    { q: "Quel est le rôle d'un consommateur Kafka ?", options: ["Lire des messages d'un topic", "Publier des messages", "Gérer les partitions", "Faire la réplication"], correct: "Lire des messages d'un topic", explanation: "Un consommateur s'abonne à un ou plusieurs topics et lit les messages séquentiellement, dans l'ordre des offsets. Il peut appartenir à un groupe pour le parallélisme.", tip: "Le consommateur est pull‑based : il demande des données quand il est prêt." },
+    { q: "Qu'est‑ce qu'un groupe de consommateurs ?", options: ["Ensemble de consommateurs se partageant les partitions d'un topic", "Un topic spécial", "Un groupe de brokers", "Un type de partition"], correct: "Ensemble de consommateurs se partageant les partitions d'un topic", explanation: "Les consommateurs d'un même groupe divisent la charge : chaque partition est lue par un seul consommateur. Cela permet de scaler horizontalement la consommation.", tip: "Le nombre de consommateurs actifs ne peut pas dépasser le nombre de partitions." },
+    { q: "Que signifie `auto.offset.reset` ?", options: ["Détermine la position initiale quand aucun offset n'est commis (earliest/latest)", "Réinitialise les offsets manuellement", "Supprime les offsets", "Change la partition"], correct: "Détermine la position initiale quand aucun offset n'est commis (earliest/latest)", explanation: "Lorsqu'un groupe démarre pour la première fois ou que ses offsets ont expiré, cette configuration choisit de lire depuis le début (earliest) ou seulement les nouveaux messages (latest).", tip: "Pour le rejeu, utilisez earliest." },
+    { q: "Pourquoi désactiver `enable.auto.commit` en production ?", options: ["Pour contrôler précisément quand l'offset est sauvegardé", "Pour améliorer les performances", "Pour activer exactly‑once", "Pour réduire les rebalancements"], correct: "Pour contrôler précisément quand l'offset est sauvegardé", explanation: "Avec le commit automatique, l'offset peut être commis avant que le traitement soit terminé, entraînant une perte de données. Le commit manuel permet de commiter après succès.", tip: "Utilisez commitSync() après traitement réussi." },
+    { q: "Que se passe-t-il lors d'un rebalancement de groupe ?", options: ["Les partitions sont redistribuées entre les consommateurs du groupe", "Les offsets sont réinitialisés", "Le groupe est supprimé", "Les messages sont perdus"], correct: "Les partitions sont redistribuées entre les consommateurs du groupe", explanation: "Lorsqu'un consommateur rejoint ou quitte le groupe, Kafka réassigne les partitions. Pendant le rebalancement, la consommation est suspendue (stop‑the‑world).", tip: "Utilisez static membership pour réduire les rebalancements." },
+    { q: "Quel paramètre limite le nombre de messages retournés par `poll()` ?", options: ["max.poll.records", "max.partition.fetch.bytes", "fetch.max.bytes", "session.timeout.ms"], correct: "max.poll.records", explanation: "max.poll.records définit le nombre maximal d'enregistrements qu'un appel à poll() peut renvoyer. Cela évite de surcharger le consommateur avec trop de messages à la fois.", tip: "Ajustez selon la capacité de traitement (ex: 500)." },
+    { q: "Que mesure le lag consommateur ?", options: ["La différence entre le dernier offset produit et le dernier offset commis", "Le temps de traitement", "Le nombre de consommateurs", "La taille des messages"], correct: "La différence entre le dernier offset produit et le dernier offset commis", explanation: "Le lag indique le retard du consommateur. S'il augmente, le consommateur ne suit pas le rythme de production. C'est la métrique de surveillance la plus importante.", tip: "Alertez si le lag dépasse un seuil (ex: 10 000)." },
+    { q: "Que se passe-t-il si `session.timeout.ms` est trop bas ?", options: ["Rebalancements intempestifs si le heartbeat est perdu", "Le consommateur est plus réactif", "Les messages sont perdus", "Les offsets sont réinitialisés"], correct: "Rebalancements intempestifs si le heartbeat est perdu", explanation: "session.timeout.ms est la durée maximale sans heartbeat avant de déclarer le consommateur mort. Une valeur trop basse peut causer des rebalancements en cas de léger ralentissement (GC, réseau).", tip: "Utilisez 45-60 secondes en production." },
+    { q: "Que fait `commitSync()` par rapport à `commitAsync()` ?", options: ["commitSync() bloque jusqu'à confirmation ; commitAsync() non bloquant", "commitSync() est plus rapide", "commitAsync() est plus fiable", "Ils sont identiques"], correct: "commitSync() bloque jusqu'à confirmation ; commitAsync() non bloquant", explanation: "commitSync() garantit que l'offset est bien enregistré avant de continuer. commitAsync() peut échouer silencieusement mais est plus performant. On utilise souvent les deux : commitAsync pour les commits périodiques, commitSync à la fermeture.", tip: "Pour exactly‑once, utilisez commitSync." },
+    { q: "Que signifie `isolation.level=read_committed` ?", options: ["Ne lire que les messages validés par des transactions", "Lire tous les messages", "Ignorer les messages", "Lire les messages non validés"], correct: "Ne lire que les messages validés par des transactions", explanation: "Ce paramètre permet aux consommateurs de ne voir que les messages écrits dans des transactions Kafka qui ont été commises. Cela évite de lire des messages qui pourraient être annulés (abort).", tip: "Utilisez read_committed pour exactly‑once." },
+    // -------- 41-50 : Topics avancés & configurations de base --------
+    { q: "Que fait la rétention `retention.ms` ?", options: ["Durée de conservation des messages", "Taille maximale du log", "Temps de vie des consommateurs", "Intervalle de commit"], correct: "Durée de conservation des messages", explanation: "retention.ms (défaut 7 jours) spécifie combien de temps les messages sont conservés dans un topic avant suppression. Au‑delà, ils sont éligibles à la suppression.", tip: "Ajustez selon les obligations légales et le volume de données." },
+    { q: "Que signifie `cleanup.policy=compact` ?", options: ["Ne garder que la dernière valeur par clé", "Supprimer après délai", "Ne pas supprimer", "Compacter les segments"], correct: "Ne garder que la dernière valeur par clé", explanation: "La compaction est une politique où Kafka conserve uniquement le dernier message pour chaque clé (les versions antérieures sont supprimées). Idéal pour les tables de référence.", tip: "Activez la compaction pour les streams KTable." },
+    { q: "Que se passe-t-il si `auto.create.topics.enable=true` est activé en production ?", options: ["Risque de création accidentelle de topics (typo)", "Améliore les performances", "Facilite l'administration", "Empêche la suppression"], correct: "Risque de création accidentelle de topics (typo)", explanation: "Si un producteur ou consommateur fait référence à un topic inexistant, Kafka le crée automatiquement avec les paramètres par défaut. Cela peut entraîner des topics non désirés avec un mauvais dimensionnement.", tip: "En production, désactivez cette option." },
+    { q: "Que fait `min.insync.replicas` ?", options: ["Nombre minimal de répliques synchronisées pour acks=all", "Facteur de réplication minimal", "Nombre de partitions minimal", "Nombre de consommateurs minimal"], correct: "Nombre minimal de répliques synchronisées pour acks=all", explanation: "min.insync.replicas garantit la durabilité : une écriture avec acks=all n'est acceptée que si au moins ce nombre de répliques (dans l'ISR) a accusé réception.", tip: "Avec replication.factor=3, utilisez min.insync=2." },
+    { q: "Quelle est la taille par défaut d'un segment de log ?", options: ["1 Go", "100 Mo", "10 Mo", "512 Mo"], correct: "1 Go", explanation: "log.segment.bytes = 1 073 741 824 octets (1 Go). Les segments sont fermés quand ils atteignent cette taille ou après segment.ms.", tip: "Des segments plus grands améliorent la compression mais augmentent le temps de nettoyage." },
+    { q: "Que signifie `unclean.leader.election.enable` ?", options: ["Permet à un follower hors ISR de devenir leader (risque de perte)", "Interdit l'élection du leader", "Force l'élection", "Active la réplication"], correct: "Permet à un follower hors ISR de devenir leader (risque de perte)", explanation: "Si activé, un follower non synchronisé peut être élu leader, ce qui peut entraîner une perte de données (les messages manquants sont perdus). En production, cette option doit être false.", tip: "Ne jamais activer en production." },
+    { q: "Que fait la commande `kafka-topics.sh --describe` ?", options: ["Affiche les détails d'un topic (partitions, réplicas, ISR)", "Crée un topic", "Supprime un topic", "Modifie la configuration"], correct: "Affiche les détails d'un topic (partitions, réplicas, ISR)", explanation: "Cette commande est essentielle pour diagnostiquer l'état des partitions, voir les leaders, les followers et les ISR.", tip: "Utilisez‑la pour vérifier la réplication." },
+    { q: "Quel est l'effet de `replica.lag.time.max.ms` ?", options: ["Temps max de retard d'un follower avant d'être exclu de l'ISR", "Timeout de réplication", "Délai de rebalancement", "Durée de rétention"], correct: "Temps max de retard d'un follower avant d'être exclu de l'ISR", explanation: "Si un follower ne rattrape pas le leader dans ce délai, il est retiré de l'ISR. Augmentez cette valeur si vous avez des pics de latence réseau.", tip: "Valeur par défaut 30 secondes ; pour les réseaux instables, montez à 60 secondes." },
+    { q: "Que sont les messages tombstone ?", options: ["Messages avec valeur null qui suppriment une clé dans un topic compacté", "Messages d'erreur", "Messages de contrôle", "Messages de snapshot"], correct: "Messages avec valeur null qui suppriment une clé dans un topic compacté", explanation: "Dans un topic avec cleanup.policy=compact, un message avec une clé et une valeur nulle (tombstone) indique que cette clé doit être supprimée lors du prochain passage du nettoyeur.", tip: "Utilisez les tombstones pour effacer des données." },
+    { q: "Qu'est‑ce que le `__consumer_offsets` ?", options: ["Un topic interne stockant les offsets des consommateurs", "Un topic utilisateur", "Une partition spéciale", "Un fichier de log"], correct: "Un topic interne stockant les offsets des consommateurs", explanation: "Kafka utilise ce topic pour stocker de manière durable la position de chaque consommateur dans chaque partition. Il permet la reprise après redémarrage.", tip: "Ce topic doit être répliqué (facteur ≥ 3) pour éviter la perte des offsets." },
+    // -------- 51-60 : Garanties et comportements --------
+    { q: "Quelle garantie de livraison offre Kafka par défaut ?", options: ["At‑least‑once", "At‑most‑once", "Exactly‑once", "None"], correct: "At‑least‑once", explanation: "Par défaut, avec les accusés (acks=1) et les retries, Kafka garantit qu'un message est livré au moins une fois (possibilité de doublons). Pour exactly‑once, activez l'idempotence.", tip: "Exactly‑once nécessite enable.idempotence=true et des transactions." },
+    { q: "Que se passe-t-il si un producteur envoie un message sans accusé (acks=0) ?", options: ["Le message peut être perdu, mais la latence est minimale", "Le message est garanti", "Le producteur bloque", "Le broker refuse le message"], correct: "Le message peut être perdu, mais la latence est minimale", explanation: "Avec acks=0, le producteur ne reçoit aucun accusé et continue immédiatement. En cas de panne broker, le message peut être perdu. À réserver aux logs non critiques.", tip: "Utilisez acks=0 pour du monitoring à très haut débit." },
+    { q: "Que garantit l'idempotence exactement ?", options: ["Aucun doublon dans la partition", "Aucun doublon global", "Aucune perte", "Aucun réordonnancement"], correct: "Aucun doublon dans la partition", explanation: "Avec idempotence, le broker détecte et ignore les messages dupliqués pour un même producteur et une même partition. Cela évite les doublons dus aux retries.", tip: "Combine avec acks=all pour exactly‑once." },
+    { q: "Que signifie `max.poll.interval.ms` ?", options: ["Temps max entre deux poll() avant que le consommateur ne soit jugé mort", "Intervalle de commit", "Temps de traitement max", "Durée de la session"], correct: "Temps max entre deux poll() avant que le consommateur ne soit jugé mort", explanation: "Si le consommateur ne rappelle pas poll() dans ce délai (à cause d'un traitement long), le groupe le considère comme mort et déclenche un rebalancement.", tip: "Augmentez pour les traitements longs (ex: 10 minutes)." },
+    { q: "Qu'est‑ce que le static membership ?", options: ["Attribue un identifiant fixe à chaque consommateur pour réduire les rebalancements", "Un groupe immuable", "Une partition statique", "Une configuration fixe"], correct: "Attribue un identifiant fixe à chaque consommateur pour réduire les rebalancements", explanation: "En définissant `group.instance.id`, le consommateur conserve la même identité après redémarrage, évitant un rebalancement. Utile pour les applications stateful.", tip: "Utilisez static membership avec les Kafka Streams." },
+    { q: "Que fait `heartbeat.interval.ms` ?", options: ["Fréquence des signaux de vie du consommateur", "Intervalle de commit", "Timeout de session", "Délai de poll"], correct: "Fréquence des signaux de vie du consommateur", explanation: "Le consommateur envoie des heartbeats au coordinateur de groupe pour montrer qu'il est vivant. heartbeats.interval.ms doit être inférieur à session.timeout.ms (généralement 1/3).", tip: "Défaut 3 secondes." },
+    { q: "Que se passe-t-il si un consommateur ne committe pas ses offsets ?", options: ["Il relira les mêmes messages au redémarrage", "Il perd ses messages", "Le groupe est supprimé", "Les offsets sont automatiquement commis"], correct: "Il relira les mêmes messages au redémarrage", explanation: "Si aucun offset n'est commis, au redémarrage, le consommateur utilisera auto.offset.reset. S'il a déjà consommé mais n'a pas committé, il relira les messages déjà traités (doublons).", tip: "Toujours committer après traitement réussi." },
+    { q: "Que signifie `fetch.min.bytes` pour un consommateur ?", options: ["Taille minimale de données pour une réponse du broker", "Taille minimale d'un message", "Taille minimale du lot", "Taille minimale de la partition"], correct: "Taille minimale de données pour une réponse du broker", explanation: "Le broker attend d'avoir au moins fetch.min.bytes de données avant de répondre à une requête fetch. Cela améliore le débit au prix de la latence.", tip: "Pour une faible latence, gardez 1 (valeur par défaut)." },
+    { q: "Que se passe-t-il si le producteur utilise `compression.type=zstd` ?", options: ["Meilleur taux de compression mais plus de CPU", "Moins de CPU", "Pas de compression", "Compression rapide"], correct: "Meilleur taux de compression mais plus de CPU", explanation: "zstd (Zstandard) offre le meilleur ratio de compression pour les données textuelles, mais consomme plus de CPU que lz4 ou snappy. À réserver aux environnements avec CPU disponible.", tip: "Testez avec votre charge." },
+    { q: "Qu'est‑ce que le `request.timeout.ms` dans un producteur ?", options: ["Timeout pour une seule requête d'envoi", "Timeout global", "Délai de retry", "Durée de vie du message"], correct: "Timeout pour une seule requête d'envoi", explanation: "Le producteur attend la réponse du broker pour chaque requête. Si le délai est dépassé, il considère la requête comme échouée et peut la retenter.", tip: "Ajustez en fonction de la latence réseau." },
+    // -------- 61-70 : Offset management & avancés --------
+    { q: "Comment réinitialiser les offsets d'un groupe de consommateurs au début ?", options: ["kafka-consumer-groups --reset-offsets --to-earliest", "kafka-topics --reset", "kafka-configs --set", "recreate the group"], correct: "kafka-consumer-groups --reset-offsets --to-earliest", explanation: "La commande `kafka-consumer-groups` permet de réinitialiser les offsets d'un groupe, par exemple pour rejouer tous les messages. Cela peut être dangereux en production.", tip: "Utilisez avec précaution et testez en staging." },
+    { q: "Que stocke le topic `__consumer_offsets` ?", options: ["Les offsets commités de chaque groupe/partition", "Les messages des consommateurs", "Les configurations des topics", "Les métadonnées des brokers"], correct: "Les offsets commités de chaque groupe/partition", explanation: "C'est un topic interne à Kafka où sont enregistrés les offsets de tous les groupes de consommateurs. Sa réplication est cruciale pour la reprise après panne.", tip: "Surveillez son état (UnderReplicatedPartitions)." },
+    { q: "Quel est le débit approximatif d'une partition ?", options: ["10-20 Mo/s", "1-2 Mo/s", "100 Mo/s", "1 Go/s"], correct: "10-20 Mo/s", explanation: "Une partition peut supporter typiquement 10 à 20 Mo/s en écriture (selon le matériel et la configuration). Ce chiffre sert de base pour dimensionner le nombre de partitions.", tip: "Utilisez cette valeur pour estimer vos besoins." },
+    { q: "Que se passe-t-il si un producteur dépasse `max.request.size` ?", options: ["RecordTooLargeException", "Le message est tronqué", "Il est compressé automatiquement", "Il est envoyé en plusieurs fois"], correct: "RecordTooLargeException", explanation: "Le producteur rejette le message si sa taille dépasse max.request.size (défaut 1 Mo). Il faut augmenter cette valeur ou externaliser les gros blobs.", tip: "Pour les gros messages, utilisez la compression et augmentez la limite." },
+    { q: "Que fait `delivery.timeout.ms` ?", options: ["Délai maximal total depuis l'envoi jusqu'à l'accusé (inclut retries)", "Timeout de connexion", "Délai de retry", "Durée de vie du producteur"], correct: "Délai maximal total depuis l'envoi jusqu'à l'accusé (inclut retries)", explanation: "C'est le temps maximum que le producteur passe à essayer de livrer un message (y compris les tentatives). Après expiration, le message est abandonné.", tip: "Valeur recommandée : 120 000 ms." },
+    { q: "Que signifie `message.max.bytes` (broker/topic) ?", options: ["Taille maximale d'un message acceptée", "Taille maximale du lot", "Taille maximale de la partition", "Taille maximale de la requête"], correct: "Taille maximale d'un message acceptée", explanation: "Chaque broker peut refuser les messages plus gros que message.max.bytes (défaut 1 Mo). Il faut l'augmenter sur le broker et le topic si vous utilisez des gros messages.", tip: "Synchronisez avec max.request.size du producteur." },
+    { q: "Quel est le rôle d'un partitionneur personnalisé ?", options: ["Définir une logique métier pour choisir la partition", "Compresser les messages", "Accélérer l'envoi", "Gérer les erreurs"], correct: "Définir une logique métier pour choisir la partition", explanation: "Vous pouvez implémenter votre propre classe implémentant Partitioner pour contrôler la distribution des messages (ex: isoler un client prioritaire sur une partition).", tip: "À utiliser seulement si vous avez des besoins très spécifiques." },
+    { q: "Qu'est‑ce que le sticky partitioner ?", options: ["Un partitionneur qui remplit une partition avant de passer à la suivante (sans clé)", "Un partitionneur aléatoire", "Un partitionneur basé sur le temps", "Un partitionneur round‑robin"], correct: "Un partitionneur qui remplit une partition avant de passer à la suivante (sans clé)", explanation: "Introduit dans Kafka 2.4, il améliore le batching en envoyant plusieurs messages sans clé sur la même partition pendant un court laps de temps, puis bascule.", tip: "C'est le partitionneur par défaut pour les messages sans clé." },
+    { q: "Que signifie `max.partition.fetch.bytes` ?", options: ["Taille maximale de données par partition retournée au consommateur", "Taille max du lot", "Taille max du message", "Taille max du buffer"], correct: "Taille maximale de données par partition retournée au consommateur", explanation: "Cette limite évite qu'une seule partition ne monopolise le fetch du consommateur. Par défaut 1 Mo.", tip: "Si vos messages sont gros, augmentez cette valeur." },
+    { q: "Que se passe-t-il si un consommateur appelle `pause()` ?", options: ["Il arrête temporairement de recevoir des messages des partitions spécifiées", "Il se déconnecte", "Il change de groupe", "Il committe les offsets"], correct: "Il arrête temporairement de recevoir des messages des partitions spécifiées", explanation: "La méthode pause() est utile pour gérer la backpressure : on peut suspendre la réception sur certaines partitions le temps de traiter un lot, puis reprendre avec resume().", tip: "Utilisez pause/resume pour un contrôle fin du flux." },
+    // -------- 71-80 : Mélange de fondamentaux --------
+    { q: "Quelle est la commande pour lister les topics ?", options: ["kafka-topics.sh --list", "kafka-consumer-groups.sh --list", "kafka-broker.sh --list", "kafka-configs.sh --list"], correct: "kafka-topics.sh --list", explanation: "La commande kafka-topics.sh avec l'option --list affiche tous les topics du cluster. C'est une vérification rapide.", tip: "Ajoutez --bootstrap-server." },
+    { q: "Que signifie `unclean.leader.election.enable=false` ?", options: ["Empêche la perte de données en n'autorisant que les leaders issus de l'ISR", "Autorise tous les followers", "Désactive l'élection", "Force l'élection"], correct: "Empêche la perte de données en n'autorisant que les leaders issus de l'ISR", explanation: "En désactivant cette option, on garantit qu'un follower hors ISR ne deviendra jamais leader, évitant ainsi la perte de données. C'est la configuration recommandée en production.", tip: "Toujours false en production." },
+    { q: "Que fait `kafka-dump-log.sh` ?", options: ["Affiche le contenu des segments de log (debug)", "Supprime un segment", "Compresse un log", "Crée un segment"], correct: "Affiche le contenu des segments de log (debug)", explanation: "Cet outil inspecte les fichiers .log et .index pour déboguer des problèmes de corruption ou pour analyser manuellement les messages.", tip: "Utilisez‑le uniquement hors production." },
+    { q: "Que signifie le paramètre `offsets.topic.num.partitions` ?", options: ["Nombre de partitions du topic __consumer_offsets", "Nombre de partitions par défaut", "Nombre de partitions pour les topics internes", "Nombre de partitions pour les consumers"], correct: "Nombre de partitions du topic __consumer_offsets", explanation: "Ce paramètre (défaut 50) détermine le nombre de partitions du topic interne qui stocke les offsets. Pour un très grand nombre de groupes, augmentez cette valeur.", tip: "Augmentez si vous avez des milliers de groupes." },
+    { q: "Qu'est‑ce qu'un rack awareness ?", options: ["Répartir les répliques sur différents racks pour éviter une perte totale", "Un type de partition", "Un paramètre de compression", "Un outil de monitoring"], correct: "Répartir les répliques sur différents racks pour éviter une perte totale", explanation: "En configurant `broker.rack`, Kafka place les répliques d'une partition sur des racks différents (ou zones de disponibilité). Ainsi, la panne d'un rack n'entraîne pas la perte de toutes les copies.", tip: "Indispensable dans le cloud." },
+    { q: "Que fait `kafka-consumer-groups.sh --describe` ?", options: ["Affiche le lag et l'état d'un groupe", "Crée un groupe", "Supprime un groupe", "Modifie la configuration"], correct: "Affiche le lag et l'état d'un groupe", explanation: "Cette commande est la plus utilisée pour surveiller les consommateurs : elle montre pour chaque partition le LEO, l'offset commis et le lag.", tip: "Surveillez le lag avec cette commande." },
+    { q: "Qu'est‑ce qu'un commit manuel asynchrone ?", options: ["L'offset est envoyé au broker sans attendre la confirmation", "L'offset est sauvegardé localement", "Le consommateur bloque", "Les messages sont perdus"], correct: "L'offset est envoyé au broker sans attendre la confirmation", explanation: "commitAsync() envoie la requête de commit et continue, sans attendre l'accusé. Si une erreur se produit, elle est signalée dans un callback. C'est plus rapide mais moins fiable.", tip: "Utilisez commitAsync pour les commits fréquents, commitSync à la fermeture." },
+    { q: "Quelle est la différence entre `auto.offset.reset=earliest` et `latest` ?", options: ["Earliest lit depuis le début ; latest lit les nouveaux messages", "Earliest lit les nouveaux ; latest lit depuis le début", "Earliest ignore les messages", "Latest supprime les offsets"], correct: "Earliest lit depuis le début ; latest lit les nouveaux messages", explanation: "C'est le comportement par défaut quand un groupe démarre pour la première fois ou que ses offsets ont expiré. earliest peut causer un rejeu massif ; latest évite de relire l'historique.", tip: "Pour les applications sensibles au volume, utilisez latest." },
+    { q: "Que se passe-t-il si un consommateur ne parvient pas à désérialiser un message ?", options: ["Il doit gérer l'exception et éventuellement envoyer le message vers une DLQ", "Il crash", "Il ignore le message", "Il redémarre"], correct: "Il doit gérer l'exception et éventuellement envoyer le message vers une DLQ", explanation: "Le consommateur doit attraper l'exception de désérialisation, logguer l'erreur, committer l'offset pour passer au message suivant, et envoyer le message problématique dans une Dead Letter Queue.", tip: "Implémentez toujours une DLQ." },
+    { q: "Que signifie `fetch.max.wait.ms` ?", options: ["Temps max d'attente du broker pour atteindre fetch.min.bytes", "Timeout de fetch", "Intervalle de polling", "Durée de la session"], correct: "Temps max d'attente du broker pour atteindre fetch.min.bytes", explanation: "Si le broker n'a pas assez de données pour atteindre fetch.min.bytes, il attend jusqu'à fetch.max.wait.ms avant de répondre. Cela contrôle le compromis latence/débit.", tip: "Réduisez pour une meilleure réactivité." }
+];
+
+// Ajoutons des questions supplémentaires pour atteindre 80 (j'en ai déjà 80 en comptant)
+// Le tableau ci-dessus contient exactement 80 entrées (vérification faite). On va simplement les utiliser.
+
+// Variables globales
+let currentQuestions = [];
+let currentIndex = 0;
+let userAnswers = [];
+let score = 0;
+let selectedCount = 80;
+
+// DOM elements
+const settingsPanel = document.getElementById('settings-panel');
+const quizContent = document.getElementById('quiz-content');
+const questionCountSelect = document.getElementById('question-count');
+const startBtn = document.getElementById('start-quiz-btn');
+const questionCounter = document.getElementById('question-counter');
+const currentScoreSpan = document.getElementById('current-score');
+const progressBar = document.getElementById('progress-bar');
+const questionText = document.getElementById('question-text');
+const thematicBadge = document.getElementById('thematic-badge');
+const optionsContainer = document.getElementById('options-container');
+const explanationBox = document.getElementById('explanation-box');
+const explanationTitle = document.getElementById('explanation-title');
+const explanationText = document.getElementById('explanation-text');
+const tipBox = document.getElementById('tip-box');
+const tipText = document.getElementById('tip-text');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const finishBtn = document.getElementById('finish-btn');
+const finalScorePercentage = document.getElementById('final-score-percentage');
+const finalScoreCorrect = document.getElementById('final-score-correct');
+const finalScoreTotal = document.getElementById('final-score-total');
+const finalRecommendations = document.getElementById('final-recommendations');
+const shortTermSpan = document.getElementById('short-term');
+const longTermSpan = document.getElementById('long-term');
+const restartQuizBtn = document.getElementById('restart-quiz-btn');
+
+function shuffleArray(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+
+function startQuiz() {
+    selectedCount = parseInt(questionCountSelect.value);
+    let allQuestions = [...questions];
+    if (allQuestions.length < selectedCount) { selectedCount = allQuestions.length; alert(`Seulement ${allQuestions.length} questions disponibles.`); }
+    currentQuestions = shuffleArray(allQuestions).slice(0, selectedCount);
+    currentIndex = 0;
+    score = 0;
+    userAnswers = new Array(currentQuestions.length).fill(null);
+    settingsPanel.classList.add('d-none');
+    quizContent.classList.remove('d-none');
+    displayQuestion(0);
+    updateScoreDisplay();
+}
+
+function displayQuestion(idx) {
+    explanationBox.classList.add('d-none');
+    tipBox.classList.add('d-none');
+    const q = currentQuestions[idx];
+    questionText.textContent = q.q;
+    thematicBadge.textContent = "Concepts fondamentaux";
+    optionsContainer.innerHTML = '';
+    const shuffled = shuffleArray([...q.options]);
+    shuffled.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.className = 'option-btn';
+        btn.onclick = () => selectAnswer(btn, opt, idx);
+        optionsContainer.appendChild(btn);
+    });
+    if (userAnswers[idx] !== null) showAnswerFeedback(idx);
+    updateNavigation();
+    updateProgress();
+}
+
+function selectAnswer(btn, selected, idx) {
+    if (userAnswers[idx] !== null) return;
+    const q = currentQuestions[idx];
+    const isCorrect = (selected === q.correct);
+    userAnswers[idx] = { selected, correct: q.correct, isCorrect };
+    if (isCorrect) score++;
+    updateScoreDisplay();
+    showAnswerFeedback(idx);
+    document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+    btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+    if (!isCorrect) {
+        document.querySelectorAll('.option-btn').forEach(b => { if (b.textContent === q.correct) b.classList.add('correct'); });
+    }
+}
+
+function showAnswerFeedback(idx) {
+    const ans = userAnswers[idx];
+    if (!ans) return;
+    const q = currentQuestions[idx];
+    explanationText.textContent = q.explanation;
+    explanationTitle.textContent = ans.isCorrect ? "✅ Correct !" : "📘 Explication";
+    explanationBox.className = `explanation-box ${ans.isCorrect ? 'explanation-correct' : 'explanation-incorrect'}`;
+    explanationBox.classList.remove('d-none');
+    if (q.tip) {
+        tipText.textContent = q.tip;
+        tipBox.classList.remove('d-none');
+    }
+}
+
+function updateNavigation() {
+    prevBtn.disabled = (currentIndex === 0);
+    const isLast = (currentIndex === currentQuestions.length - 1);
+    nextBtn.classList.toggle('d-none', isLast);
+    finishBtn.classList.toggle('d-none', !isLast);
+}
+
+function updateProgress() {
+    const percent = ((currentIndex + 1) / currentQuestions.length) * 100;
+    progressBar.style.width = `${percent}%`;
+    questionCounter.textContent = `Question ${currentIndex + 1} / ${currentQuestions.length}`;
+}
+
+function updateScoreDisplay() {
+    currentScoreSpan.textContent = `Score: ${score}/${currentQuestions.length}`;
+}
+
+function nextQuestion() { if (currentIndex < currentQuestions.length - 1) { currentIndex++; displayQuestion(currentIndex); } }
+function prevQuestion() { if (currentIndex > 0) { currentIndex--; displayQuestion(currentIndex); } }
+
+function finishQuiz() {
+    const percentage = (score / currentQuestions.length) * 100;
+    finalScorePercentage.textContent = `${percentage.toFixed(0)}%`;
+    finalScoreCorrect.textContent = score;
+    finalScoreTotal.textContent = currentQuestions.length;
+    let rec = "";
+    if (percentage >= 90) rec = "<h5><i class='fas fa-crown'></i> Maîtrise des fondamentaux !</h5><p>Vous avez une excellente compréhension de Kafka. Passez aux domaines avancés (Streams, Connect, production).</p>";
+    else if (percentage >= 75) rec = "<h5><i class='fas fa-medal'></i> Très bon niveau</h5><p>Revoyez quelques points de détail (réplication, offsets). Entraînez‑vous avec la CLI.</p>";
+    else if (percentage >= 60) rec = "<h5><i class='fas fa-graduation-cap'></i> Bonnes bases</h5><p>Approfondissez les concepts de partitionnement et de consommation.</p>";
+    else rec = "<h5><i class='fas fa-book-open'></i> À renforcer</h5><p>Reprenez les chapitres sur les producteurs, consommateurs et la réplication.</p>";
+    finalRecommendations.innerHTML = rec;
+    shortTermSpan.textContent = "Refaites les TPs Kafka, installez un cluster KRaft, jouez avec la CLI.";
+    longTermSpan.textContent = "Passez à Kafka Streams, apprenez Debezium, devenez architecte événementiel.";
+    const modal = new bootstrap.Modal(document.getElementById('resultsModal'));
+    modal.show();
+}
+
+function restartQuiz() {
+    settingsPanel.classList.remove('d-none');
+    quizContent.classList.add('d-none');
+    document.getElementById('resultsModal').querySelector('.btn-close').click();
+}
+
+startBtn.addEventListener('click', startQuiz);
+nextBtn.addEventListener('click', nextQuestion);
+prevBtn.addEventListener('click', prevQuestion);
+finishBtn.addEventListener('click', finishQuiz);
+restartQuizBtn.addEventListener('click', restartQuiz);
+</script>
+</body>
+</html>
+
