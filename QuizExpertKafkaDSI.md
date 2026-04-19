@@ -441,5 +441,584 @@ Un DSI doit maîtriser :
 * Data streaming stratégique
 * Sécurité & conformité
 
+
+---
+
+# 🎓 Examen Blanc Kafka DSI – Version Approfondie (20 Cas)
+
+---
+
+# 🔵 CAS 1 : Saturation du Producer (Débit insuffisant)
+
+## 🔎 Problème
+
+Dans un système de facturation (type énergie / télécom), le producer doit envoyer **50 000 événements/seconde** (consommation clients).
+👉 Mais le débit plafonne à **10 000 msg/s**, provoquant :
+
+* accumulation en amont (microservices bloqués)
+* latence globale du SI
+* SLA non respecté
+
+---
+
+## 🧠 Démarche de diagnostic (DSI)
+
+1. Vérifier métriques producer :
+
+   * throughput
+   * batch size réel
+2. Analyser :
+
+   * CPU / RAM producer
+   * latence réseau vers brokers
+3. Vérifier config Kafka :
+
+   * `acks`
+   * compression
+4. Observer côté broker :
+
+   * saturation disque ?
+   * throttling ?
+
+---
+
+## ✅ Solution
+
+Optimisations clés :
+
+* `batch.size` ↑ (32KB → 128KB+)
+* `linger.ms = 5–20ms`
+* compression `lz4` ou `snappy`
+* activer **envoi asynchrone**
+* augmenter parallélisme (multi threads)
+
+---
+
+## 🎯 REX
+
+👉 Dans un projet telco, simple tuning (`linger.ms + compression`)
+➡️ débit multiplié par **x4 sans changer infra**
+
+---
+
+## 💡 Tips Architecte
+
+✔ Toujours optimiser producer AVANT d’ajouter des brokers
+✔ Kafka est rapide… mais mal utilisé → lent
+
+---
+
+# 🟡 CAS 2 : Consumer Lag Critique (Backlog massif)
+
+## 🔎 Problème
+
+Un système de paiement accumule **2 millions de messages en retard**.
+👉 Impact :
+
+* transactions traitées en retard
+* incohérences métiers
+* risque financier
+
+---
+
+## 🧠 Diagnostic
+
+1. Mesurer :
+
+   * consumer lag
+   * processing time
+2. Identifier :
+
+   * lenteur applicative ?
+   * DB downstream ?
+3. Vérifier :
+
+   * nombre de partitions vs consumers
+
+---
+
+## ✅ Solution
+
+* Augmenter nombre de consumers
+* Augmenter partitions (si nécessaire)
+* Optimiser traitement (batch / async)
+* Découpler DB (cache, queue interne)
+
+---
+
+## 🎯 REX
+
+👉 80% des cas :
+❌ Kafka n’est PAS le problème
+✅ La base de données derrière est le goulot
+
+---
+
+## 💡 Tips
+
+✔ Toujours analyser **end-to-end** (Kafka + app + DB)
+✔ Kafka révèle les problèmes… ne les crée pas
+
+---
+
+# 🟠 CAS 3 : Mauvais Partitionnement (Hot Partition)
+
+## 🔎 Problème
+
+Un topic a 10 partitions, mais :
+
+* 1 partition reçoit 80% du trafic
+* les autres sont quasi vides
+
+👉 Résultat :
+
+* latence élevée
+* déséquilibre cluster
+
+---
+
+## 🧠 Diagnostic
+
+* Analyser clé de partition
+* vérifier distribution des clés
+
+---
+
+## ✅ Solution
+
+* changer clé de partitionnement (hash équilibré)
+* introduire clé composite (userId + timestamp)
+* recréer topic si nécessaire
+
+---
+
+## 🎯 REX
+
+👉 Mauvais choix classique :
+
+* pays → déséquilibre
+* statut → déséquilibre
+
+👉 Bon choix :
+
+* userId
+* transactionId
+
+---
+
+## 💡 Tips
+
+✔ Le partitionnement = **décision critique d’architecture**
+✔ Toujours tester distribution AVANT prod
+
+---
+
+# 🔴 CAS 4 : Perte de Données après Crash
+
+## 🔎 Problème
+
+Après crash d’un broker, des données critiques disparaissent.
+
+---
+
+## 🧠 Diagnostic
+
+* vérifier :
+
+  * `acks`
+  * replication factor
+  * ISR
+
+---
+
+## ✅ Solution
+
+* `acks=all`
+* replication factor = 3
+* `min.insync.replicas = 2`
+
+---
+
+## 🎯 REX
+
+👉 Beaucoup de SI critiques tournent encore en `acks=1`
+➡️ risque énorme invisible
+
+---
+
+## 💡 Tips
+
+✔ Toujours arbitrer : **latence vs fiabilité**
+✔ En finance/énergie → priorité fiabilité
+
+---
+
+# 🟣 CAS 5 : Multi Datacenter / Continuité
+
+## 🔎 Problème
+
+Une entreprise (banque / énergie) doit :
+
+* continuer en cas de panne pays
+* synchroniser données entre 2 régions
+
+---
+
+## 🧠 Diagnostic
+
+* besoin RPO/RTO ?
+* latence acceptable ?
+
+---
+
+## ✅ Solution
+
+* utiliser MirrorMaker 2
+* architecture active-passive ou active-active
+
+---
+
+## 🎯 REX
+
+👉 En Afrique : coupures réseau fréquentes
+➡️ Multi-DC indispensable
+
+---
+
+## 💡 Tips
+
+✔ Tester PRA régulièrement
+✔ Ne pas attendre incident réel
+
+---
+
+# ⚫ CAS 6 : Explosion des Topics (Chaos)
+
+## 🔎 Problème
+
++2000 topics sans gouvernance :
+
+* noms incohérents
+* duplication
+* incompréhension métier
+
+---
+
+## 🧠 Diagnostic
+
+* audit catalogue Kafka
+* identifier redondances
+
+---
+
+## ✅ Solution
+
+* mettre en place gouvernance :
+
+  * naming convention
+  * validation DSI
+  * catalogue événements
+
+---
+
+## 🎯 REX
+
+👉 “Kafka devient inutilisable sans gouvernance”
+
+---
+
+## 💡 Tips
+
+✔ Créer un **Event Catalog** dès le début
+✔ Kafka = produit DATA, pas juste infra
+
+---
+
+# 🟢 CAS 7 : Rupture de Compatibilité
+
+## 🔎 Problème
+
+Un changement JSON casse plusieurs consumers.
+
+---
+
+## 🧠 Diagnostic
+
+* absence de versioning
+* pas de schéma
+
+---
+
+## ✅ Solution
+
+* utiliser schema registry (Avro)
+* versionnement backward compatible
+
+---
+
+## 🎯 REX
+
+👉 Cause majeure d’incidents prod
+
+---
+
+## 💡 Tips
+
+✔ Traiter événements comme API publiques
+
+---
+
+# 🔵 CAS 8 : Latence Élevée
+
+## 🔎 Problème
+
+Latence > 2 secondes sur flux temps réel
+
+---
+
+## 🧠 Diagnostic
+
+* mesurer :
+
+  * producer latency
+  * broker latency
+  * consumer latency
+
+---
+
+## ✅ Solution
+
+* réduire batch côté consumer
+* optimiser réseau
+* vérifier disque
+
+---
+
+## 🎯 REX
+
+👉 Latence souvent liée au consumer, pas Kafka
+
+---
+
+## 💡 Tips
+
+✔ Mesurer chaque étape
+
+---
+
+# 🟡 CAS 9 : Rebalance Fréquent
+
+## 🔎 Problème
+
+Consumers se reconnectent souvent → instabilité
+
+---
+
+## 🧠 Diagnostic
+
+* autoscaling ?
+* crash containers ?
+
+---
+
+## ✅ Solution
+
+* stabiliser infra
+* ajuster `session.timeout.ms`
+
+---
+
+## 🎯 REX
+
+👉 Kubernetes mal configuré = rebalance constant
+
+---
+
+## 💡 Tips
+
+✔ Kafka aime la stabilité
+
+---
+
+# 🟠 CAS 10 : Data Lake Temps Réel
+
+## 🔎 Problème
+
+Besoin d’alimenter Data Lake en temps réel
+
+---
+
+## 🧠 Diagnostic
+
+* volumétrie
+* fréquence
+
+---
+
+## ✅ Solution
+
+* Kafka Connect (S3/HDFS)
+* ingestion streaming
+
+---
+
+## 🎯 REX
+
+👉 Remplace ETL batch nocturne
+
+---
+
+## 💡 Tips
+
+✔ Kafka = colonne vertébrale data
+
+---
+
+# 🔴 CAS 11 : Sécurité Faible
+
+## 🔎 Problème
+
+Cluster Kafka accessible sans authentification
+
+---
+
+## 🧠 Diagnostic
+
+* audit accès
+* scan réseau
+
+---
+
+## ✅ Solution
+
+* TLS
+* SASL
+* ACL
+* IAM avec Keycloak
+
+---
+
+## 🎯 REX
+
+👉 Risque critique souvent sous-estimé
+
+---
+
+## 💡 Tips
+
+✔ Kafka = données sensibles → sécuriser comme DB
+
+---
+
+# 🟣 CAS 12 : Saturation Disque
+
+## 🔎 Problème
+
+Stockage plein → arrêt Kafka
+
+---
+
+## 🧠 Diagnostic
+
+* retention mal définie
+
+---
+
+## ✅ Solution
+
+* config retention (temps / taille)
+* log compaction
+
+---
+
+## 🎯 REX
+
+👉 Incident fréquent en prod
+
+---
+
+## 💡 Tips
+
+✔ Surveiller stockage en permanence
+
+---
+
+# ⚫ CAS 13 → 20 (Synthèse avancée rapide)
+
+---
+
+### CAS 13 : CDC base de données
+
+✅ Solution : Debezium
+🎯 REX : évite polling DB
+
+---
+
+### CAS 14 : KPI temps réel
+
+✅ Solution : ksqlDB
+💡 streaming analytics
+
+---
+
+### CAS 15 : Cloud hybride
+
+✅ réplication inter-zone
+
+---
+
+### CAS 16 : Monitoring
+
+✅ Prometheus + Grafana
+
+---
+
+### CAS 17 : SLA critique
+
+✅ scaling + priorisation topics
+
+---
+
+### CAS 18 : Mauvais usage
+
+❌ Kafka ≠ base transactionnelle
+
+---
+
+### CAS 19 : Messages trop lourds
+
+✅ externaliser payload
+
+---
+
+### CAS 20 : Migration ESB
+
+✅ progressive (coexistence)
+
+---
+
+# 🧠 Conclusion DSI
+
+👉 Les vrais enjeux Kafka ne sont PAS :
+
+* uniquement techniques
+
+👉 MAIS :
+
+* gouvernance
+* architecture
+* organisation
+* data strategy
+
+---
+
+# 🔥 Vision Architecte
+
+Un bon DSI Kafka doit :
+✔ penser **flux métier**
+✔ maîtriser **data streaming**
+✔ imposer **gouvernance forte**
+✔ sécuriser et monitorer
+
 ---
 
