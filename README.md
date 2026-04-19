@@ -2,6 +2,7 @@
 
 Voici un **quiz complet “Kafka in Action”** conçu pour un développeur / architecte / administrateur, avec **questions + réponses détaillées + explications terrain (REX)**.
 
+
 ---
 
 # 🚀 Quiz KAFKA in Action (Niveau Progressif)
