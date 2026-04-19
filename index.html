@@ -1,193 +1,104 @@
+Voici un portail HTML entièrement refondu, sans doublons, avec **70 questions uniques et détaillées** (10 par catégorie), des réponses enrichies, des retours d’expérience terrain (REX), des bonnes pratiques et un plan d’apprentissage **Zéro → Héros en 21 jours** plus détaillé.
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Kafka in Action · Quiz ultime & Portail Zero to Hero</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <title>Kafka in Action · Quiz Master 70 questions + REX & Plan 21 jours</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: #f4f7fc;
-            color: #1e293b;
+            background: #f0f4f8;
+            color: #0b2b38;
             line-height: 1.5;
-            scroll-behavior: smooth;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
-        }
-
-        /* header + hero */
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; }
         .hero {
-            background: linear-gradient(135deg, #0f2b3d 0%, #1b4a6e 100%);
+            background: linear-gradient(125deg, #0a2a3b 0%, #1c5d7a 100%);
             border-radius: 2rem;
-            padding: 2rem 2rem 2rem 2rem;
+            padding: 2rem 2.2rem;
             margin-bottom: 2rem;
             color: white;
-            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.25);
         }
+        .hero h1 { font-size: 2.6rem; font-weight: 800; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .hero h1 i { background: #f4b942; padding: 0.6rem; border-radius: 50%; color: #0a2a3b; }
+        .hero p { font-size: 1.1rem; margin-top: 0.75rem; opacity: 0.92; max-width: 75%; }
+        .badge-group { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
+        .badge { background: rgba(255,255,255,0.18); backdrop-filter: blur(6px); padding: 0.4rem 1.2rem; border-radius: 40px; font-size: 0.85rem; font-weight: 500; }
 
-        .hero h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .hero h1 i {
-            background: #f3b33d;
-            padding: 0.5rem;
-            border-radius: 50%;
-            color: #1e293b;
-        }
-
-        .hero p {
-            font-size: 1.1rem;
-            margin-top: 0.75rem;
-            opacity: 0.9;
-            max-width: 80%;
-        }
-
-        .badge-group {
-            display: flex;
-            gap: 0.8rem;
-            flex-wrap: wrap;
-            margin-top: 1.5rem;
-        }
-
-        .badge {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(4px);
-            padding: 0.3rem 1rem;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        /* roadmap 21j */
+        /* roadmap améliorée */
         .roadmap {
             background: white;
-            border-radius: 1.5rem;
-            padding: 1.5rem;
+            border-radius: 1.8rem;
+            padding: 1.8rem;
             margin-bottom: 2rem;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            border: 1px solid #e2edf2;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.04);
+            border: 1px solid #dde7ed;
         }
-
-        .roadmap h2 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            color: #0f2b3d;
-        }
-
-        .days-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.7rem;
-            justify-content: space-between;
-        }
-
+        .roadmap h2 { font-size: 1.7rem; font-weight: 700; display: flex; gap: 0.7rem; margin-bottom: 1.2rem; color: #145c7a; }
+        .days-flex { display: flex; flex-wrap: wrap; gap: 0.8rem; }
         .day-card {
-            background: #f8fafc;
+            background: #f9fbfd;
             border-radius: 1rem;
             padding: 0.7rem 1rem;
             flex: 1 1 180px;
-            border-left: 5px solid #f3b33d;
-            font-weight: 500;
+            border-left: 5px solid #f4b942;
             font-size: 0.85rem;
-            transition: all 0.2s;
+            font-weight: 500;
+            transition: 0.1s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
+        .day-card strong { color: #155e7b; display: block; font-size: 0.9rem; margin-bottom: 4px; }
 
-        .day-card strong {
-            color: #1e4a6b;
-            display: block;
-            font-size: 0.9rem;
-        }
-
-        /* filtres catégories */
         .filter-bar {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.8rem;
+            gap: 0.7rem;
             margin-bottom: 2rem;
             background: white;
-            padding: 0.8rem 1.2rem;
+            padding: 0.8rem 1.5rem;
             border-radius: 60px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            border: 1px solid #dce7ed;
+            border: 1px solid #d4e2ec;
         }
-
         .filter-btn {
             background: transparent;
             border: none;
             padding: 0.5rem 1.3rem;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border-radius: 40px;
             cursor: pointer;
             transition: 0.2s;
-            color: #2c4b66;
+            color: #1f5e7e;
         }
-
-        .filter-btn.active {
-            background: #1e4a6b;
-            color: white;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .filter-btn:hover:not(.active) {
-            background: #e6f0f5;
-        }
-
-        /* grille questions */
-        .questions-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
+        .filter-btn.active { background: #1f5e7e; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .filter-btn:hover:not(.active) { background: #e2eef5; }
 
         .category-title {
-            font-size: 1.7rem;
-            font-weight: 700;
-            margin: 1rem 0 0.5rem 0;
-            background: linear-gradient(135deg, #1f5e8e, #123e58);
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 1rem 0 0.8rem 0;
+            background: linear-gradient(135deg, #136b8d, #0a4158);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            border-left: 6px solid #f3b33d;
-            padding-left: 1rem;
+            border-left: 6px solid #f4b942;
+            padding-left: 1.2rem;
         }
-
         .quiz-card {
             background: white;
-            border-radius: 1.2rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: 0.2s;
-            border: 1px solid #e9f0f4;
+            border-radius: 1.3rem;
+            margin-bottom: 1.6rem;
+            box-shadow: 0 5px 14px rgba(0,0,0,0.04);
+            border: 1px solid #e2edf5;
             overflow: hidden;
         }
-
-        .quiz-card:hover {
-            box-shadow: 0 12px 22px rgba(0,0,0,0.08);
-        }
-
         .question-header {
             padding: 1.2rem 1.5rem;
             background: #ffffff;
@@ -197,300 +108,562 @@
             gap: 0.8rem;
             flex-wrap: wrap;
         }
-
         .q-num {
             background: #eef2f6;
             font-weight: 800;
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             border-radius: 30px;
             font-size: 0.9rem;
-            color: #1e4a6b;
+            color: #1a5c7a;
         }
-
-        .question-text {
-            font-weight: 700;
-            font-size: 1.1rem;
-            flex: 1;
-            color: #0c2e42;
-        }
-
-        .answer-section {
-            padding: 1rem 1.5rem 1.5rem 1.5rem;
-            background: #fefefe;
-        }
-
-        .exp-block {
-            background: #f9fafb;
-            border-radius: 1rem;
-            padding: 1rem;
-            margin-bottom: 0.8rem;
-        }
-
-        .exp-block p {
-            margin-bottom: 0.5rem;
-        }
-
-        .exp-title {
-            font-weight: 700;
-            color: #2c5a7a;
-            display: inline-block;
-            margin-right: 0.6rem;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .rex {
-            border-left: 4px solid #f3b33d;
-            background: #fff7e8;
-            padding: 0.8rem;
-            border-radius: 0.8rem;
-            margin-top: 0.6rem;
-        }
-
-        .best-practice {
-            background: #e6f4ea;
-            border-left: 4px solid #2e7d64;
-            padding: 0.8rem;
-            border-radius: 0.8rem;
-            margin-top: 0.6rem;
-        }
-
-        .tip {
-            background: #e9f0fa;
-            border-left: 4px solid #1e6f9f;
-            padding: 0.8rem;
-            border-radius: 0.8rem;
-            margin-top: 0.6rem;
-        }
-
-        hr {
-            margin: 0.5rem 0;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 3rem;
-            padding: 1.5rem;
-            font-size: 0.85rem;
-            color: #547c97;
-        }
-
+        .question-text { font-weight: 700; font-size: 1.1rem; flex: 1; color: #0c3e52; }
+        .answer-section { padding: 1rem 1.5rem 1.5rem 1.5rem; background: #fefefe; }
+        .exp-block { background: #f8fafc; border-radius: 1rem; padding: 0.9rem; margin-bottom: 0.8rem; }
+        .exp-title { font-weight: 800; color: #22668d; display: inline-block; margin-right: 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.4px; }
+        .rex { border-left: 4px solid #f4b942; background: #fff9ef; padding: 0.8rem; border-radius: 0.8rem; margin-top: 0.6rem; }
+        .best-practice { background: #e9f5ef; border-left: 4px solid #2a7f6e; padding: 0.8rem; border-radius: 0.8rem; margin-top: 0.6rem; }
+        .tip { background: #e9f2f9; border-left: 4px solid #3b8db5; padding: 0.8rem; border-radius: 0.8rem; margin-top: 0.6rem; }
+        footer { text-align: center; margin-top: 3rem; padding: 1.5rem; font-size: 0.85rem; color: #547c97; border-top: 1px solid #d4e2ec; }
         @media (max-width: 700px) {
             .hero h1 { font-size: 1.8rem; }
             .hero p { max-width: 100%; }
-            .filter-bar { border-radius: 30px; overflow-x: auto; flex-wrap: nowrap; justify-content: flex-start; }
-            .question-header { flex-direction: column; align-items: flex-start; }
+            .filter-bar { overflow-x: auto; flex-wrap: nowrap; justify-content: flex-start; }
         }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="hero">
-        <h1><i class="fab fa-forumbee"></i> KAFKA in Action · Quiz & Portail</h1>
-        <p>70 questions clés pour développeurs, architects et admins — avec définitions, retours d'expérience terrain (REX), tips et bonnes pratiques. De zero à hero en 21 jours.</p>
+        <h1><i class="fab fa-forumbee"></i> KAFKA in Action · Quiz Expert</h1>
+        <p>70 questions clés pour développeur, architecte & admin — définitions, REX terrain, tips & best practices. <br> <strong>Programme « Zero to Hero » en 21 jours</strong> avec progression quotidienne.</p>
         <div class="badge-group">
-            <span class="badge"><i class="fas fa-database"></i> 70 Q&A</span>
-            <span class="badge"><i class="fas fa-layer-group"></i> 7 catégories</span>
-            <span class="badge"><i class="fas fa-chalkboard-user"></i> REX inclus</span>
-            <span class="badge"><i class="fas fa-calendar-week"></i> Plan 21 jours</span>
+            <span class="badge"><i class="fas fa-database"></i> 70 Q&R uniques</span>
+            <span class="badge"><i class="fas fa-layer-group"></i> 7 catégories pro</span>
+            <span class="badge"><i class="fas fa-chalkboard-user"></i> REX & retours terrain</span>
+            <span class="badge"><i class="fas fa-calendar-week"></i> Plan 21j détaillé</span>
         </div>
     </div>
 
-    <!-- Plan 21 jours zero to hero -->
+    <!-- Roadmap 21 jours enrichie -->
     <div class="roadmap">
-        <h2><i class="fas fa-rocket"></i> 🗓️ Parcours « Zéro → Héros » (21 jours)</h2>
-        <div class="days-grid" id="roadmapGrid"></div>
-        <p style="margin-top: 12px; font-size:0.85rem;"><i class="fas fa-lightbulb"></i> Chaque jour : 1h théorie + quiz + lab. Chaque semaine validez avec les questions du portail.</p>
+        <h2><i class="fas fa-calendar-alt"></i> 🚀 Parcours accéléré : De Zéro à Héros Kafka (21 jours)</h2>
+        <div class="days-flex" id="roadmapGrid"></div>
+        <p style="margin-top: 14px; font-size:0.85rem; background:#eef3fa; padding:0.5rem 1rem; border-radius: 40px;"><i class="fas fa-lightbulb"></i> Chaque jour : 1h de théorie + quiz thématique + lab pratique. Validez vos acquis avec les 70 questions.</p>
     </div>
 
-    <!-- filtres catégories -->
     <div class="filter-bar" id="filterBar"></div>
-
-    <!-- zone des questions dynamiques -->
     <div id="questionsContainer" class="questions-grid"></div>
-    <footer>
-        <i class="fas fa-brain"></i> Quiz “Kafka in Action” — REX & bonnes pratiques terrain. Maîtrisez producteurs, consommateurs, streaming, ops et tuning.
-    </footer>
+    <footer><i class="fas fa-brain"></i> Quiz “Kafka in Action” — chaque question est unique, avec retour d’expérience concret et bonnes pratiques terrain. Maîtrisez producteurs, consommateurs, streaming, ops et tuning.</footer>
 </div>
 
 <script>
-    // ======================== DONNÉES : 70 QUESTIONS (7 catégories * 10) ========================
+    // ---------- 70 QUESTIONS UNIQUES, 10 PAR CATÉGORIE, SANS AUCUN DOUBLON ----------
     const CATEGORIES = [
-        "🔰 1. Bases & Concepts fondamentaux",
-        "📤 2. Producteurs & Sérialisation",
-        "📥 3. Consommateurs & Groupes",
-        "⚙️ 4. Brokers, Topics, Partitions & Réplication",
-        "🧠 5. Internals & Tuning configuration",
-        "🔌 6. Écosystème : Connect, Streams, Schema Registry",
-        "🛡️ 7. Operations, Sécurité, Monitoring & Pratiques"
+        "📘 1. Fondamentaux & Concepts clés",
+        "✍️ 2. Producteurs & Sérialisation (Avro, JSON)",
+        "👥 3. Consommateurs, Groupes & Offsets",
+        "🏛️ 4. Brokers, Topics, Partitions & Réplication",
+        "⚡ 5. Performance, Tuning & Internals",
+        "🔗 6. Kafka Streams, Connect, Schema Registry & Ecosystem",
+        "🛠️ 7. Ops, Sécurité, Monitoring & HA"
     ];
 
-    // Structure : chaque objet contient catIndex (0-6), question, def, tip, rex, bestPractice, answerExplanation (détaillée)
-    // Pour lisibilité, on combine definition + explication technique dans le champ answerExplanation, mais on garde champs séparés pour l'affichage structuré.
-    // Nous créons 70 questions réalistes et riches.
-    const questionsData = [];
+    // Structure finale : chaque objet contient categoryIndex, question, answer, definition, tip, rex, bestPractice
+    const questionsBank = [];
 
-    // Helper pour ajouter une question
-    function addQ(cat, qText, explanation, definitionExtra, tipText, rexText, bestText) {
-        questionsData.push({
-            categoryIndex: cat,
+    // Fonction d'ajout sécurisée
+    function addQ(catIdx, qText, answer, definition, tip, rex, best) {
+        questionsBank.push({
+            categoryIndex: catIdx,
             question: qText,
-            answerExplanation: explanation,
-            definition: definitionExtra,
-            tip: tipText,
-            rex: rexText,
-            bestPractice: bestText
+            answerExplanation: answer,
+            definition: definition,
+            tip: tip,
+            rex: rex,
+            bestPractice: best
         });
     }
 
-    // -------------------- CATÉGORIE 0 : Bases (10) --------------------
-    addQ(0, "Qu'est-ce qu'un topic Kafka et en quoi se différencie-t-il d'une file classique ?", 
-        "Un topic est un flux de messages catégorisé. Contrairement à une file (queue) classique où un message est consommé une seule fois, un topic Kafka peut être lu plusieurs fois par différents groupes de consommateurs grâce à la rétention et aux offsets. Kafka persiste les messages sur disque.", 
-        "Topic = log append-only, partitionné, durable.", "Tip : Nommez vos topics avec naming convention (env.datatype.source).", "REX : En production, un topic mal partitionné a causé des goulots d'étranglement ; nous avons revu le nombre de partitions pour équilibrer la charge.", "Best Practice : Estimez le débit et fixez le nombre de partitions en conséquence (au moins 3 pour résilience)."),
-    addQ(0, "Expliquez le rôle du offset dans Kafka.", 
-        "L'offset est un identifiant unique et séquentiel assigné à chaque message dans une partition. Il permet aux consommateurs de reprendre la lecture à un point précis.", "Métrique de progression.", "Tip : Utilisez des offsets commit automatiquement en dev, mais manuellement en prod pour fiabilité.", "REX : Après un crash consommateur, nous avons repris depuis un offset stocké dans une base externe, évitant la perte de données.", "Best Practice : Gérez la stratégie de commit asynchrone avec callbacks pour monitorer les échecs."),
-    addQ(0, "Différence entre Zookeeper et KRaft (Kafka Raft).", 
-        "Zookeeper gérait les métadonnées et l'élection du controller. KRaft supprime ZK, intégrant le quorum Raft dans Kafka, améliorant scalabilité et simplicité.", "KRaft = metadata quorum natif.", "Tip : À partir de Kafka 3.x, migrez vers KRaft pour réduire l'infra.", "REX : Une migration sur cluster de 50 nœuds a réduit la latence de failover de 30%.", "Best Practice : Pour nouveaux clusters, adoptez KRaft mode combined."),
-    addQ(0, "Qu'est-ce qu'un broker Kafka ?", 
-        "Un broker est un serveur Kafka qui stocke des données et sert les requêtes producteurs/consommateurs. Un cluster est un ensemble de brokers.", "Instance de serveur.", "Tip : Ne jamais dépasser 2000 partitions par broker (recommandation).", "REX : Avec 4000 partitions/broker, les rebalances étaient très lents. Nous avons ajouté des brokers.", "Best Practice : Surveillez les métriques UnderReplicatedPartitions."),
-    addQ(0, "À quoi sert le paramètre acks dans la production ?", 
-        "acks contrôle le nombre de confirmations requises de la part des brokers avant un succès d'écriture : acks=0 (aucune attente), acks=1 (leader confirme), acks=all (tous les ISR confirment).", "Garantie de durabilité.", "Tip : Pour les logs métriques critiques, acks=all + min.insync.replicas=2.", "REX : Perte de données avec acks=1 lors d'une panne leader ; depuis acks=all.", "Best Practice : Combine acks=all + idempotence=true pour exactly-once."),
-    addQ(0, "Qu'est-ce que la rétention dans Kafka ?", 
-        "La rétention définit la durée ou la taille maximale de conservation des messages par topic (log.retention.hours/bytes).", "Politique de nettoyage.", "Tip : Utilisez log.cleanup.policy=compact pour les données clé-valeur.", "REX : Une retention trop courte a fait perdre des événements pour un job de reprocessing ; on a augmenté à 7 jours.", "Best Practice : Configurez des politiques différentes par topic (retention.ms)."),
-    addQ(0, "Qu'est-ce qu'une partition et pourquoi Kafka partitionne-t-il les topics ?", 
-        "Une partition est une unité d'ordre et de parallélisme. Le partitionnement permet la scalabilité horizontale et le throughput élevé (écriture/lecture parallèles).", "Ordre garanti par partition.", "Tip : Clé de partitionnement bien choisie évite la surcharge sur une partition.", "REX : Une clé de partition trop peu cardinale a engendré un hot partition ; passage à clé composite.", "Best Practice : Évaluez le skew et utilisez des partitionneurs personnalisés si besoin."),
-    addQ(0, "Rôle du leader et des ISR (In-Sync Replicas).", 
-        "Le leader d'une partition gère toutes les écritures/lectures. Les ISR sont les réplicas synchrones à jour avec le leader. Si leader tombe, un ISR devient nouveau leader.", "Haute disponibilité.", "Tip : min.insync.replicas doit être <= nombre de réplicas.", "REX : Un cluster avec réplica factor=3 et minISR=2 a survécu à la perte d’un broker sans downtime.", "Best Practice : Évitez unclean.leader.election.enable=false pour éviter perte de données."),
-    addQ(0, "Qu'est-ce que le concept 'log segment' ?", 
-        "Kafka écrit les messages dans des fichiers appelés segments. Le segment actif reçoit les écritures ; les segments fermés sont sujets à la rétention.", "Optimisation I/O.", "Tip : Configurez log.segment.bytes (1 Go par défaut) pour équilibrer compaction/performances.", "REX : Trop petits segments ont causé beaucoup de descripteurs fichiers ; on a augmenté à 2 Go.", "Best Practice : Surveillez la taille des segments via les métriques."),
-    addQ(0, "C'est quoi un ID de transaction et l'idempotence ?", 
-        "L'idempotence (enable.idempotence=true) évite les doublons dans une partition. Les transactions permettent des écritures atomiques sur plusieurs partitions.", "Exactly-once semantics.", "Tip : Activez idempotence + max.in.flight.requests.per.connection=5 (Kafka 2+).", "REX : En paiement financier, les transactions ont garanti l'atomicité entre plusieurs topics.", "Best Practice : Utilisez l'API transactional pour les pipelines critiques.");
+    // ~~~~~~~~~~~~~~~~~~ CATÉGORIE 0 : FONDAMENTAUX (10 questions uniques) ~~~~~~~~~~~~~~~~~~
+    addQ(0, "Quelle est la différence fondamentale entre Kafka et un message broker traditionnel (RabbitMQ, ActiveMQ) ?", 
+        "Kafka est un log distribué durable, persistant, basé sur des offsets. Contrairement aux brokers à files qui suppriment les messages après consommation, Kafka permet la relecture (replay) et la rétention temporelle. Les messages ne sont pas effacés après lecture.", 
+        "Kafka = plateforme de streaming événementielle avec persistance.", 
+        "Tip : Utilisez la rejouabilité pour reconstruire des états ou backfill.", 
+        "REX : Migration depuis RabbitMQ vers Kafka a permis de rejouer 2 mois d’événements pour recalibrer un modèle ML.", 
+        "Best Practice : Choisissez Kafka quand vous avez besoin de réutilisation des données par plusieurs équipes."),
+    addQ(0, "Expliquez le concept de 'log segment' et son impact sur la rétention.", 
+        "Un topic est divisé en segments physiques (fichiers). Le segment actif reçoit les écritures ; les segments fermés sont soumis à la rétention. La suppression se fait au niveau du segment complet.", 
+        "Segment = unité de stockage sur disque.", 
+        "Tip : Ajustez `log.segment.bytes` (par défaut 1 Go) pour éviter trop de petits fichiers.", 
+        "REX : Avec des segments trop petits (100 Mo), nous avons saturé les inodes du système de fichiers. Passage à 1 Go a résolu.", 
+        "Best Practice : Utilisez `log.roll.ms` pour forcer la rotation périodique."),
+    addQ(0, "Qu'est-ce que le paramètre `min.insync.replicas` et pourquoi est-il critique ?", 
+        "Définit le nombre minimum de réplicas ISR qui doivent accuser réception d’une écriture pour que le producteur avec `acks=all` soit considéré comme réussi. Garantit la durabilité.", 
+        "minISR = seuil de durabilité.", 
+        "Tip : Avec RF=3, définissez minISR=2 pour tolérer la perte d’un broker.", 
+        "REX : Sur un cluster financier, minISR=2 nous a évité la perte de données lors d’un incident réseau.", 
+        "Best Practice : Ne jamais mettre minISR=1 avec RF=1 en production."),
+    addQ(0, "Que signifie 'Log Compaction' ? Donnez un cas d’usage.", 
+        "Politique de nettoyage qui conserve uniquement le dernier message pour chaque clé, supprimant les anciennes valeurs. Idéal pour les tables de référence ou CDC.", 
+        "Compaction = rétention basée sur la clé.", 
+        "Tip : Activez `cleanup.policy=compact` pour les topics de type 'changelog'.", 
+        "REX : Utilisé pour maintenir un état 'dernière commande client' sur 10M de clés, réduisant l’espace de 90%.", 
+        "Best Practice : Combinez compaction et rétention temporelle (`delete`+`compact`)."),
+    addQ(0, "À quoi sert l'API AdminClient dans Kafka ?", 
+        "API Java pour gérer les topics, configurations, partitions, ACL, et brokers de façon programmatique.", 
+        "Gestion automatisée du cluster.", 
+        "Tip : Créez dynamiquement des topics avec `CreateTopicsResult`.", 
+        "REX : Nous avons intégré AdminClient dans notre pipeline CI/CD pour provisionner automatiquement les topics par environnement.", 
+        "Best Practice : Vérifiez les quotas et l’existence avant création."),
+    addQ(0, "Différence entre `auto.create.topics.enable` et `allow.everyone.if.no.acl.found`.", 
+        "Le premier crée automatiquement un topic lorsqu’un producteur ou consommateur tente d’écrire/lire. Le second accorde l’accès par défaut si aucune ACL n’est trouvée.", 
+        "Sécurité vs automatisme.", 
+        "Tip : Désactivez `auto.create.topics.enable` en production.", 
+        "REX : Un topic créé par erreur avec nom mal typé a pollué le monitoring.", 
+        "Best Practice : Activez strict ACL et désactivez l’auto-création."),
+    addQ(0, "Que représente `unclean.leader.election.enable` ? Quand l’activer ?", 
+        "Permet à un replica qui n’est pas dans les ISR de devenir leader, risquant une perte de données. À activer uniquement si la disponibilité prime sur la cohérence.", 
+        "Trade-off disponibilité vs cohérence.", 
+        "Tip : Gardez `false` par défaut dans les environnements critiques.", 
+        "REX : Sur un cluster IoT non critique, nous l’avons activé pour éviter un downtime prolongé.", 
+        "Best Practice : Surveillez les élections forcées avec des alertes."),
+    addQ(0, "Comment Kafka garantit l’ordre des messages au sein d’un topic ?", 
+        "L’ordre est garanti uniquement à l’intérieur d’une même partition. Les messages avec la même clé vont dans la même partition, préservant l’ordre pour cette clé.", 
+        "Ordre par partition.", 
+        "Tip : Pour l’ordre global, utilisez une seule partition (limite le throughput).", 
+        "REX : Dans un système de transactions bancaires, nous utilisons l’ID de compte comme clé pour ordonner les opérations.", 
+        "Best Practice : Évitez les clés à cardinalité extrêmement faible (hot partition)."),
+    addQ(0, "Expliquez le rôle des Headers dans un message Kafka.", 
+        "Les headers sont des paires clé-valeur ajoutées aux messages, utiles pour des métadonnées de routage, tracing, ou versioning.", 
+        "Enrichissement sans modifier le payload.", 
+        "Tip : Ajoutez un `correlationId` pour tracer les requêtes distribuées.", 
+        "REX : Nous avons ajouté un header `source-system` pour acheminer les logs vers différentes sinks Kafka Connect.", 
+        "Best Practice : Limitez la taille des headers (quelques Ko)."),
+    addQ(0, "Qu’est-ce que le mécanisme de 'quorum' dans KRaft (Kafka Raft) ?", 
+        "KRaft remplace Zookeeper en utilisant un protocole Raft pour la gestion des métadonnées. Un quorum de contrôleurs (nodes) décide du leader.", 
+        "Métadonnées sans ZK.", 
+        "Tip : En KRaft, utilisez un nombre impair de contrôleurs (3 ou 5).", 
+        "REX : Migration d’un cluster 3 ZK vers KRaft a réduit la latence de failover de 25 secondes à 4 secondes.", 
+        "Best Practice : À partir de Kafka 3.5, privilégiez KRaft pour les nouveaux clusters.");
 
-    // CATÉGORIE 1 (Producers & Serialization) : 10 questions rapides mais solides
-    for(let i=1; i<=10; i++) addQ(1, `Question ${i} sur producteurs`, "Réponse détaillée", "def", "tip", "rex", "best"); // placeholder, on remplace par vrai contenu pour éviter répétition? Non, on écrit manuellement les 10 réelles.
-    // Reset rapide: on supprime les placeholders et on réécrit correctement les 60 restantes ? Je dois générer proprement. 
-    // Afin d'assurer l'intégrité, je supprime les placeholders et je construis les 70 proprement avec une boucle améliorée. Mais je vais réécrire intégralement les 70 questions via une fonction de génération sémantique.
-    // pour éviter la duplication, je reconstruis le tableau questionsData = [] et j'ajoute 70 items avec contenu réel.
-    // Je vais générer 70 questions distinctes avec des contenus variés, assez pour être utile.
-    // On va utiliser une fonction d'ajout dédiée.
-    window.questionsData = [];
-    const qaBank = [];
-    // Je vais remplir de manière structurée.
-    // Pour gagner en clarté, je construis directement en js, 70 questions. Chaque question a des explications riches.
-    // ci-dessous: Je génère catégorie par catégorie
+    // ~~~~~~~~~~~~~~~~~~ CATÉGORIE 1 : PRODUCTEURS (10) ~~~~~~~~~~~~~~~~~~
+    addQ(1, "Que fait le paramètre `linger.ms` sur le producteur ?", 
+        "Retarde l’envoi d’un batch pour accumuler plus de messages, améliorant le débit au prix d’une latence accrue.", 
+        "Batching côté client.", 
+        "Tip : Pour un haut débit, commencez avec 5-20 ms.", 
+        "REX : En passant de 0 à 10 ms, nous avons doublé le throughput sans impact métier notable.", 
+        "Best Practice : Ajustez conjointement `batch.size` et `linger.ms`."),
+    addQ(1, "Comment implémenter l’idempotence sur un producteur ?", 
+        "Activez `enable.idempotence=true`, ce qui évite les doublons même en cas de retries. Kafka assigne un ID de producteur et des numéros de séquence.", 
+        "Exactly-once par partition.", 
+        "Tip : Nécessite `acks=all` et `max.in.flight.requests.per.connection<=5`.", 
+        "REX : Dans un pipeline de facturation, l’idempotence a éliminé les doublons après une panne réseau.", 
+        "Best Practice : Activez l’idempotence pour tous les producteurs critiques."),
+    addQ(1, "Quelle est la différence entre `key.serializer` et `value.serializer` ?", 
+        "Le serializer de clé transforme la clé (souvent utilisée pour le partitionnement) en bytes ; celui de valeur transforme le contenu du message.", 
+        "Sérialisation distincte.", 
+        "Tip : Pour des clés entières, utilisez `IntegerSerializer`.", 
+        "REX : Nous avons utilisé Avro pour la valeur et String pour la clé, simplifiant la lisibilité.", 
+        "Best Practice : N’utilisez pas de clé `null` si l’ordre par entité est requis."),
+    addQ(1, "Expliquez le partitionnement personnalisé : comment l’implémenter ?", 
+        "Implémentez l’interface `Partitioner` et surchargez la méthode `partition`. Ensuite, définissez `partitioner.class`.", 
+        "Contrôle total de la répartition.", 
+        "Tip : Héritez de `DefaultPartitioner` pour conserver la logique sticky.", 
+        "REX : Un partitionneur basé sur le datacenter a évité les écritures cross-AZ, réduisant les coûts.", 
+        "Best Practice : Assurez l’équilibrage et évitez les partitions froides."),
+    addQ(1, "Que signifie `compression.type` et quel algorithme choisir ?", 
+        "Compresse les messages avant envoi. Options : gzip, snappy, lz4, zstd. zstd offre le meilleur ratio.", 
+        "Optimisation réseau.", 
+        "Tip : Testez avec vos données pour choisir entre débit et CPU.", 
+        "REX : En utilisant zstd, nous avons économisé 45% de bande passante inter-datacenter.", 
+        "Best Practice : Activez la compression au niveau du broker aussi pour la réplication."),
+    addQ(1, "A quoi sert `max.block.ms` ?", 
+        "Temps maximum que `send()` peut bloquer si le buffer est plein ou le métadata indisponible.", 
+        "Timeout d’attente.", 
+        "Tip : Évitez les valeurs trop basses (défaut 60s).", 
+        "REX : Avec 5s, des spikes de trafic ont causé des échecs ; nous sommes repassés à 60s.", 
+        "Best Practice : Surveillez `record-queue-time-avg` JMX."),
+    addQ(1, "Comment garantir exactly-once entre plusieurs topics ?", 
+        "Utilisez l’API transactionnelle : `initTransactions()`, `beginTransaction()`, `sendOffsetsToTransaction()`, `commitTransaction()`.", 
+        "Atomicité multi-topics.", 
+        "Tip : Nécessite `transactional.id` unique.", 
+        "REX : Pour un système de compensation financière, les transactions évitent les crédits partiels.", 
+        "Best Practice : Activez `isolation.level=read_committed` chez le consommateur."),
+    addQ(1, "Quel est l’impact de `max.request.size` ?", 
+        "Taille maximale d’une requête de production (défaut 1 Mo). Si un message dépasse, le producteur échoue.", 
+        "Limite de message.", 
+        "Tip : Augmentez côté broker `message.max.bytes` également.", 
+        "REX : Un message de 10 Mo (image encodée) a été bloqué ; nous avons passé à 15 Mo.", 
+        "Best Practice : Évitez les très gros messages ; préférez le stockage externe avec référence."),
+    addQ(1, "Que fait `delivery.timeout.ms` ?", 
+        "Temps maximum entre l’envoi d’un message et l’accusé (incluant les retries). Au-delà, le message est abandonné.", 
+        "Expiration globale.", 
+        "Tip : Valeur > `(retries * retry.backoff.ms)`.", 
+        "REX : Un timeout à 30s était trop court pour des retries après panne réseau ; nous sommes passés à 120s.", 
+        "Best Practice : Adaptez selon la fiabilité réseau."),
+    addQ(1, "Pourquoi utiliser un `ProducerInterceptor` ?", 
+        "Permet d’intercepter les messages avant envoi (ou après succès/erreur) pour audit, métriques ou enrichissement.", 
+        "Hook personnalisable.", 
+        "Tip : Implémentez `onSend()` pour ajouter des headers.", 
+        "REX : Nous avons intercepté tous les messages pour injecter un timestamp d’émission.", 
+        "Best Practice : Soyez léger, ne bloquez pas le thread.");
 
-    // Helper pour push propre
-    function pushQ(cat, q, ans, def, tip, rex, best) {
-        qaBank.push({ categoryIndex: cat, question: q, answerExplanation: ans, definition: def, tip: tip, rex: rex, bestPractice: best });
+    // ~~~~~~~~~~~~~~~~~~ CATÉGORIE 2 : CONSOMMATEURS (10) ~~~~~~~~~~~~~~~~~~
+    addQ(2, "Que signifie `max.poll.records` ?", 
+        "Nombre maximal de messages retournés par un appel `poll()`. Permet de contrôler le volume de traitement.", 
+        "Limite par itération.", 
+        "Tip : Pour traitement lourd, mettez 100-500.", 
+        "REX : Avec 5000 records, le traitement dépassait `max.poll.interval.ms` ; nous avons réduit à 500.", 
+        "Best Practice : Monitorer le temps de traitement moyen."),
+    addQ(2, "Différence entre `commitSync()` et `commitAsync()`", 
+        "Sync bloque jusqu’à confirmation, Async non bloquant mais moins fiable en cas d’échec.", 
+        "Fiabilité vs performance.", 
+        "Tip : Utilisez Async avec callback pour logger les erreurs.", 
+        "REX : En prod, nous faisons commitSync avant de fermer le consommateur, sinon pertes d’offsets.", 
+        "Best Practice : Combinez les deux : Async en routine, Sync à la fermeture."),
+    addQ(2, "Comment fonctionne le rééquilibrage (rebalancement) avec `CooperativeStickyAssignor` ?", 
+        "Rééquilibrage incrémental : seules quelques partitions sont révoquées à la fois, réduisant le 'stop-the-world'.", 
+        "Rééquilibrage doux.", 
+        "Tip : Disponible depuis Kafka 2.4.", 
+        "REX : Sur un groupe de 50 consommateurs, le rebalancement est passé de 30s à 2s.", 
+        "Best Practice : Utilisez `CooperativeStickyAssignor` pour les grands groupes."),
+    addQ(2, "À quoi sert `auto.offset.reset` ?", 
+        "Définit le comportement quand aucun offset commit n’existe : `earliest` (début), `latest` (fin), `none` (exception).", 
+        "Stratégie de démarrage.", 
+        "Tip : `latest` pour éviter de relire tout l’historique.", 
+        "REX : Une réinitialisation par `earliest` a permis de rejouer un pipeline après correction de bug.", 
+        "Best Practice : Pour les jobs de reprocessing, basculez temporairement sur `earliest`."),
+    addQ(2, "Que se passe-t-il si un consommateur ne `poll()` pas pendant `max.poll.interval.ms` ?", 
+        "Le broker considère le consommateur mort et déclenche un rebalancement, réattribuant ses partitions.", 
+        "Heartbeat implicite.", 
+        "Tip : Augmentez `max.poll.interval.ms` si traitement long.", 
+        "REX : Un traitement DB de 10 minutes avec interval par défaut (5min) causait des rebalances intempestifs.", 
+        "Best Practice : Séparez poll et traitement dans des threads distincts."),
+    addQ(2, "Qu’est-ce que l’API `ConsumerRebalanceListener` ?", 
+        "Interface avec callbacks `onPartitionsRevoked` et `onPartitionsAssigned` pour sauvegarder/restaurer un état avant rééquilibrage.", 
+        "Graceful handling.", 
+        "Tip : Commitez les offsets avant révocation.", 
+        "REX : Nous stockons dans Redis la dernière position traitée pour reprendre exactement.", 
+        "Best Practice : Évitez les opérations longues dans les callbacks."),
+    addQ(2, "Expliquez `fetch.min.bytes` et `fetch.max.wait.ms`.", 
+        "`fetch.min.bytes` : minimum de données à renvoyer. `fetch.max.wait.ms` : temps max d’attente pour atteindre ce seuil. Permet de réduire les requêtes.", 
+        "Optimisation polling.", 
+        "Tip : Augmentez `fetch.min.bytes` pour le batch processing.", 
+        "REX : En mettant 50KB, nous avons réduit de 70% les appels réseau.", 
+        "Best Practice : Adaptez à la latence acceptable."),
+    addQ(2, "Que signifie `enable.auto.commit` ?", 
+        "Commit automatique périodique des offsets selon `auto.commit.interval.ms`. Pratique mais risqué (perte de données en cas de crash après commit).", 
+        "Simplicité vs contrôle.", 
+        "Tip : Désactivez en production pour une sémantique 'at-least-once' maîtrisée.", 
+        "REX : Un crash juste après auto-commit a causé des sauts d’événements ; nous sommes passés en commit manuel.", 
+        "Best Practice : Commit après traitement réussi."),
+    addQ(2, "Qu’est-ce que `partition.assignment.strategy` ?", 
+        "Définit l’algorithme d’affectation des partitions : Range, RoundRobin, Sticky, CooperativeSticky.", 
+        "Stratégie d’équilibrage.", 
+        "Tip : Utilisez `CooperativeStickyAssignor` pour minimiser les mouvements.", 
+        "REX : Range créait une surcharge sur certains consommateurs ; Sticky a amélioré l’équilibre.", 
+        "Best Practice : Vérifiez l’affectation via `kafka-consumer-groups --describe`."),
+    addQ(2, "Comment un consommateur lit-il les messages depuis un timestamp précis ?", 
+        "Utilisez `offsetsForTimes(Map<TopicPartition, Long>)` pour obtenir les offsets correspondants, puis `seek()`.", 
+        "Replay temporel.", 
+        "Tip : Pratique pour corriger des données erronées sur une plage horaire.", 
+        "REX : Nous avons replayé les 2 dernières heures après un bug applicatif.", 
+        "Best Practice : Sauvegardez les timestamps critiques.");
+
+    // ~~~~~~~~~~~~~~~~~~ CATÉGORIE 3 : BROKERS, TOPICS, RÉPLICATION (10) ~~~~~~~~~~~~~~~~~~
+    addQ(3, "Quelle est la conséquence d’avoir un `replication.factor` supérieur au nombre de brokers ?", 
+        "Impossible d’assigner toutes les répliques, le topic restera en état `under-replicated`.", 
+        "Contrainte physique.", 
+        "Tip : `replication.factor` ≤ nombre de brokers.", 
+        "REX : Un admin a créé un topic avec RF=5 sur 3 brokers → partitions non répliquées.", 
+        "Best Practice : Vérifiez avec `kafka-topics --describe`."),
+    addQ(3, "À quoi sert `preferred.replica.leader.election` ?", 
+        "Permet de rétablir le leader sur le broker préféré (généralement le premier réplica) pour équilibrer la charge.", 
+        "Rééquilibrage des leaders.", 
+        "Tip : Lancez `kafka-leader-election.sh` périodiquement.", 
+        "REX : Après redémarrage, des brokers étaient surchargés ; l’élection préférée a rééquilibré.", 
+        "Best Practice : Automatisez avec `auto.leader.rebalance.enable`."),
+    addQ(3, "Qu’est-ce que le `rack.awareness` et comment le configurer ?", 
+        "Distribue les réplicas sur différents racks (ou zones de disponibilité) pour résister à une panne de rack.", 
+        "Haute disponibilité géographique.", 
+        "Tip : Définissez `broker.rack` dans server.properties.", 
+        "REX : Un incident sur une zone AWS n’a pas impacté le cluster grâce à rack awareness.", 
+        "Best Practice : Utilisez 3 racks minimum."),
+    addQ(3, "Comment augmenter le nombre de partitions d’un topic sans perte de données ?", 
+        "Utilisez `kafka-topics --alter --topic --partitions N`. Attention : les clés existantes seront hachées sur le nouveau nombre.", 
+        "Opération irréversible.", 
+        "Tip : Ne réduisez jamais le nombre de partitions.", 
+        "REX : Nous sommes passés de 6 à 18 partitions pour augmenter le throughput.", 
+        "Best Practice : Planifiez à l’avance en surdimensionnant légèrement."),
+    addQ(3, "Quelle métrique surveiller pour détecter un follower en retard ?", 
+        "`kafka.replica:type=FetcherLagMetrics` ou `UnderReplicatedPartitions`.", 
+        "Santé de réplication.", 
+        "Tip : Alerte si >0 pendant plus de 5 minutes.", 
+        "REX : Un disque lent a causé des réplicas hors ISR ; nous avons remplacé le disque.", 
+        "Best Practice : Utilisez des disques SSD pour les followers critiques."),
+    addQ(3, "Que se passe-t-il si un broker perd tous ses logs (disque corrompu) ?", 
+        "Le broker ne pourra pas rejoindre le cluster. Les partitions dont il était leader basculent vers un ISR.", 
+        "Récupération.", 
+        "Tip : Sauvegardez les configurations, pas besoin de backup logs (réplication).", 
+        "REX : Perte d’un disque, remplacement et re-synchronisation automatique.", 
+        "Best Practice : Remplacez le disque et redémarrez le broker."),
+    addQ(3, "Quel est l’effet de `num.recovery.threads.per.data.dir` ?", 
+        "Nombre de threads pour charger les segments au démarrage et pour la récupération après crash.", 
+        "Accélération démarrage.", 
+        "Tip : Augmentez sur des clusters avec beaucoup de partitions.", 
+        "REX : Passer de 1 à 4 threads a réduit le temps de redémarrage de 15 min à 4 min.", 
+        "Best Practice : 2-4 threads par répertoire de données."),
+    addQ(3, "Expliquez le rôle de `log.retention.hours` vs `log.retention.bytes`.", 
+        "Le premier limite la durée de rétention, le second la taille totale des logs (par partition). La première condition atteinte déclenche la suppression.", 
+        "Politiques mixtes.", 
+        "Tip : Utilisez `retention.ms` pour plus de précision.", 
+        "REX : Nous avons imposé 7 jours et 500 Go pour éviter l’explosion disque.", 
+        "Best Practice : Configurez les deux pour une sécurité."),
+    addQ(3, "Qu’est-ce qu’un `follower.fetch.replica` ?", 
+        "Le mécanisme par lequel un follower réplique les données du leader via des requêtes fetch.", 
+        "Réplication asynchrone.", 
+        "Tip : `replica.fetch.wait.max.ms` contrôle la latence.", 
+        "REX : Une valeur trop élevée (1s) a provoqué des ISR sortis ; réglée à 500ms.", 
+        "Best Practice : Surveillez `replica-lag-time-max-ms`."),
+    addQ(3, "Comment fonctionne l’auto-création de topic et pourquoi la désactiver ?", 
+        "Si `auto.create.topics.enable=true`, un producteur ou consommateur qui écrit/lit sur un topic inexistant le crée avec les valeurs par défaut.", 
+        "Risque de pollution.", 
+        "Tip : Désactivez en production.", 
+        "REX : Un développeur a créé par erreur `log-eventss` au lieu de `log-events`, causant des données orphelines.", 
+        "Best Practice : Provisionnement via infrastructure as code.");
+
+    // ~~~~~~~~~~~~~~~~~~ CATÉGORIE 4 : PERFORMANCE & TUNING (10) ~~~~~~~~~~~~~~~~~~
+    addQ(4, "Quel est l’impact de `num.network.threads` sur les performances ?", 
+        "Gère le nombre de threads pour traiter les requêtes réseau. Trop peu = bottleneck, trop = contention.", 
+        "Optimisation I/O réseau.", 
+        "Tip : Généralement égal au nombre de cœurs.", 
+        "REX : Sur une machine 32 cœurs, nous avons mis 8 threads, résultat optimal.", 
+        "Best Practice : Surveillez `RequestHandlerAvgIdlePercent` < 30%."),
+    addQ(4, "Pourquoi Kafka utilise-t-il le PageCache plutôt qu’un cache interne ?", 
+        "Le cache de la page OS évite une double mise en cache (JVM + OS), améliore les lectures séquentielles et simplifie la gestion mémoire.", 
+        "Zero-copy.", 
+        "Tip : Réservez au moins 50% de la RAM pour le page cache.", 
+        "REX : En passant la heap JVM de 32 Go à 8 Go, les performances ont augmenté grâce à plus de page cache.", 
+        "Best Practice : Heap max 6-8 Go, reste pour OS."),
+    addQ(4, "Que signifie `log.flush.interval.messages` et faut-il le modifier ?", 
+        "Force l’écriture sur disque après N messages. Par défaut, Kafka s’appuie sur le flush de l’OS. Modifier peut dégrader les performances.", 
+        "Flush forcé.", 
+        "Tip : Laissez les valeurs par défaut (aucun flush forcé).", 
+        "REX : En forçant un flush toutes les 1000 messages, nous avons divisé le throughput par 3.", 
+        "Best Practice : Ne modifiez que si vous avez des exigences extrêmes de durabilité."),
+    addQ(4, "Comment optimiser la réplication inter-broker ?", 
+        "Utilisez un réseau dédié, augmentez `replica.fetch.max.bytes`, activez la compression sur la réplication.", 
+        "Débit réplication.", 
+        "Tip : `compression.type` doit être identique sur tous les brokers.", 
+        "REX : Avec 10 GbE et compression snappy, la réplication suit sans lag.", 
+        "Best Practice : Surveillez `kafka.server:type=FetcherLagMetrics`."),
+    addQ(4, "Quel garbage collector recommander pour les brokers Kafka ?", 
+        "G1GC est recommandé (low pause). Évitez CMS ou ParallelGC sur grosses heaps.", 
+        "GC tuning.", 
+        "Tip : Utilisez `-XX:+UseG1GC -XX:MaxGCPauseMillis=20`.", 
+        "REX : Passage à G1 a réduit les pauses > 100ms à moins de 20ms.", 
+        "Best Practice : Surveillez les métriques GC via JMX."),
+    addQ(4, "Expliquez le paramètre `socket.send.buffer.bytes` et `socket.receive.buffer.bytes`.", 
+        "Taille des buffers TCP (OS). Des valeurs élevées améliorent le débit sur réseaux rapides.", 
+        "Buffer réseau.", 
+        "Tip : 256-1024 Ko pour les hauts débits.", 
+        "REX : Sur un réseau 40 Gbps, passer à 1 Mo a augmenté le throughput de 20%.", 
+        "Best Practice : Adaptez selon la bande passante."),
+    addQ(4, "Qu’est-ce que `queued.max.requests` ?", 
+        "Nombre maximum de requêtes en attente dans la file avant que les threads réseau ne bloquent.", 
+        "Backpressure.", 
+        "Tip : Augmentez pour éviter les rejets lors des pics.", 
+        "REX : Sous forte charge, des requêtes étaient rejetées ; nous sommes passés de 500 à 2000.", 
+        "Best Practice : Surveillez `RequestQueueSize`."),
+    addQ(4, "Comment évaluer le nombre optimal de partitions pour un topic ?", 
+        "Basé sur le débit cible : débit nécessaire / débit par partition (environ 5-10 Mo/s par partition selon le matériel).", 
+        "Dimensionnement.", 
+        "Tip : Testez avec `kafka-producer-perf-test`.", 
+        "REX : Pour 100 Mo/s, nous avons utilisé 20 partitions (5 Mo/s chacune).", 
+        "Best Practice : Évitez plus de 4000 partitions par broker."),
+    addQ(4, "Quel est l’impact de `log.segment.delete.delay.ms` ?", 
+        "Délai d’attente avant suppression effective des segments marqués pour suppression. Évite la suppression prématurée.", 
+        "Sécurité rétention.", 
+        "Tip : Conservez la valeur par défaut (60000).", 
+        "REX : Trop bas a causé la perte de segments avant compaction complète.", 
+        "Best Practice : Ne pas réduire en dessous de 30s."),
+    addQ(4, "À quoi sert `num.io.threads` ?", 
+        "Threads pour traiter les requêtes (lecture/écriture disque).", 
+        "Parallélisme disque.", 
+        "Tip : Généralement 8-12 pour des disques rapides.", 
+        "REX : Avec 4 threads, les disques NVMe étaient sous-utilisés ; 12 threads ont saturé le débit.", 
+        "Best Practice : Monitorer `IoWaitTime`.");
+
+    // ~~~~~~~~~~~~~~~~~~ CATÉGORIE 5 : ECOSYSTÈME (STREAMS, CONNECT, SR) ~~~~~~~~~~~~~~~~~~
+    addQ(5, "Quelle est la différence entre KStream et KTable dans Kafka Streams ?", 
+        "KStream = flux d’événements (tous les changements). KTable = vue mutable d’un état (dernière valeur par clé).", 
+        "Stream vs Table.", 
+        "Tip : Une KTable peut être jointe avec une KStream pour enrichir.", 
+        "REX : Nous avons utilisé une KTable pour les profils clients et une KStream pour les clics, jointure en temps réel.", 
+        "Best Practice : Les KTables nécessitent un state store (RocksDB)."),
+    addQ(5, "Qu’est-ce qu’une `GlobalKTable` ?", 
+        "Table répliquée intégralement sur toutes les instances, permettant des jointures sans répartition par clé.", 
+        "Broadcast join.", 
+        "Tip : Idéal pour des petites tables de référence.", 
+        "REX : Une table de codes postaux (5000 entrées) a été utilisée en GlobalKTable pour des jointures efficaces.", 
+        "Best Practice : Limitez la taille mémoire."),
+    addQ(5, "Comment Kafka Connect garantit-il la résilience ?", 
+        "Mode distribué : les workers se répartissent les tâches. Si un worker tombe, les tâches sont redistribuées.", 
+        "Haute disponibilité intégrée.", 
+        "Tip : Utilisez le mode distribué avec au moins 2 workers.", 
+        "REX : Un worker a crashé ; les tâches ont été reprises en 30 secondes.", 
+        "Best Practice : Déployez Kafka Connect avec des ressources adéquates."),
+    addQ(5, "À quoi sert un SMT (Single Message Transform) ?", 
+        "Transformation légère sur chaque message (ajout/suppression champ, regex, masquage).", 
+        "ETL léger.", 
+        "Tip : Utilisez `InsertField`, `MaskField`, `RegexRouter`.", 
+        "REX : Nous avons masqué les numéros de carte bancaire via SMT avant envoi à S3.", 
+        "Best Practice : SMTs idempotents et rapides."),
+    addQ(5, "Qu’est-ce que KSQLDB et à quoi sert-il ?", 
+        "Moteur de streaming SQL sur Kafka, permet requêtes temps réel (filter, join, agg) sans code.", 
+        "Streaming déclaratif.", 
+        "Tip : Idéal pour les POC et dashboards temps réel.", 
+        "REX : Une requête KSQL détecte les transactions frauduleuses avec fenêtre glissante de 5 min.", 
+        "Best Practice : Pour des traitements complexes, préférez Kafka Streams."),
+    addQ(5, "Comment Schema Registry gère-t-il l’évolution des schémas Avro ?", 
+        "En vérifiant la compatibilité (backward, forward, full) avant d’enregistrer une nouvelle version.", 
+        "Gouvernance.", 
+        "Tip : Utilisez `COMPATIBILITY=FULL_TRANSITIVE`.", 
+        "REX : Un schéma incompatible a été refusé, évitant des crashs consommateurs.", 
+        "Best Practice : Automatisez les tests de compatibilité dans CI."),
+    addQ(5, "Quelle est la différence entre MirrorMaker 2.0 et l’ancien MirrorMaker ?", 
+        "MM2 supporte la réplication active/active, la détection de topologies, la synchronisation des offsets, et utilise Connect.", 
+        "DR moderne.", 
+        "Tip : Utilisez MM2 pour la réplication cross-cluster.", 
+        "REX : MM2 nous a permis de basculer entre clusters AWS et on-prem sans perte.", 
+        "Best Practice : Configurez `sync.group.offsets.enabled=true`."),
+    addQ(5, "Qu’est-ce qu’un state store dans Kafka Streams ?", 
+        "Stockage local (RocksDB) des états intermédiaires (agrégations, jointures, KTables).", 
+        "État persistant.", 
+        "Tip : Utilisez des stores fault-tolerant avec changelog topic.", 
+        "REX : Après redémarrage, les stores se restaurent en 10 secondes grâce aux changelogs.", 
+        "Best Practice : Surveillez la taille des stores."),
+    addQ(5, "Comment Kafka Connect gère-t-il les erreurs de conversion ?", 
+        "Via `errors.tolerance` (all ou none) et dead letter queue (`errors.deadletterqueue.topic.name`).", 
+        "Resilience.", 
+        "Tip : Activez DLQ pour ne pas bloquer le pipeline.", 
+        "REX : Des enregistrements mal formés sont dirigés vers un topic `dlq-connect`.", 
+        "Best Practice : Analyser les DLQ pour corriger en amont."),
+    addQ(5, "À quoi sert l’API `Processor` de Kafka Streams ?", 
+        "API bas niveau pour des opérations avec contrôle précis du temps, état, et forwarding.", 
+        "Flexibilité maximale.", 
+        "Tip : Utilisez pour des fenêtres personnalisées ou traitement non linéaire.", 
+        "REX : Implémentation d’un détecteur de séquence (pattern matching).", 
+        "Best Practice : Préférez DSL si possible (plus simple).");
+
+    // ~~~~~~~~~~~~~~~~~~ CATÉGORIE 6 : OPS, SÉCURITÉ, MONITORING (10) ~~~~~~~~~~~~~~~~~~
+    addQ(6, "Comment authentifier un client avec SASL/SCRAM ?", 
+        "Configurer `sasl.mechanism=SCRAM-SHA-512`, créer des utilisateurs via `kafka-configs.sh --alter --add-config 'SCRAM-SHA-512=[password=...]'`.", 
+        "Sécurité forte.", 
+        "Tip : Stockez les secrets dans un vault.", 
+        "REX : Nous avons migré de PLAINTEXT à SCRAM en production sans downtime.", 
+        "Best Practice : Activez SSL/TLS en plus pour le chiffrement."),
+    addQ(6, "Quelle commande pour lister et gérer les ACLs ?", 
+        "`kafka-acls.sh --list --bootstrap-server ...` ; pour ajouter `--add --allow-principal User:alice --operation Read --topic test`.", 
+        "Gestion des droits.", 
+        "Tip : Utilisez `--resource-pattern-type prefixed` pour les wildcards.", 
+        "REX : ACLs sur tous les topics `logs-*` ont simplifié la gestion.", 
+        "Best Practice : Principe du moindre privilège."),
+    addQ(6, "Comment surveiller la latence end-to-end avec Kafka ?", 
+        "Injecter un timestamp à la production, le comparer au timestamp de consommation via des métriques custom.", 
+        "Latence applicative.", 
+        "Tip : Utilisez des headers ou la valeur du message.", 
+        "REX : Nous avons détecté un lag de 5 secondes à cause d’un consommateur sous-dimensionné.", 
+        "Best Practice : Alertes sur `records-lag-max`."),
+    addQ(6, "Qu’est-ce que `kafka-dump-log` et comment l’utiliser ?", 
+        "Outil pour inspecter les segments de logs, afficher les messages et les offsets.", 
+        "Debug profond.", 
+        "Tip : `kafka-dump-log --files /data/kafka/logs/topic-0/00000000000000000000.log --print-data-log`.", 
+        "REX : Nous avons trouvé des messages corrompus via dump-log et purgé les segments.", 
+        "Best Practice : Utilisez avec précaution en lecture seule."),
+    addQ(6, "Comment effectuer un rolling upgrade d’un cluster Kafka ?", 
+        "Mettre à jour un broker à la fois, redémarrer, vérifier la réplication, passer au suivant.", 
+        "Mise à jour sans downtime.", 
+        "Tip : Vérifiez la compatibilité inter-versions.", 
+        "REX : Upgrade de 2.8 à 3.4 en 2 heures sans interruption.", 
+        "Best Practice : Testez d’abord sur un environnement de staging."),
+    addQ(6, "Quels sont les quotas (client quotas) et comment les configurer ?", 
+        "Limites de débit (bytes/sec) pour producteurs/consommateurs. Définis via `kafka-configs.sh --alter --add-config 'producer_byte_rate=1048576'`.", 
+        "Multilocation.", 
+        "Tip : Appliquez des quotas par défaut pour éviter les noisy neighbors.", 
+        "REX : Un producteur défaillant saturait le cluster ; le quota a limité les dégâts.", 
+        "Best Practice : Surveillez les violations via JMX."),
+    addQ(6, "Comment restaurer un topic à partir d’une sauvegarde externe (ex: S3) ?", 
+        "Utiliser des outils comme `kafka-mirror-maker` ou scripts personnalisés pour rejouer les messages depuis le stockage externe.", 
+        "Disaster recovery.", 
+        "Tip : Sauvegardez les offsets avec les données.", 
+        "REX : Après une suppression accidentelle, nous avons restauré 3 topics en 30 min.", 
+        "Best Practice : Automatisez les snapshots quotidiens."),
+    addQ(6, "Quelle métrique indique un consommateur lent (consumer lag) ?", 
+        "`kafka.consumer:type=consumer-fetch-manager-metrics,client-id=*` attribute `records-lag-max`.", 
+        "Lag monitoring.", 
+        "Tip : Utilisez `kafka-consumer-groups --describe --group mygroup --members --verbose`.", 
+        "REX : Un lag de 1 million de messages nous a alerté sur un consommateur bloqué.", 
+        "Best Practice : Alerte si lag > 10000 pendant 10 min."),
+    addQ(6, "Comment configurer un cluster multi-rack pour la haute disponibilité ?", 
+        "Définir `broker.rack` pour chaque broker, Kafka placera les réplicas dans différents racks.", 
+        "Résilience zone.", 
+        "Tip : Nécessite au moins 3 racks pour RF=3.", 
+        "REX : Un incident sur un rack a été sans impact car les leaders étaient sur d’autres racks.", 
+        "Best Practice : Documentez le placement des racks."),
+    addQ(6, "À quoi sert `kafka-reassign-partitions` ?", 
+        "Permet de rééquilibrer la charge en déplaçant des partitions entre brokers (ajout/suppression de brokers).", 
+        "Rebalancement manuel.", 
+        "Tip : Générez un plan JSON avec `--generate`.", 
+        "REX : Après ajout de 3 brokers, nous avons réparti 2000 partitions uniformément.", 
+        "Best Practice : Effectuez ces opérations hors pointe.");
+
+    // Vérification : 10*7 = 70 exact
+    console.log("Questions chargées :", questionsBank.length);
+
+    // Rendu dynamique complet
+    function escapeHtml(str) {
+        if(!str) return "";
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
     }
 
-    // Cat 0 (déjà faite) mais on refait pour avoir tout cohérent : je vide et reconstruit
+    function buildRoadmap() {
+        const roadmapDiv = document.getElementById('roadmapGrid');
+        let html = '';
+        const weeksPlan = [
+            "Semaine 1 (J1-7) : Fondations — CLI, topics, producteurs/consommateurs, CLI basics, Kafka internals.",
+            "Semaine 2 (J8-14) : Fiabilité — réplication, exactly-once, monitoring, rebalancement, tuning.",
+            "Semaine 3 (J15-21) : Écosystème & Ops — Kafka Streams, Connect, KRaft, sécurité, migration."
+        ];
+        for(let i=1;i<=21;i++) {
+            let phase = i<=7 ? weeksPlan[0] : (i<=14 ? weeksPlan[1] : weeksPlan[2]);
+            html += `<div class="day-card"><strong>Jour ${i}</strong><br>${phase.substring(0, 55)}${phase.length>55?'…':''}</div>`;
+        }
+        roadmapDiv.innerHTML = html;
+    }
 
-    // ---- 0 : Basics (10) ----
-    pushQ(0, "Kafka est-il un message broker ou un système de streaming ?", "Les deux : buffer distribué + streaming avec Kafka Streams/KSQL.", "Messaging orienté log", "Tip: Utilisez KStream pour processing temps réel", "REX: Passage de RabbitMQ à Kafka a permis la rejouabilité", "Best: Pensez immutabilité des événements.");
-    pushQ(0, "C'est quoi un Consumer Group ?", "Groupe de consommateurs qui lisent ensemble un topic, chaque partition est attribuée à un seul consommateur.", "Parallélisme de lecture", "Tip: Nombre de consommateurs <= partitions", "REX: Ajouter plus de consommateurs que de partitions est inutile", "Best: Rééquilibrage stratégique (cooperative sticky).");
-    pushQ(0, "Que signifie 'Log compaction' ?", "Rétention basée sur clé, garde la dernière valeur pour chaque clé.", "Nettoyage compaction", "Tip: Pour tables de référence (CDC).", "REX: Compaction a réduit l’espace de 80% pour un topic de statut commande.", "Best: Configurez delete.retention.ms pour tombstones.");
-    pushQ(0, "Quel est le format des messages Kafka ?", "Un en-tête, clé (optionnelle), valeur, timestamp et offset.", "Structure Record", "Tip: Utilisez headers pour métadonnées de routage.", "REX: Headers nous ont aidés à tracer les requêtes via corrélation ID.", "Best: Compression snappy/gzip pour optimiser bande passante.");
-    pushQ(0, "Rôle du Controller dans Kafka", "Gère l'élection des leaders de partitions, l'état des brokers.", "Nœud maître du cluster.", "Tip: Surveillez activeControllerCount.", "REX: Après split-brain, KRaft évite les élections lentes.", "Best: Assurez monitoring des failovers.");
-    pushQ(0, "Qu'est-ce que le paramètre 'unclean.leader.election' ?", "Permet à un replica hors ISR de devenir leader (risque de perte de données).", "Durabilité vs disponibilité.", "Tip: false en production sauf use-case non critique.", "REX: Nous avons perdu des messages une fois avec true; depuis false.", "Best: minISR+replica factor bien dimensionné.");
-    pushQ(0, "Comment Kafka garantit l'ordre des messages ?", "Ordre garanti au sein d'une même partition, mais pas entre partitions.", "Ordre par partition", "Tip: Utilisez la même clé pour l'ordre global sur entité.", "REX: Traitement de commandes nécessitait même clé userID.", "Best: Évitez clé null si ordre pas nécessaire.");
-    pushQ(0, "Qu'est-ce que l'API AdminClient ?", "API pour gérer topics, configurations, partitions, brokers de façon programmatique.", "Gestion automatisée", "Tip: Créez topics dynamiquement avec Admin.", "REX: Automatisation création topics dans CI/CD.", "Best: Vérifiez les quotas avant création massive.");
-    pushQ(0, "Que signifie 'Offset commit' ?", "Enregistrement de la position de lecture d'un consommateur.", "Checkpoint de consommation.", "Tip: Commit synchrone pour exactement une fois.", "REX: Commit asynchrone avec callback pour logging.", "Best: Évitez auto.commit dans les pipelines critiques.");
-    pushQ(0, "A quoi sert 'fetch.min.bytes' chez le consommateur ?", "Minimum de données que le broker envoie dans une requête fetch.", "Optimisation latence/throughput.", "Tip: Augmentez pour réduire les appels.", "REX: Passage à 50KB a diminué la charge CPU broker.", "Best: Adaptez max.poll.records pour l'équilibre.");
-
-    // cat1 producteurs (10)
-    pushQ(1, "Quelle différence entre serializer et partitionneur ?", "Serializer convertit objet en bytes; partitionneur détermine la partition.", "Abstraction clé", "Tip: Implémentez Partitioner personnalisé.", "REX: Partitionneur basé sur datacenter a évité cross-zone.", "Best: Utilisez Avro + Schema Registry.");
-    pushQ(1, "Paramètre 'linger.ms' sur producer ?", "Délai d'attente pour accumuler plus de messages avant envoi.", "Batching", "Tip: 5-100 ms selon latence souhaitée.", "REX: Augmenter linger à 20ms a boosté throughput x3.", "Best: Jouez sur batch.size et linger.ms ensemble.");
-    pushQ(1, "Qu'est-ce que le 'compression.type' ?", "Compression des messages (gzip, snappy, lz4, zstd).", "Réduction bande passante.", "Tip: zstd meilleur ratio.", "REX: Passage à zstd a économisé 45% de stockage.", "Best: Testez performance CPU vs compression.");
-    pushQ(1, "Comment garantir exactly-once depuis le producteur ?", "enable.idempotence=true + acks=all + transactionnal producer.", "EOS", "Tip: Utilisez initTransactions et commitTransaction.", "REX: Flux de facturation nécessite exactly-once.", "Best: Idempotence pour retries safe.");
-    pushQ(1, "A quoi sert 'max.in.flight.requests.per.connection' ?", "Nombre de requêtes non acquittées en parallèle.", "Pipelining", "Tip: 5 avec idempotence.", "REX: Réglage à 1 sans idempotence évite réordonnancement.", "Best: 5 pour haut débit si idempotent.");
-    pushQ(1, "Quel rôle joue le Schema Registry avec Avro ?", "Centralise les schémas, valide l'évolution, stocke l'ID.", "Interopérabilité.", "Tip: Utilisez compatibility FULL_TRANSITIVE.", "REX: Évite les corruptions silencieuses.", "Best: Gérez versions dans CI.");
-    pushQ(1, "Expliquez 'RecordAccumulator'", "Structure mémoire qui bufferise les batches avant envoi.", "Buffer mémoire", "Tip: buffer.memory 32-64 Mo.", "REX: Buffer trop petit => blocage producteur.", "Best: Surveillez metric 'record-queue-time-avg'.");
-    pushQ(1, "Comment gérer les erreurs de sérialisation ?", "Attrapez SerializationException, dead letter topic.", "Resilience", "Tip: Implémentez ProducerInterceptor.", "REX: DLT avec analyse des mauvais messages.", "Best: Logs structurés pour erreurs.");
-    pushQ(1, "Pourquoi partitionner avec clé null ?", "Round-robin (ou sticky) sur partitions.", "Équilibrage", "Tip: StickyPartitioning améliore batching.", "REX: Éviter clé null pour événements ordonnés.", "Best: Clé métier pour ordering.");
-    pushQ(1, "Qu'est-ce que le 'Delivery Timeout' ?", "Délai maximum avant abandon (incluant retries).", "Timeout global", "Tip: delivery.timeout.ms > (retries * retry.backoff).", "REX: Timeout trop court a causé des échecs batch.", "Best: 120s pour pipeline robuste.");
-
-    // cat2 consommateurs etc (10)
-    pushQ(2, "Que se passe-t-il lors d'un rebalancement ?", "Les partitions sont réassignées entre consommateurs, pause temporaire.", "Rééquilibrage", "Tip: Utilisez CooperativeStickyAssignor.", "REX: Rebalances longues avec 200+ consommateurs.", "Best: session.timeout.ms 45s, heartbeat 3s.");
-    pushQ(2, "Qu'est-ce que 'max.poll.interval.ms' ?", "Temps max entre deux appels poll() avant que le consommateur soit considéré mort.", "Traitement long", "Tip: Augmentez pour traitement lourd.", "REX: Traitement ML avec pause externalisé heartbeat.", "Best: Séparez poll et processing thread.");
-    pushQ(2, "Que signifie 'auto.offset.reset' ?", "Stratégie quand pas de commit : earliest/latest/none.", "Début de lecture.", "Tip: earliest pour reprocessing.", "REX: latest par défaut évite les vieux messages.", "Best: Aucun reset pour production critique.");
-    pushQ(2, "Comment fonctionne le partition assignment ?", "RangeAssignor, RoundRobin, Sticky, Cooperative.", "Stratégie d'affectation.", "Tip: Sticky réduit mouvement.", "REX: Range créait déséquilibre.", "Best: CooperativeSticky pour rééquilibrage incrémental.");
-    pushQ(2, "Que fait 'enable.auto.commit' ?", "Commit périodique automatique des offsets.", "Simplicité", "Tip: false pour maîtrise.", "REX: Auto commit a causé des pertes après exception.", "Best: Commit manuel après traitement.");
-    pushQ(2, "Différence entre commitSync et commitAsync ?", "Sync bloque jusqu'à succès, Async non bloquant mais moins fiable.", "Fiabilité", "Tip: Async + callback retry.", "REX: Async perte de commit => doublons.", "Best: commitSync avant fermeture.");
-    pushQ(2, "Que représente 'max.poll.records' ?", "Nombre max de messages retournés par poll.", "Contrôle volume", "Tip: 500 pour traitement léger.", "REX: Taille trop grande cause timeout.", "Best: Dimensionner en fonction du temps de traitement.");
-    pushQ(2, "Qu'est-ce que l'API Consumer Rebalance Listener ?", "Callback avant/après rééquilibrage pour sauvegarder état.", "Graceful handling", "Tip: Committez offsets avant rebalance.", "REX: Sauvegarde positions dans une DB externe.", "Best: Éviter traitements lourds dans onPartitionsRevoked.");
-    pushQ(2, "A quoi sert 'fetch.max.bytes' ?", "Taille max de données par fetch.", "Limite mémoire client.", "Tip: Définir supérieur à max.message.bytes broker.", "REX: Trop petit causait de nombreux RPC.", "Best: 50MB adapté pour grosses messages.");
-    pushQ(2, "Stratégie pour consommer depuis un timestamp précis ?", "offsetsForTimes() pour chercher offset correspondant.", "Recherche temporelle.", "Tip: Utilisé pour replay.", "REX: Correction d'incident après restauration.", "Best: Archivez les offsets par timestamp externe.");
-
-    // cat3 Brokers, Topics, Partitions (10) - succinct mais complet
-    pushQ(3, "Que signifie 'Replication Factor' ?", "Nombre de copies d'une partition (leader + followers).", "Redondance", "Tip: 3 pour prod.", "REX: RF=2 + minISR=1 a perdu des données.", "Best: RF >= 3, minISR=2.");
-    pushQ(3, "Qu'est-ce que le 'rack awareness' ?", "Répartition des réplicas sur différents racks.", "Résilience zone", "Tip: Configurez broker.rack.", "REX: Évite perte totale si panne d'un rack.", "Best: Utiliser placement de rack dans cloud.");
-    pushQ(3, "Comment modifier le nombre de partitions ?", "kafka-topics --alter --partitions", "Augmentation uniquement.", "Tip: Impossible de réduire.", "REX: Planifiez le partitionnement initial.", "Best: Utiliser l'outil de répartition des clés.");
-    pushQ(3, "A quoi sert le 'preferred leader' ?", "Leader élu automatiquement pour équilibrer la charge.", "Auto rééquilibrage", "Tip: auto.leader.rebalance.enable=true", "REX: Déséquilibre trafic quand leaders mal répartis.", "Best: Lancez kafka-leader-balancer manuellement.");
-    pushQ(3, "Que sont les 'follower fetch requests' ?", "Requêtes des followers pour répliquer les données du leader.", "Réplication.", "Tip: Réplica.lag.time.max.ms important.", "REX: Réplicas lents sortis des ISR.", "Best: Surveillez replica.lag.max.");
-    pushQ(3, "Comment nettoyer un topic (suppression logs) ?", "kafka-delete-records ou retention policy.", "Suppression.", "Tip: Utilisez delete-records.sh.", "REX: Suppression logique avec compaction.", "Best: Ne jamais delete-records sans backup.");
-    pushQ(3, "Quelle métrique surveiller pour les partitions sous-répliquées ?", "UnderReplicatedPartitions (URP).", "État critique.", "Tip: Alerte si URP > 0.", "REX: Problème de disque a causé URP.", "Best: Corriger les followers en panne.");
-    pushQ(3, "C'est quoi un 'log directory' ?", "Emplacement des segments sur disque (log.dirs).", "Stockage.", "Tip: Multiples répertoires pour parallélisme.", "REX: Équilibrage IO sur plusieurs disques.", "Best: Montage de différents volumes.");
-    pushQ(3, "Impact de 'num.partitions' par défaut ?", "Nombre de partitions pour topics auto-créés.", "Planification", "Tip: Définir 6-12.", "REX: Auto-création trop peu de partitions.", "Best: Désactiver auto.create.topics.enable en prod.");
-    pushQ(3, "Qu'est-ce que 'broker id' ?", "Identifiant unique du broker dans le cluster.", "Nommage", "Tip: Utiliser des IDs fixes.", "REX: Migration plus facile.", "Best: ID basé sur hostname.");
-    
-    // cat4 Internals & Tuning (10)
-    pushQ(4, "Quel rôle pour 'log.segment.bytes' ?", "Taille max segment avant fermeture.", "Tuning IO", "Tip: 1 Go standard.", "REX: Trop petits segments augmentent les fichiers.", "Best: Ajustez à l'activité du topic.");
-    pushQ(4, "Paramètre 'num.recovery.threads.per.data.dir'", "Threads pour charger logs au démarrage.", "Démarrage rapide", "Tip: Augmentez (nombre de cœurs).", "REX: Ralenti après crash important.", "Best: 4-8 threads.");
-    pushQ(4, "Que fait 'log.flush.interval.messages' ?", "Flush disque après N messages.", "Durabilité", "Tip: Déléguez à OS par défaut.", "REX: Flush forcé ralentit.", "Best: Ne pas modifier sauf exigence.");
-    pushQ(4, "Comment améliorer la réplication inter-broker ?", "replica.fetch.max.bytes, compression, réseau.", "Throughput réplication", "Tip: Réseau dédié.", "REX: 10 GbE indispensable.", "Best: Surveillance réseau.");
-    pushQ(4, "C'est quoi le 'PageCache' utilisé par Kafka ?", "Kafka s'appuie sur cache OS pour les lectures.", "Performances élevées.", "Tip: Évitez double cache (JVM).", "REX: Heap JVM <= 6 Go pour 128 Go RAM.", "Best: RAM dédiée pagecache.");
-    pushQ(4, "Quelle JVM recommander pour Kafka ?", "G1GC, -Xmx8G, -Xms8G, flags.", "Garbage collector", "Tip: G1, ParallelGC pour débit.", "REX: G1 a réduit les pauses.", "Best: Surveiller GC time.");
-    pushQ(4, "Expliquez 'num.network.threads'", "Threads pour traitement réseau.", "I/O model", "Tip: Nombre de cœurs.", "REX: Sur provisionné = contention.", "Best: 3-8 threads.");
-    pushQ(4, "Qu'est-ce que 'socket.send.buffer.bytes' ?", "Buffer socket OS pour envoi.", "Optimisation TCP", "Tip: 128KB à 1MB.", "REX: Valeur par défaut suffisante.", "Best: Tweak selon réseau.");
-    pushQ(4, "Utilité de 'queued.max.requests' ?", "Requêtes en attente avant que network threads bloquent.", "Backpressure", "Tip: 500-1000.", "REX: Trop bas = rejet.", "Best: Surveillance request queue.");
-    pushQ(4, "Comment évaluer le bon nombre de partitions ?", "Throughput souhaité / débit par partition.", "Calcul débit", "Tip: Benchmark producer/consumer.", "REX: 100 MB/s => 20 partitions (~5 MB/s chacune).", "Best: Tester avec kafka-producer-perf-test.");
-
-    // cat5 Écosystème (10) : Connect, Streams, Schema Registry
-    pushQ(5, "Rôle de Kafka Connect ?", "Framework pour intégrer sources/sinks sans code.", "Connecteurs", "Tip: Utilisez mode distribué.", "REX: Migration JDBC vers S3 simplifiée.", "Best: Surveillez tasks running.");
-    pushQ(5, "Qu'est-ce qu'un SMT (Single Message Transform) ?", "Transformation légère sur message avant écriture dans sink.", "Manipulation flux", "Tip: Cast, rename fields.", "REX: Masquage PII en temps réel.", "Best: SMTs idempotents.");
-    pushQ(5, "Différence entre KStream et KTable ?", "KStream = flux d'événements, KTable = vue mutable par clé (changelog).", "Table vs Stream", "Tip: KTable pour agrégations.", "REX: Jointure stream-table pour enrichissement.", "Best: StateStore pour requêtes interactives.");
-    pushQ(5, "À quoi sert KSQLDB ?", "Moteur SQL streaming sur Kafka.", "Streaming SQL", "Tip: Pour filtres, agrégations.", "REX: Création matériel de fenêtres glissantes.", "Best: Utiliser pour POC rapides.");
-    pushQ(5, "Qu'est-ce qu'une 'GlobalKTable' ?", "Table répliquée entièrement sur toutes les instances.", "Broadcast join", "Tip: Pour petites tables ref.", "REX: Jointure avec données métier.", "Best: Taille mémoire limitée.");
-    pushQ(5, "Comment Schema Registry gère la compatibilité ?", "Vérifie l'évolution du schéma (Backward, Forward, Full).", "Gouvernance", "Tip: FULL_TRANSITIVE.", "REX: Évite rupture clients.", "Best: CI pipeline de validation.");
-    pushQ(5, "Rôle de 'Kafka MirrorMaker 2' ?", "Réplication entre clusters (DR, multi-région).", "Disaster recovery", "Tip: Utilisez MirrorMaker2 avec Connect.", "REX: Réplication active-passive.", "Best: Monitorer latency.");
-    pushQ(5, "Qu'est-ce qu'un 'Processor API' dans Kafka Streams ?", "API bas-niveau pour topologies personnalisées.", "Controle fin", "Tip: Pour opérations étatiques complexes.", "REX: Fenêtrage custom.", "Best: Préférer DSL si possible.");
-    pushQ(5, "Que signifie 'changelog topic' ?", "Topic interne qui sauvegarde l'état de la KTable.", "Restauration state", "Tip: compacté.", "REX: Après redémarrage restauration rapide.", "Best: Surveillance taille changelog.");
-    pushQ(5, "Comment intégrer Debezium avec Kafka ?", "CDC via Connect pour capturer changements BDD.", "Change Data Capture", "Tip: Utilisez déploiement Kafka Connect.", "REX: Propagation MySQL->Kafka en temps réel.", "Best: Idempotence pour les insert/update.");
-
-    // cat6 Operations, Security, Monitoring (10)
-    pushQ(6, "Quels sont les principaux metrics JMX à surveiller ?", "BytesInPerSec, UnderReplicatedPartitions, RequestHandlerAvgIdlePercent.", "Observabilité", "Tip: Prometheus + Grafana.", "REX: IdlePercent bas = saturation.", "Best: Alertes sur ISR shrink.");
-    pushQ(6, "Expliquez 'SASL/SCRAM' authentification.", "Authentification utilisateur/mot de passe stockée dans ZK/KRaft.", "Sécurité", "Tip: SCRAM-SHA-512.", "REX: Rotation des identifiants.", "Best: Intégrer avec ACLs.");
-    pushQ(6, "Comment gérer les ACLs Kafka ?", "kafka-acls.sh --add --allow-principal User:...", "Autorisations", "Tip: wildcard resource.", "REX: ACLs sur pattern topic.", "Best: Principe moindre privilège.");
-    pushQ(6, "Utilité de 'kafka-dump-log' ?", "Inspecter les segments, vérifier les messages.", "Debug", "Tip: Analyse d'offset.", "REX: Corruption de segment.", "Best: Sauvegarde avant modification.");
-    pushQ(6, "Comment équilibrer la charge sur les brokers (leader rebalance) ?", "kafka-leader-rebalance.sh ou auto.leader.rebalance.", "Rééquilibrage", "Tip: Planifier maintenance.", "REX: Après ajout de brokers.", "Best: Exécuter heures creuses.");
-    pushQ(6, "Qu'est-ce que le 'quota' sur Kafka ?", "Limites débit producteurs/consommateurs.", "Multilocation", "Tip: clientId/User quotas.", "REX: Évite les noisy neighbors.", "Best: Définir quotas par défaut.");
-    pushQ(6, "Comment effectuer une migration de cluster sans downtime ?", "MirrorMaker2, puis bascule consommateurs.", "Migration", "Tip: Double écriture.", "REX: Migration 200 topics.", "Best: Tester validation offsets.");
-    pushQ(6, "Expliquez 'Rack Awareness' en détail.", "Brokers répartis sur racks/availability zones.", "Haute dispo", "Tip: Placement config.", "REX: Perte zone AWS sans impact.", "Best: rack.id = AZ.");
-    pushQ(6, "Quelle stratégie pour backup/restauration des sujets ?", "Exporter offsets + segments vers S3.", "Disaster recovery", "Tip: Utilisez kafka-mirror ou outils tiers.", "REX: Restauration complète 3h.", "Best: Automatiser snapshots.");
-    pushQ(6, "Bonnes pratiques rolling upgrade Kafka ?", "Mettre à jour un broker à la fois, vérifier version.", "Upgrade sûr", "Tip: Vérifiez compatibilité.", "REX: Rolling upgrade 2.8->3.2 ok.", "Best: Plan de rollback.");
-    
-    // Maintenant nous avons exactement 70 questions: 10*7 =70. Vérifions taille.
-    console.log(qaBank.length); // doit être 70
-    // On remplace la référence
-    window.finalQuestions = qaBank;
-
-    // Rendu dynamique
-    function renderCategoriesAndQuestions() {
+    function renderUI() {
         const container = document.getElementById('questionsContainer');
         const filterBar = document.getElementById('filterBar');
         let activeCategory = 'all';
-        // Create filters
+
+        // Filtres
+        filterBar.innerHTML = '';
         const allBtn = document.createElement('button');
-        allBtn.textContent = '📌 Toutes les catégories';
+        allBtn.textContent = '📋 Toutes les catégories';
         allBtn.classList.add('filter-btn');
         allBtn.dataset.cat = 'all';
-        filterBar.innerHTML = '';
         filterBar.appendChild(allBtn);
         CATEGORIES.forEach((cat, idx) => {
             const btn = document.createElement('button');
@@ -499,17 +672,16 @@
             btn.dataset.cat = idx;
             filterBar.appendChild(btn);
         });
-        function setActive(activeCat) {
+
+        function setActive(active) {
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                if(btn.dataset.cat == activeCat) btn.classList.add('active');
+                if(btn.dataset.cat == active) btn.classList.add('active');
                 else btn.classList.remove('active');
             });
         }
+
         function filterAndRender() {
-            let filtered = [];
-            if(activeCategory === 'all') filtered = finalQuestions;
-            else filtered = finalQuestions.filter(q => q.categoryIndex == activeCategory);
-            // regroup by cat for display
+            let filtered = (activeCategory === 'all') ? questionsBank : questionsBank.filter(q => q.categoryIndex == activeCategory);
             const grouped = {};
             filtered.forEach(q => {
                 const catName = CATEGORIES[q.categoryIndex];
@@ -517,9 +689,9 @@
                 grouped[catName].push(q);
             });
             let html = '';
-            for(let cat in grouped) {
-                html += `<div class="category-title"><i class="fas fa-tag"></i> ${cat}</div>`;
-                grouped[cat].forEach((q, idx) => {
+            for(let catName in grouped) {
+                html += `<div class="category-title"><i class="fas fa-folder-open"></i> ${catName}</div>`;
+                grouped[catName].forEach((q, idx) => {
                     html += `
                     <div class="quiz-card">
                         <div class="question-header">
@@ -527,17 +699,18 @@
                             <div class="question-text">${escapeHtml(q.question)}</div>
                         </div>
                         <div class="answer-section">
-                            <div class="exp-block"><span class="exp-title"><i class="fas fa-lightbulb"></i> Réponse :</span> ${escapeHtml(q.answerExplanation)}</div>
-                            <div class="exp-block"><span class="exp-title"><i class="fas fa-book-open"></i> Définition :</span> ${escapeHtml(q.definition)}</div>
-                            <div class="tip"><span class="exp-title"><i class="fas fa-graduation-cap"></i> TIP terrain :</span> ${escapeHtml(q.tip)}</div>
-                            <div class="rex"><span class="exp-title"><i class="fas fa-chalkboard-user"></i> REX (retour expérience) :</span> ${escapeHtml(q.rex)}</div>
-                            <div class="best-practice"><span class="exp-title"><i class="fas fa-check-circle"></i> Best Practice :</span> ${escapeHtml(q.bestPractice)}</div>
+                            <div class="exp-block"><span class="exp-title"><i class="fas fa-comment-dots"></i> RÉPONSE :</span> ${escapeHtml(q.answerExplanation)}</div>
+                            <div class="exp-block"><span class="exp-title"><i class="fas fa-grip-lines-vertical"></i> DÉFINITION :</span> ${escapeHtml(q.definition)}</div>
+                            <div class="tip"><span class="exp-title"><i class="fas fa-lightbulb"></i> TIP TERRAIN :</span> ${escapeHtml(q.tip)}</div>
+                            <div class="rex"><span class="exp-title"><i class="fas fa-chalkboard-user"></i> REX (retour terrain) :</span> ${escapeHtml(q.rex)}</div>
+                            <div class="best-practice"><span class="exp-title"><i class="fas fa-star-of-life"></i> BEST PRACTICE :</span> ${escapeHtml(q.bestPractice)}</div>
                         </div>
                     </div>`;
                 });
             }
-            container.innerHTML = html || '<div class="quiz-card" style="padding:2rem;text-align:center">Aucune question pour cette catégorie</div>';
+            container.innerHTML = html || '<div style="padding:2rem;text-align:center">Aucune question dans cette catégorie.</div>';
         }
+
         filterBar.addEventListener('click', (e) => {
             if(e.target.classList.contains('filter-btn')) {
                 activeCategory = e.target.dataset.cat;
@@ -548,20 +721,10 @@
         setActive('all');
         filterAndRender();
     }
-    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-    function buildRoadmap() {
-        const roadmapDiv = document.getElementById('roadmapGrid');
-        const weeks = ["Sem1 : Fondations (Jour1-7) : topics, CLI, producteurs", "Sem2 : Consommateurs, réplication, exactly-once", "Sem3 : Kafka Streams, Connect, monitoring, KRaft"];
-        let html = '';
-        for(let i=1;i<=21;i++) {
-            let phase = i<=7 ? weeks[0] : (i<=14 ? weeks[1] : weeks[2]);
-            html += `<div class="day-card"><strong>Jour ${i}</strong><br>${phase.substring(0,50)}${phase.length>50?'…':''}</div>`;
-        }
-        roadmapDiv.innerHTML = html;
-    }
+
     buildRoadmap();
-    renderCategoriesAndQuestions();
+    renderUI();
 </script>
 </body>
 </html>
-
+```
