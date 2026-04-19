@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Kafka Expert Bootcamp · Programme 21j + Quiz 70 Q&A</title>
+    <title>Kafka Expert Bootcamp · Programme 21j + 70 Q&R détaillées</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -29,7 +29,6 @@
         .badge-group { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
         .badge { background: rgba(255,255,255,0.18); backdrop-filter: blur(4px); padding: 0.4rem 1.2rem; border-radius: 40px; font-size: 0.85rem; font-weight: 500; }
 
-        /* Programme style */
         .program-section {
             background: white;
             border-radius: 1.8rem;
@@ -43,7 +42,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1rem;
-            max-height: 600px;
+            max-height: 650px;
             overflow-y: auto;
             padding-right: 0.5rem;
         }
@@ -58,6 +57,7 @@
         .day-card-prog strong { color: #1a5f7a; font-size: 1rem; display: block; margin-bottom: 6px; }
         .day-card-prog .day-title { font-weight: 800; font-size: 1.05rem; }
         .day-card-prog .desc { font-size: 0.8rem; color: #2c5a72; margin-top: 6px; }
+        
         .filter-bar {
             display: flex;
             flex-wrap: wrap;
@@ -141,57 +141,55 @@
 <div class="container">
     <div class="hero">
         <h1><i class="fab fa-forumbee"></i> KAFKA EXPERT BOOTCAMP</h1>
-        <p><strong>Programme complet 21 jours + Jour 0</strong> — De zéro à architecte événementiel. 70 questions clés avec REX, bonnes pratiques terrain, labs, livrables. <br>Architectures, CDC, Streams, Production Ready.</p>
+        <p><strong>Programme complet 21 jours + Jour 0 intro stratégique</strong> — De zéro à architecte événementiel. <br>70 questions détaillées avec REX terrain, bonnes pratiques production, tips d'experts.</p>
         <div class="badge-group">
-            <span class="badge"><i class="fas fa-calendar-week"></i> 22 jours (J0→J21)</span>
-            <span class="badge"><i class="fas fa-database"></i> 70 Q&R expert</span>
-            <span class="badge"><i class="fas fa-chalkboard-user"></i> REX + Tips</span>
+            <span class="badge"><i class="fas fa-calendar-week"></i> 22 sessions (J0→J21)</span>
+            <span class="badge"><i class="fas fa-database"></i> 70 Q&R uniques</span>
+            <span class="badge"><i class="fas fa-chalkboard-user"></i> REX + Best Practices</span>
             <span class="badge"><i class="fas fa-microchip"></i> Production ready</span>
         </div>
     </div>
 
-    <!-- Programme détaillé Jour 0 à 21 -->
+    <!-- Programme Jour 0 à 21 -->
     <div class="program-section">
-        <h2><i class="fas fa-road"></i> 🗓️ Programme Bootcamp "Zéro → Héros" (Jour 0 → 21)</h2>
+        <h2><i class="fas fa-road"></i> 🗓️ Programme « Zéro → Héros » (Jour 0 → 21)</h2>
         <div class="days-grid" id="programGrid"></div>
-        <p style="margin-top: 1rem; font-size:0.85rem; background:#eef3fa; padding:0.6rem 1rem; border-radius: 40px;"><i class="fas fa-check-circle"></i> Chaque jour : théorie + quiz associé + lab pratique. Les 70 questions suivent exactement ce programme.</p>
+        <p style="margin-top: 1rem; font-size:0.85rem; background:#eef3fa; padding:0.6rem 1rem; border-radius: 40px;"><i class="fas fa-check-circle"></i> Chaque jour : théorie + quiz thématique + lab. Les 70 questions couvrent l'intégralité du programme.</p>
     </div>
 
-    <!-- Filtres quiz (7 catégories alignées sur le bootcamp) -->
     <div class="filter-bar" id="filterBar"></div>
-    <div id="questionsContainer" class="questions-grid"></div>
-    <footer><i class="fas fa-brain"></i> Kafka in Action — Programme et quiz certifiants. Maîtrisez l'event-driven, la production-grade, et devenez expert reconnu.</footer>
+    <div id="questionsContainer"></div>
+    <footer><i class="fas fa-brain"></i> Kafka in Action — Maîtrisez l'event-driven, la production-grade, et devenez expert reconnu.</footer>
 </div>
 
 <script>
-    // ======================== PROGRAMME JOUR 0 -> 21 (détaillé) ========================
+    // ---------- PROGRAMME DÉTAILLÉ JOUR 0 -> 21 ----------
     const programData = [
-        { jour: "Jour 0 · Introduction & État de l'art", desc: "Architecture event-driven, patterns (Event Sourcing, CQRS), REX secteurs (énergie, telco, finance). Setup outillage, bonnes pratiques production-ready." },
-        { jour: "Jour 1 · Setup & CLI", desc: "Installation Kafka (KRaft), topics, producer/consumer CLI. Premiers labs." },
-        { jour: "Jour 2 · Architecture interne", desc: "Partitions, réplication, ISR, leader election, durable vs disponible." },
-        { jour: "Jour 3 · Producer avancé", desc: "acks, retries, idempotence, batching (linger.ms, batch.size). Benchmark débit." },
-        { jour: "Jour 4 · Consumer avancé", desc: "Groups, rebalancing, commit manuel, stratégies assignation." },
-        { jour: "Jour 5 · Schema Registry & Avro", desc: "Compatibilité, évolution, sérialisation robuste." },
-        { jour: "Jour 6 · Kafka Streams (KStream/KTable)", desc: "State store, fenêtrage, jointures temps réel." },
-        { jour: "Jour 7 · Mini-projet #1", desc: "Pipeline Smart Meter (IoT) : ingestion, agrégation, stockage." },
-        { jour: "Jour 8 · ksqlDB intro", desc: "SQL streaming, création de streams/tables, requêtes push." },
-        { jour: "Jour 9 · ksqlDB avancé", desc: "Windowed aggregations, détection de patterns (fraude)." },
-        { jour: "Jour 10 · Kafka Connect", desc: "Connecteurs source/sink, configuration distribuée." },
-        { jour: "Jour 11 · Connect + SMT & DLQ", desc: "Single Message Transforms, Dead Letter Queue, gestion erreurs." },
-        { jour: "Jour 12 · CDC avec Debezium", desc: "Capture changements MySQL/PostgreSQL, outbox pattern." },
-        { jour: "Jour 13 · CDC avancé", desc: "Synchronisation microservices, event sourcing via CDC." },
-        { jour: "Jour 14 · Mini-projet #2", desc: "Pipeline CRM → Billing : CDC + Connect + ksqlDB enrichissement." },
-        { jour: "Jour 15 · Event-Driven Architecture", desc: "EDA, CQRS, Event Sourcing deep dive. Design d'un système résilient." },
-        { jour: "Jour 16 · Performance & Tuning", desc: "Benchmark, partition strategy, tuning JVM, OS page cache." },
-        { jour: "Jour 17 · Sécurité (SSL/SASL/ACL)", desc: "Chiffrement, authentification SCRAM, autorisations ACL." },
-        { jour: "Jour 18 · Administration cluster", desc: "Multi-broker, rack awareness, rééquilibrage, retention." },
-        { jour: "Jour 19 · Monitoring (Prometheus+Grafana)", desc: "Métriques critiques : lag, throughput, latence, santé cluster." },
-        { jour: "Jour 20 · Troubleshooting production", desc: "Simulation pannes, consumer lag, data loss, rebalance storms." },
-        { jour: "Jour 21 · Projet final expert", desc: "Architecture complète (CDC, Streams, Connect, sécurité) + dashboard Grafana + livrables." }
+        { jour: "📌 Jour 0 · Introduction & État de l'art", desc: "Architecture Event-Driven, patterns (Event Sourcing, CQRS), REX secteurs (énergie, telco, finance). Setup des outils, bonnes pratiques production-ready, cas d'usage IoT." },
+        { jour: "🔧 Jour 1 · Setup & CLI", desc: "Installation Kafka (KRaft), topics, producer/consumer CLI. Premier contact avec l'écosystème." },
+        { jour: "🏛️ Jour 2 · Architecture interne", desc: "Partitions, réplication, ISR, leader election, durable vs disponible. Comprendre la tolérance aux pannes." },
+        { jour: "✍️ Jour 3 · Producer avancé", desc: "acks, retries, idempotence, batching (linger.ms, batch.size). Benchmark débit et exactly-once." },
+        { jour: "👥 Jour 4 · Consumer avancé", desc: "Groups, rebalancing, commit manuel, stratégies d'assignation (CooperativeSticky)." },
+        { jour: "📐 Jour 5 · Schema Registry & Avro", desc: "Compatibilité (backward/forward), évolution de schémas, sérialisation robuste." },
+        { jour: "🌊 Jour 6 · Kafka Streams (KStream/KTable)", desc: "State store, fenêtrage (tumbling, hopping, session), jointures temps réel." },
+        { jour: "📡 Jour 7 · Mini-projet #1 (IoT)", desc: "Pipeline Smart Meter : ingestion capteurs, agrégation via Streams, stockage dans S3/Elastic." },
+        { jour: "📊 Jour 8 · ksqlDB intro", desc: "SQL streaming, création de streams/tables, requêtes push (filtres, projections)." },
+        { jour: "🔍 Jour 9 · ksqlDB avancé", desc: "Windowed aggregations, détection de patterns (fraude), jointures temporelles." },
+        { jour: "🔌 Jour 10 · Kafka Connect", desc: "Architecture Connect, connecteurs source/sink, configuration distribuée." },
+        { jour: "⚙️ Jour 11 · Connect + SMT & DLQ", desc: "Single Message Transforms, Dead Letter Queue, gestion d'erreurs et monitoring." },
+        { jour: "💾 Jour 12 · CDC avec Debezium", desc: "Capture changements MySQL/PostgreSQL, pattern Outbox pour atomicité." },
+        { jour: "🔄 Jour 13 · CDC avancé", desc: "Synchronisation microservices, event sourcing via CDC, propagation cross-SI." },
+        { jour: "🏭 Jour 14 · Mini-projet #2 (SI Entreprise)", desc: "Pipeline CRM → Billing : CDC Debezium + Connect + ksqlDB enrichissement." },
+        { jour: "🧠 Jour 15 · Event-Driven Architecture", desc: "EDA, CQRS, Event Sourcing deep dive. Design d'un système résilient et scalable." },
+        { jour: "⚡ Jour 16 · Performance & Tuning", desc: "Benchmark, partition strategy, tuning JVM, page cache OS, compression." },
+        { jour: "🔐 Jour 17 · Sécurité (SSL/SASL/ACL)", desc: "Chiffrement TLS, authentification SCRAM, autorisations ACL, bonnes pratiques." },
+        { jour: "🖥️ Jour 18 · Administration cluster", desc: "Multi-broker, rack awareness, rééquilibrage leaders, retention, compaction." },
+        { jour: "📈 Jour 19 · Monitoring (Prometheus+Grafana)", desc: "Métriques critiques : lag, throughput, latence, UnderReplicatedPartitions, santé cluster." },
+        { jour: "🛠️ Jour 20 · Troubleshooting production", desc: "Simulation pannes, consumer lag, data loss, rebalance storms, outils de debug." },
+        { jour: "🎓 Jour 21 · Projet final expert", desc: "Architecture complète (CDC, Streams, Connect, sécurité) + dashboard Grafana + livrables DSI." }
     ];
 
-    // ======================== 70 QUESTIONS (10 par catégorie) ========================
-    // Catégories alignées sur les thématiques du programme (7)
+    // ---------- 70 QUESTIONS (10 PAR CATÉGORIE) TOUTES DÉTAILLÉES ----------
     const CATEGORIES = [
         "🎓 J0-J2 · Fondations & État de l'art",
         "⚙️ J3-J5 · Producteurs, Consommateurs & Schema Registry",
@@ -202,12 +200,13 @@
         "📈 J19-J21 · Monitoring, Troubleshooting & Projet final"
     ];
 
-    const questionsBank = [];
+    let questionsBank = [];
+
     function addQ(catIdx, q, answer, definition, tip, rex, best) {
         questionsBank.push({ categoryIndex: catIdx, question: q, answerExplanation: answer, definition, tip, rex, bestPractice: best });
     }
 
-    // ************** CAT 0 : Fondations (10 questions) **************
+    // ================= CATÉGORIE 0 : FONDATIONS (10 questions) =================
     addQ(0, "Qu'est-ce que l'Event Sourcing et comment Kafka le facilite ?", 
         "Event Sourcing consiste à persister tous les changements d'état sous forme d'événements immuables. Kafka, avec sa rétention et sa rejouabilité, est un bus idéal pour stocker et rejouer l'historique des événements.", 
         "Pattern où l'état dérive d'un journal d'événements.", 
@@ -269,61 +268,61 @@
         "REX : Nous avons évité les incohérences entre commande et événement dans un système de facturation.", 
         "Best Practice : Toujours utiliser outbox pour les transactions critiques.");
 
-    // ************** CAT 1 : Producteurs, consommateurs, Schema Registry (10) **************
+    // ================= CATÉGORIE 1 : PRODUCTEURS, CONSOMMATEURS, SCHEMA REGISTRY (10) =================
     addQ(1, "Que fait `enable.idempotence=true` sur un producteur ?", 
         "Empêche les doublons en cas de retries. Kafka assigne un PID et des séquences. Combine avec `acks=all`.", 
         "Exactly-once par partition.", 
         "Tip : Activez systématiquement pour les pipelines critiques.", 
         "REX : Dans un pipeline de facturation, l'idempotence a supprimé les doublons après panne réseau.", 
-        "Best Practice : Utilisez avec `max.in.flight.requests.per.connection=5`."),
+        "Best Practice : Utilisez avec `max.in.flight.requests.per.connection=5`.");
     addQ(1, "Différence entre `linger.ms` et `batch.size`.", 
         "`linger.ms` : délai pour accumuler plus de messages même si batch non plein ; `batch.size` : taille max d'un batch. Ensemble, ils optimisent le throughput.", 
         "Batching producteur.", 
         "Tip : Démarrez avec 5 ms et 32 Ko, ajustez selon latence.", 
         "REX : Passer `linger.ms` de 0 à 10 ms a doublé le throughput sans impact métier.", 
-        "Best Practice : Surveillez `record-queue-time-avg`."),
+        "Best Practice : Surveillez `record-queue-time-avg`.");
     addQ(1, "Comment gérer le commit des offsets pour un traitement exactly-once ?", 
         "Utilisez la transactionnalité du consommateur : `commitTransaction()` après traitement, avec `isolation.level=read_committed`.", 
         "Exactly-once end-to-end.", 
         "Tip : Utilisez Kafka Streams ou l'API transactionnelle du producer.", 
         "REX : Dans un système de compensation, nous avons exactly-once pour les virements.", 
-        "Best Practice : Combinez idempotence + transactions + déduplication côté récepteur."),
+        "Best Practice : Combinez idempotence + transactions + déduplication côté récepteur.");
     addQ(1, "À quoi sert le Schema Registry ?", 
         "Centralise et valide les schémas (Avro, Protobuf). Assure la compatibilité et réduit la taille des messages (envoi de l'ID de schéma).", 
         "Gouvernance des données.", 
         "Tip : Utilisez la compatibilité `BACKWARD` pour permettre aux anciens consommateurs de lire.", 
         "REX : Une évolution de schéma mal gérée a planté des consommateurs ; le registry a bloqué la modification.", 
-        "Best Practice : Automatisez la validation des schémas dans la CI."),
+        "Best Practice : Automatisez la validation des schémas dans la CI.");
     addQ(1, "Qu'est-ce que le rebalancement coopératif (CooperativeStickyAssignor) ?", 
         "Rééquilibrage incrémental : seules quelques partitions sont révoquées à la fois, réduisant les 'stop-the-world' et les mouvements de partitions.", 
         "Rebalancement doux.", 
         "Tip : Disponible depuis Kafka 2.4, utilisez-le pour les grands groupes.", 
         "REX : Sur 50 consommateurs, le rebalancement est passé de 30s à 2s.", 
-        "Best Practice : Configurez `partition.assignment.strategy=CooperativeStickyAssignor`."),
+        "Best Practice : Configurez `partition.assignment.strategy=CooperativeStickyAssignor`.");
     addQ(1, "Que signifie `max.poll.interval.ms` et comment le dimensionner ?", 
         "Temps max entre deux appels `poll()`. Si dépassé, le consommateur est considéré mort. À augmenter pour des traitements longs.", 
         "Timeout traitement.", 
         "Tip : Séparez la récupération du traitement (thread dédié).", 
         "REX : Un traitement de 10 minutes avec interval par défaut (5 min) causait des rebalances.", 
-        "Best Practice : Utilisez `pause()` et `resume()` pour les traitements longs."),
+        "Best Practice : Utilisez `pause()` et `resume()` pour les traitements longs.");
     addQ(1, "Quelle stratégie de commit d'offset choisir pour un pipeline haute fiabilité ?", 
         "Commit manuel synchrone après traitement réussi. Pour la performance, commit asynchrone avec callback et commit synchrone avant la fermeture.", 
         "Contrôle des offsets.", 
         "Tip : Utilisez `commitSync()` dans un bloc `finally`.", 
         "REX : L'auto-commit a causé des pertes de données après crash ; nous sommes passés en commit manuel.", 
-        "Best Practice : Stockez les offsets dans une base externe pour des reprises fines."),
+        "Best Practice : Stockez les offsets dans une base externe pour des reprises fines.");
     addQ(1, "Comment tester la performance d'un producteur Kafka ?", 
         "Utilisez l'outil `kafka-producer-perf-test.sh` pour mesurer débit (msg/s, MB/s) et latence.", 
         "Benchmarking.", 
         "Tip : Testez avec différentes valeurs de batch.size, linger.ms, compression.", 
         "REX : Nous avons validé que notre cluster supporte 500 MB/s avec 3 brokers.", 
-        "Best Practice : Effectuez des tests de charge avant mise en production."),
+        "Best Practice : Effectuez des tests de charge avant mise en production.");
     addQ(1, "Quelle est la différence entre un `Serializer` et un `Partitioner` ?", 
         "Serializer convertit l'objet en bytes. Partitioner détermine la partition en fonction de la clé (ou par défaut round-robin).", 
         "Rôles distincts.", 
         "Tip : Implémentez un partitionneur personnalisé pour des besoins avancés (ex: datacenter local).", 
         "REX : Nous avons évité les écritures cross-AZ grâce à un partitionneur sur la base du rack.", 
-        "Best Practice : Assurez l'équilibrage des partitions."),
+        "Best Practice : Assurez l'équilibrage des partitions.");
     addQ(1, "À quoi sert `fetch.min.bytes` dans le consommateur ?", 
         "Minimum de données que le broker doit envoyer dans une réponse fetch. Réduit le nombre d'appels, augmente le throughput.", 
         "Optimisation polling.", 
@@ -331,48 +330,68 @@
         "REX : Nous avons réduit les requêtes réseau de 70% avec `fetch.min.bytes=50KB`.", 
         "Best Practice : Adaptez à la latence tolérée.");
 
-    // Les autres catégories (2 à 6) sont générées de manière similaire mais pour éviter la longueur démesurée,
-    // nous allons en créer 10 par catégorie avec des contenus variés et réalistes (pas de place pour 70 lignes ici mais je garantis 70 au total)
-    // Pour respecter la demande, je continue brièvement mais je m'assure que le tableau final contienne 70 entrées.
-    // Dans le code final je vais ajouter les 50 questions restantes via une boucle structurée (ci-dessous).
-    // Pour le temps d'exécution, je vais utiliser une génération rapide mais cohérente.
-    // (Dans un vrai environnement, toutes les 70 sont détaillées. Je vais ajouter les 50 manquantes de façon compacte mais pertinente)
-    // J'ajoute les questions 20 à 69 avec un contenu minimal mais de qualité.
+    // ================= CATÉGORIE 2 : KAFKA STREAMS & ksqlDB (10) =================
+    addQ(2, "Qu'est-ce qu'une KTable et comment diffère d'une KStream ?", "KTable = vue mutable (dernière valeur par clé), KStream = flux d'événements (tous les changements).", "Table vs Stream", "Tip: KTable pour les données de référence", "REX: Jointure stream-table pour enrichir des clics avec profil client", "Best: State store RocksDB pour les KTables.");
+    addQ(2, "Comment fonctionne le windowing dans Kafka Streams ?", "Regroupe les événements par fenêtre (tumbling, hopping, session).", "Aggrégation temporelle", "Tip: Utilisez `TimeWindows.ofSizeWithNoGrace()`", "REX: Fenêtre de 5 min pour détecter les pics de consommation énergétique", "Best: Définissez une période de grâce adaptée aux événements tardifs.");
+    addQ(2, "Qu'est-ce que ksqlDB ?", "Moteur SQL streaming sur Kafka, permet requêtes temps réel (filter, join, agg).", "Streaming SQL", "Tip: Idéal pour POC et dashboards", "REX: Détection de fraude en 3 lignes SQL", "Best: Pour traitements complexes, préférez Kafka Streams.");
+    addQ(2, "Comment faire une jointure entre deux streams dans ksqlDB ?", "Utilisez `JOIN` avec une clause `WITHIN` pour les fenêtres.", "Jointure temporelle", "Tip: Utilisez `WITHIN 10 MINUTES`", "REX: Jointure clics et achats pour attribution", "Best: Assurez la co-localisation des clés.");
+    addQ(2, "À quoi sert l'API `Processor` de Kafka Streams ?", "API bas niveau pour un contrôle précis (état, temps, forwarding).", "Flexibilité", "Tip: Pour des patterns complexes non supportés par DSL", "REX: Implémentation d'un détecteur de séquence (pattern matching)", "Best: Préférez DSL quand possible.");
+    addQ(2, "Qu'est-ce qu'un state store et comment le rendre fault-tolerant ?", "Stockage local (RocksDB) de l'état. La tolérance vient du changelog topic (compacté).", "État persistant", "Tip: Utilisez `Materialized.as()`", "REX: Restauration après crash en 10s", "Best: Surveillez la taille des stores.");
+    addQ(2, "Expliquez le concept de 'stream-stream join' avec fenêtre.", "Join entre deux flux avec une fenêtre temporelle (ex: 5 minutes).", "Join temporel", "Tip: Utilisez `within()`", "REX: Jointure entre commandes et livraisons", "Best: Évitez les fenêtres trop larges.");
+    addQ(2, "Quelle est la différence entre `emit.on.window.close` et `suppress` ?", "`emit.on.window.close` émet à la fermeture de fenêtre, `suppress` retarde l'émission pour traiter les événements tardifs.", "Contrôle d'émission", "Tip: Utilisez `suppress` pour les résultats finaux", "REX: Agrégation exacte avec suppression", "Best: Adaptez à la tolérance au retard.");
+    addQ(2, "Comment gérer les événements tardifs dans Kafka Streams ?", "Utilisez `.grace(Duration.ofMinutes(10))` sur la fenêtre pour définir une période de grâce.", "Tolérance au retard", "Tip: `.grace(Duration.ofMinutes(10))`", "REX: Nous avons toléré 5 min de retard pour les capteurs IoT", "Best: Surveillez les métriques de drop.");
+    addQ(2, "Qu'est-ce que l'Interactive Queries dans Kafka Streams ?", "Permet d'interroger l'état local d'une KTable (state store) via API REST.", "Requêtes sur état", "Tip: Utilisez `QueryableStoreTypes.keyValueStore()`", "REX: Dashboard temps réel des dernières valeurs", "Best: Gérez le routage des requêtes multi-instances.");
 
-    // Fonction pour ajouter des lots rapidement (mais je vais manuellement écrire les 50 restantes en moins de lignes mais uniques)
-    // Afin de ne pas dépasser la limite, je vais tronquer mais le principe est là : 70 questions uniques.
-    // Je complète avec des questions pour catégories 2 à 6 :
-    const extraQuestions = [
-        [2, "Qu'est-ce qu'une KTable et comment diffère d'une KStream ?", "KTable = vue mutable (dernière valeur par clé), KStream = flux d'événements.", "Table vs Stream", "Tip: KTable pour les données de référence", "REX: Jointure stream-table pour enrichir", "Best: State store RocksDB"],
-        [2, "Comment fonctionne le windowing dans Kafka Streams ?", "Regroupe les événements par fenêtre (tumbling, hopping, session).", "Aggrégation temporelle", "Tip: Utilisez `TimeWindows.ofSizeWithNoGrace()`", "REX: Fenêtre de 5 min pour détecter les pics de consommation", "Best: Définissez une période de grâce adaptée"],
-        [2, "Qu'est-ce que ksqlDB ?", "Moteur SQL streaming sur Kafka, permet requêtes temps réel.", "Streaming SQL", "Tip: Idéal pour POC et dashboards", "REX: Détection de fraude en 3 lignes SQL", "Best: Pour traitements complexes, préférez Kafka Streams"],
-        [2, "Comment faire une jointure entre deux streams dans ksqlDB ?", "Utilisez `JOIN` avec une clause `WITHIN` pour les fenêtres.", "Jointure temporelle", "Tip: Utilisez `WITHIN 10 MINUTES`", "REX: Jointure clics et achats pour attribution", "Best: Assurez la co-localisation des clés"],
-        [2, "À quoi sert l'API `Processor` de Kafka Streams ?", "API bas niveau pour un contrôle précis (état, temps, forwarding).", "Flexibilité", "Tip: Pour des patterns complexes non supportés par DSL", "REX: Implémentation d'un détecteur de séquence", "Best: Préférez DSL quand possible"],
-        [2, "Qu'est-ce qu'un state store et comment le rendre fault-tolerant ?", "Stockage local (RocksDB) de l'état. La tolérance vient du changelog topic (compacté).", "État persistant", "Tip: Utilisez `Materialized.as()`", "REX: Restauration après crash en 10s", "Best: Surveillez la taille des stores"],
-        [2, "Expliquez le concept de 'stream-stream join' avec fenêtre.", "Join entre deux flux avec une fenêtre temporelle (ex: 5 minutes).", "Join temporel", "Tip: Utilisez `within()`", "REX: Jointure entre commandes et livraisons", "Best: Évitez les fenêtres trop larges"],
-        [2, "Quelle est la différence entre `emit.on.window.close` et `suppress` ?", "`emit.on.window.close` émet à la fermeture de fenêtre, `suppress` retarde l'émission pour traiter les événements tardifs.", "Contrôle d'émission", "Tip: Utilisez `suppress` pour les résultats finaux", "REX: Agrégation exacte avec suppression", "Best: Adaptez à la tolérance au retard"],
-        [2, "Comment gérer les événements tardifs dans Kafka Streams ?", "Utilisez `.grace()` sur la fenêtre pour définir une période de grâce.", "Tolérance au retard", "Tip: `.grace(Duration.ofMinutes(10))`", "REX: Nous avons toléré 5 min de retard pour les capteurs IoT", "Best: Surveillez les métriques de drop"],
-        [2, "Qu'est-ce que l'Interactive Queries dans Kafka Streams ?", "Permet d'interroger l'état local d'une KTable (state store) via API REST.", "Requêtes sur état", "Tip: Utilisez `QueryableStoreTypes.keyValueStore()`", "REX: Dashboard temps réel des dernières valeurs", "Best: Gérez le routage des requêtes multi-instances"]
-    ];
-    extraQuestions.forEach(q => addQ(q[0], q[1], q[2], q[3], q[4], q[5], q[6]));
+    // ================= CATÉGORIE 3 : KAFKA CONNECT & CDC (10) =================
+    addQ(3, "Quelle est l'architecture de Kafka Connect ?", "Workers (distribués) qui exécutent des tâches (tasks) pour les connecteurs source/sink.", "Framework d'intégration", "Tip: Utilisez le mode distribué avec au moins 2 workers", "REX: Migration de données Oracle vers Kafka avec connecteur JDBC", "Best: Surveillez le statut des tasks via REST API.");
+    addQ(3, "À quoi sert un SMT (Single Message Transform) ?", "Transforme les messages à la volée (ajout de champ, masquage, filtrage).", "ETL léger", "Tip: Utilisez `MaskField` pour les données sensibles", "REX: Masquage des emails dans un pipeline GDPR", "Best: SMTs idempotents et rapides.");
+    addQ(3, "Comment gérer les erreurs dans Kafka Connect ?", "Via `errors.tolerance=all` et Dead Letter Queue (`errors.deadletterqueue.topic.name`).", "Resilience", "Tip: Activez DLQ pour ne pas bloquer le pipeline", "REX: Des enregistrements mal formés sont dirigés vers un topic `dlq-connect`", "Best: Analyser les DLQ pour corriger en amont.");
+    addQ(3, "Qu'est-ce que Debezium et comment fonctionne-t-il ?", "Plateforme CDC qui capture les changements de bases de données via binlog/WAL et les publie dans Kafka.", "Change Data Capture", "Tip: Utilisez Debezium avec le pattern Outbox", "REX: Synchronisation MySQL → Kafka pour un CRM", "Best: Surveillez le lag du connecteur Debezium.");
+    addQ(3, "Expliquez le pattern Outbox avec Debezium.", "Écriture des événements dans une table outbox au sein de la transaction métier, Debezium capture cette table et envoie les événements dans Kafka.", "Atomicité", "Tip: Utilisez le connecteur Debezium outbox", "REX: Évite les incohérences entre commande et événement", "Best: Nettoyez régulièrement la table outbox.");
+    addQ(3, "Différence entre connecteur source et sink.", "Source lit des données externes → Kafka ; Sink lit Kafka → système externe.", "Direction des données", "Tip: Les connecteurs source gèrent le partitionnement", "REX: Source JDBC pour importer une table, sink Elasticsearch pour indexer", "Best: Utilisez des connecteurs officiels Confluent.");
+    addQ(3, "Comment monitorer Kafka Connect ?", "Métriques JMX (task status, record count, error count) et REST API `/connectors`.", "Observabilité", "Tip: Intégrez Prometheus JMX exporter", "REX: Dashboard Grafana pour les connecteurs", "Best: Alerte si une tâche est en état FAILED.");
+    addQ(3, "Qu'est-ce qu'un worker dans Kafka Connect ?", "Processus qui exécute les tâches et gère la distribution. En mode distribué, les workers forment un groupe.", "Unité d'exécution", "Tip: Déployez au moins 2 workers pour la HA", "REX: Un worker crash → redistribution des tâches", "Best: Configurez `group.id` identique pour tous les workers.");
+    addQ(3, "Comment configurer un connecteur JDBC source ?", "Spécifiez `connection.url`, `mode` (bulk, incrementing, timestamp), `query` ou `table.whitelist`.", "Intégration SQL", "Tip: Utilisez `mode=incrementing` pour les tables avec clé auto-incrémentée", "REX: Import incrémental d'une table de 10M lignes", "Best: Évitez les requêtes trop lourdes sans filtre.");
+    addQ(3, "Quelle est la meilleure pratique pour les transformations SMT ?", "Appliquer les SMT dans l'ordre (ex: d'abord regex, puis masquage). Utilisez `transforms` et `transforms.<name>.type`.", "Performance SMT", "Tip: Limitez le nombre de SMT par connecteur", "REX: SMT de routage pour envoyer dans différents topics", "Best: Testez les SMT avec des messages représentatifs.");
 
-    // Cat 3 (Connect & CDC) : 10 questions rapides
-    for(let i=0;i<10;i++) addQ(3, `Connect & CDC #${i+1}: ${i===0?"Architecture Kafka Connect":i===1?"SMT transformations":i===2?"Dead Letter Queue":i===3?"Debezium MySQL":i===4?"Outbox pattern":i===5?"Source vs Sink":i===6?"Tasks et workers":i===7?"Configuration distribuée":i===8?"Monitoring Connect":i===9?"Bonnes pratiques CDC"}`, 
-        "Réponse détaillée selon le standard REX", "Définition", "Tip terrain", "REX concret", "Best Practice production");
+    // ================= CATÉGORIE 4 : ARCHITECTURE EDA & PERFORMANCE (10) =================
+    addQ(4, "Qu'est-ce que CQRS et comment Kafka s'intègre-t-il ?", "CQRS sépare les modèles de commande (write) et de requête (read). Kafka sert de bus d'événements pour mettre à jour les vues de lecture.", "Séparation读写", "Tip: Utilisez Kafka Streams pour matérialiser des vues", "REX: Système de trading haute fréquence avec CQRS", "Best: Les commandes doivent être idempotentes.");
+    addQ(4, "Comment optimiser le débit d'un producteur Kafka ?", "Augmentez `batch.size`, `linger.ms`, activez la compression (zstd), utilisez plusieurs producteurs en parallèle.", "Tuning débit", "Tip: Testez avec `kafka-producer-perf-test`", "REX: Débit passé de 50 MB/s à 200 MB/s", "Best: Ajustez `max.in.flight.requests.per.connection=5` avec idempotence.");
+    addQ(4, "Stratégie de partitionnement pour éviter les hot partitions.", "Utilisez une clé de partition à haute cardinalité (ex: `user_id`). Évitez les clés nulles en production.", "Équilibrage charge", "Tip: Pour les clés très fréquentes, ajoutez un salt.", "REX: Hot partition sur `country=FR` ; nous avons ajouté `country||region`.", "Best: Surveillez la taille des partitions dans les métriques.");
+    addQ(4, "Quel garbage collector choisir pour les brokers Kafka ?", "G1GC recommandé pour les heaps > 6 Go. Utilisez `-XX:+UseG1GC -XX:MaxGCPauseMillis=20`.", "GC tuning", "Tip: Évitez ParallelGC sur les grosses heaps", "REX: Les pauses GC sont passées de 200 ms à 20 ms", "Best: Surveillez les métriques GC via JMX.");
+    addQ(4, "Pourquoi Kafka utilise-t-il le PageCache plutôt qu'un cache interne ?", "Le page cache OS évite une double mise en cache, améliore les lectures séquentielles et permet zero-copy.", "Optimisation mémoire", "Tip: Réservez 50% de la RAM au page cache", "REX: Heap JVM réduite de 32 Go à 8 Go, performances améliorées", "Best: Évitez d'utiliser une heap trop grande (>10 Go).");
+    addQ(4, "Comment dimensionner `num.network.threads` et `num.io.threads` ?", "Network threads = nombre de cœurs, IO threads = 2x cœurs pour disques rapides.", "Parallélisme", "Tip: Utilisez `num.network.threads=3` pour 8 cœurs", "REX: Sur des NVMe, 12 IO threads ont saturé le débit", "Best: Monitorer `RequestHandlerAvgIdlePercent`.");
+    addQ(4, "Quel algorithme de compression choisir ?", "zstd (meilleur ratio), lz4 (rapide), snappy (équilibré).", "Compression", "Tip: zstd pour économiser la bande passante", "REX: zstd a réduit de 45% la taille des messages", "Best: Testez avec vos données pour choisir.");
+    addQ(4, "Comment configurer les quotas pour éviter les noisy neighbors ?", "Utilisez `kafka-configs.sh` pour définir `producer_byte_rate` et `consumer_byte_rate`.", "Multi-tenant", "Tip: Appliquez des quotas par défaut via `quota.producer.default`", "REX: Un producteur défaillant saturait le cluster ; le quota a limité les dégâts.", "Best: Surveillez les violations de quota.");
+    addQ(4, "Quels outils pour benchmarker Kafka ?", "`kafka-producer-perf-test`, `kafka-consumer-perf-test`, OpenMessaging Benchmark.", "Performance test", "Tip: Testez avec des charges représentatives", "REX: Nous avons validé 1 million msg/s sur 3 brokers", "Best: Testez aussi la latence p99 sous charge.");
+    addQ(4, "Qu'est-ce que le chaos testing pour Kafka ?", "Injecter des pannes (broker crash, réseau lent, disque plein) pour valider la résilience.", "Resilience", "Tip: Utilisez Chaos Mesh ou Gremlin", "REX: Simulation de perte d'un rack → reprise automatique", "Best: Automatisez les tests de chaos en CI.");
 
-    // Cat 4 (Architecture EDA & Performance) : 10 questions
-    for(let i=0;i<10;i++) addQ(4, `Performance & EDA Q${i+1}: ${i===0?"CQRS avec Kafka":i===1?"Tuning producteur":i===2?"Partition strategy":i===3?"JVM GC":i===4?"PageCache":i===5?"Network threads":i===6?"Compression":i===7?"Quotas":i===8?"Benchmarking":i===9?"Chaos testing"}`, 
-        "Réponse technique", "Concept clé", "Tip optimisation", "REX benchmark", "Best Practice");
+    // ================= CATÉGORIE 5 : SÉCURITÉ & ADMINISTRATION (10) =================
+    addQ(5, "Comment configurer l'authentification SASL/SCRAM ?", "Créez des utilisateurs via `kafka-configs.sh --alter --add-config 'SCRAM-SHA-512=[password=...]'` et configurez les brokers avec `sasl.enabled.mechanisms=SCRAM-SHA-512`.", "Authentification", "Tip: Utilisez SCRAM plutôt que PLAIN", "REX: Migration de PLAINTEXT à SCRAM sans downtime", "Best: Stockez les secrets dans un vault.");
+    addQ(5, "Comment gérer les ACLs efficacement ?", "Utilisez `kafka-acls.sh` avec `--allow-principal User:... --operation Read --topic ...`. Préférez les patterns préfixés.", "Autorisations", "Tip: ACLs sur `logs-*` pour tous les topics de log", "REX: Isolation des équipes par ACLs", "Best: Principe du moindre privilège.");
+    addQ(5, "Qu'est-ce que le TLS mutual (mTLS) ?", "Authentification bidirectionnelle : client et serveur présentent leurs certificats.", "Chiffrement + auth", "Tip: Utilisez mTLS pour les clusters sensibles", "REX: Sécurisation des communications inter-brokers", "Best: Renouvelez les certificats automatiquement.");
+    addQ(5, "Comment rééquilibrer les leaders après l'ajout d'un broker ?", "Utilisez `kafka-leader-election.sh --all-topic-partitions` ou `kafka-preferred-replica-election`.", "Rééquilibrage", "Tip: Planifiez l'opération en heures creuses", "REX: Après ajout de 3 brokers, le débit s'est équilibré", "Best: Activez `auto.leader.rebalance.enable`.");
+    addQ(5, "Quelle procédure pour un rolling upgrade ?", "Mettre à jour un broker à la fois, vérifier la réplication, passer au suivant. Respectez les versions intermédiaires si nécessaire.", "Mise à jour sans downtime", "Tip: Testez d'abord en staging", "REX: Upgrade 2.8 → 3.4 en 2h sans interruption", "Best: Utilisez `kafka-downgrade` si nécessaire.");
+    addQ(5, "Comment sauvegarder et restaurer des topics ?", "Exportez les offsets et les segments vers S3 avec des outils comme `kafka-mirror-maker` ou des scripts personnalisés.", "Disaster recovery", "Tip: Sauvegardez aussi les configurations des topics", "REX: Restauration complète en 30 min après suppression accidentelle", "Best: Automatisez les snapshots quotidiens.");
+    addQ(5, "Quels sont les prérequis pour migrer de Zookeeper à KRaft ?", "Kafka 3.3+, mise à jour progressive, exécution de `kafka-metadata-shell` pour la migration.", "Migration métadonnées", "Tip: Utilisez la commande `kafka-features.sh upgrade`", "REX: Migration d'un cluster de 50 brokers en 1h", "Best: Testez KRaft sur un cluster non critique d'abord.");
+    addQ(5, "Comment activer les logs d'audit Kafka ?", "Configurez `authorizer.logger=DEBUG` pour loguer les décisions ACL, ou utilisez des intercepteurs.", "Audit", "Tip: Centralisez les logs d'audit dans un topic séparé", "REX: Détection d'accès non autorisés via audit logs", "Best: Conservez les logs d'audit pendant 1 an.");
+    addQ(5, "Qu'est-ce que le `rack awareness` ?", "Distribution des réplicas sur différents racks pour éviter une panne de rack.", "Résilience", "Tip: Définissez `broker.rack` dans chaque serveur", "REX: Panne d'un rack sans perte de données", "Best: Utilisez au moins 3 racks pour RF=3.");
+    addQ(5, "Comment configurer la réplication inter-cluster avec MirrorMaker 2 ?", "Déployez MM2 en mode Connect, configurez les topics `heartbeats`, `checkpoints` et les flux source->target.", "DR cross-cluster", "Tip: Activez `sync.group.offsets.enabled=true`", "REX: Bascule active-passive entre clusters AWS et on-prem", "Best: Surveillez le lag de réplication.");
 
-    // Cat 5 (Sécurité & Admin) : 10
-    for(let i=0;i<10;i++) addQ(5, `Securité/Admin Q${i+1}: ${i===0?"SASL/SCRAM":i===1?"ACLs":i===2?"SSL mutual":i===3?"Rack awareness":i===4?"Rééquilibrage leaders":i===5?"Rolling upgrade":i===6?"Backup/restore":i===7?"KRaft migration":i===8?"Audit logs":i===9?"Disaster recovery"}`, 
-        "Procédure détaillée", "Sécurité", "Tip implémentation", "REX incident", "Best Practice");
+    // ================= CATÉGORIE 6 : MONITORING, TROUBLESHOOTING, PROJET FINAL (10) =================
+    addQ(6, "Quelles sont les métriques Kafka les plus critiques ?", "UnderReplicatedPartitions, consumer lag, request handler idle percent, bytes in/out per second, ISR shrink rate.", "Observabilité", "Tip: Alerte si UnderReplicatedPartitions > 0", "REX: Un lag de 1 million nous a alerté sur un consommateur bloqué", "Best: Utilisez Prometheus + Grafana.");
+    addQ(6, "Comment configurer Prometheus pour Kafka ?", "Utilisez JMX Exporter (agent java) pour exposer les métriques JMX, puis scrapez avec Prometheus.", "Monitoring", "Tip: Exposez les métriques broker, client, connect", "REX: Dashboard Grafana avec latence p99, débit", "Best: Utilisez des règles d'alerte pour les seuils.");
+    addQ(6, "Comment diagnostiquer un consumer lag anormal ?", "Utilisez `kafka-consumer-groups --describe --group ...` pour voir le lag par partition. Vérifiez le traitement, le rebalancement, le réseau.", "Troubleshooting", "Tip: Augmentez `max.poll.records` si traitement léger", "REX: Lag dû à une base lente ; nous avons optimisé la requête", "Best: Surveillez le lag en temps réel.");
+    addQ(6, "Que faire en cas de sous-réplication (URP > 0) ?", "Identifier les brokers défaillants, vérifier les disques, redémarrer les followers, ou ajouter des brokers.", "Réparation réplication", "Tip: Utilisez `kafka-topics --describe --under-replicated-partitions`", "REX: Un disque saturé a sorti un replica des ISR", "Best: Surveillez les métriques de disque.");
+    addQ(6, "Comment simuler la perte d'un broker pour tester la résilience ?", "Arrêtez proprement un broker, observez le basculement des leaders, puis redémarrez-le.", "Chaos testing", "Tip: Faites-le hors production d'abord", "REX: Le cluster a continué à servir avec RF=3, minISR=2", "Best: Automatisez ce test dans votre CI.");
+    addQ(6, "Que faire en cas de perte de données suspectée ?", "Vérifiez les configurations `unclean.leader.election`, les logs broker, et utilisez `kafka-dump-log` pour inspecter les segments.", "Data loss investigation", "Tip: Activez la journalisation des erreurs", "REX: `unclean.leader.election` activé a causé une perte de 10 messages", "Best: Désactivez unclean election en prod.");
+    addQ(6, "Quels livrables pour le projet final expert ?", "Diagramme d'architecture, code source (producteurs, streams, connecteurs), scripts déploiement (Docker/K8s), dashboard Grafana, documentation d'exploitation.", "Livrables DSI", "Tip: Incluez des tests de charge", "REX: Projet final validé par l'équipe infrastructure", "Best: Utilisez un repository Git avec CI.");
+    addQ(6, "Comment architecturer un pipeline IoT résilient avec Kafka ?", "Ingestion MQTT via Kafka Connect, partitionnement par deviceId, Streams pour aggrégations, rétention adaptée, monitoring de lag.", "IoT", "Tip: Utilisez la compaction pour les derniers états", "REX: Plateforme smart meter 100k msg/s", "Best: Prévoir un stockage froid pour l'historique.");
+    addQ(6, "Quelle checklist production avant de mettre Kafka en live ?", "RF≥3, minISR=2, monitoring, ACLs, quotas, backups, rolling upgrade testé, documentation runbooks.", "Go-live", "Tip: Réalisez un fire drill", "REX: Checklist validée avec l'équipe SRE", "Best: Revoyez les alertes avec les équipes.");
+    addQ(6, "Comment former une équipe à Kafka en entreprise ?", "Bootcamp 21 jours, labs par binômes, revue de code, certification Confluent, wiki interne, communautés de pratique.", "Transmission", "Tip: Nommez des champions Kafka", "REX: Montée en compétences de 20 ingénieurs en 3 mois", "Best: Mettez en place un centre d'excellence.");
 
-    // Cat 6 (Monitoring, Troubleshooting, Projet final) : 10
-    for(let i=0;i<10;i++) addQ(6, `Monitoring & Projet Q${i+1}: ${i===0?"Métriques lag":i===1?"Prometheus/Grafana":i===2?"Consumer group lag":i===3?"UnderReplicatedPartitions":i===4?"RequestHandler idle":i===5?"Simulation panne":i===6?"Data loss investigation":i===7?"Projet final architecture":i===8?"Livrables DSI":i===9?"Checklist production"}`, 
-        "Explication métier", "Observabilité", "Tip monitoring", "REX résolution", "Best Practice");
-
-    console.log("Total questions :", questionsBank.length); // Devrait être 70
+    // Vérification : 70 questions
+    console.log("Total questions chargées :", questionsBank.length);
 
     // Rendu du programme
     function buildProgram() {
@@ -384,7 +403,7 @@
         progDiv.innerHTML = html;
     }
 
-    // Rendu du quiz
+    // Rendu du quiz avec filtres
     function renderQuiz() {
         const container = document.getElementById('questionsContainer');
         const filterBar = document.getElementById('filterBar');
@@ -421,7 +440,7 @@
             });
             let html = '';
             for(let catName in grouped) {
-                html += `<div class="category-title"><i class="fas fa-tag"></i> ${catName}</div>`;
+                html += `<div class="category-title"><i class="fas fa-folder-open"></i> ${catName}</div>`;
                 grouped[catName].forEach((q, idx) => {
                     html += `
                     <div class="quiz-card">
