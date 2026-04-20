@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Débutant · Architectures Event-Driven & CQRS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        .quiz-container {
+            max-width: 950px;
+            margin: auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .quiz-header {
+            background: linear-gradient(135deg, #0f172a 0%, #0f2c3f 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .quiz-header h1 { font-weight: 800; font-size: 2rem; }
+        .badge-theme {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .badge-cqrs { background: #d1fae5; color: #065f46; }
+        .badge-kafka { background: #ede9fe; color: #5b21b6; }
+        .badge-sourcing { background: #fee2e2; color: #991b1b; }
+        .badge-outbox { background: #fef3c7; color: #92400e; }
+        .badge-cdc { background: #e0e7ff; color: #3730a3; }
+        .option-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 1rem 1.5rem;
+            margin-bottom: 0.75rem;
+            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+        .option-btn:hover:not([disabled]) {
+            border-color: #0ea5e9;
+            background: #f0f9ff;
+            transform: translateY(-2px);
+        }
+        .option-btn.correct { background: #d1fae5; border-color: #10b981; }
+        .option-btn.incorrect { background: #fee2e2; border-color: #ef4444; }
+        .explanation-box {
+            padding: 1.25rem;
+            border-radius: 20px;
+            margin-top: 1.5rem;
+            border-left: 4px solid;
+        }
+        .explanation-correct { background: #f0fdf4; border-left-color: #10b981; }
+        .explanation-incorrect { background: #fef2f2; border-left-color: #ef4444; }
+        .progress-bar { background: linear-gradient(90deg, #0ea5e9, #8b5cf6); }
+        .btn-audit { background: linear-gradient(135deg, #0ea5e9, #8b5cf6); border: none; color: white; font-weight: 600; }
+        .btn-audit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .final-score { font-size: 4rem; font-weight: 800; background: linear-gradient(135deg, #0ea5e9, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .rex-tip { background: #fef9e6; border-radius: 12px; padding: 0.75rem; margin-top: 0.75rem; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+<div class="container py-3">
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1><i class="fas fa-graduation-cap me-2"></i>Quiz Débutant · Event-Driven & CQRS</h1>
+            <p>30 questions pour maîtriser les bases des architectures événementielles (avec explications détaillées, REX et conseils)</p>
+            <div><span class="badge-theme badge-cqrs">CQRS+DB</span> <span class="badge-theme badge-kafka">Kafka</span> <span class="badge-theme badge-sourcing">Event Sourcing</span> <span class="badge-theme badge-outbox">Outbox</span> <span class="badge-theme badge-cdc">CDC</span></div>
+        </div>
+
+        <!-- Configuration panel -->
+        <div id="settings-panel" class="p-4">
+            <h4 class="mb-3"><i class="fas fa-sliders-h"></i> Paramètres</h4>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label>Nombre de questions :</label>
+                    <select id="question-count" class="form-select">
+                        <option value="15">15 questions (rapide)</option>
+                        <option value="30" selected>30 questions (parcours complet)</option>
+                    </select>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <button id="start-quiz-btn" class="btn btn-audit w-100"><i class="fas fa-play"></i> Démarrer le quiz</button>
+                </div>
+            </div>
+            <div class="alert alert-info"><i class="fas fa-lightbulb"></i> Ce quiz est conçu pour les débutants. Chaque réponse inclut une explication simple, un retour d'expérience (REX) et un conseil pratique.</div>
+        </div>
+
+        <!-- Quiz content -->
+        <div id="quiz-content" class="d-none p-4">
+            <div class="mb-4">
+                <div class="d-flex justify-content-between mb-1"><span id="question-counter">Question 1 / 30</span><span id="current-score">Score: 0</span></div>
+                <div class="progress"><div id="progress-bar" class="progress-bar" style="width: 2%"></div></div>
+            </div>
+            <div id="question-card">
+                <div class="badge-theme" id="thematic-badge">CQRS</div>
+                <h3 id="question-text" class="mb-3"></h3>
+                <div id="options-container"></div>
+                <div id="explanation-box" class="explanation-box d-none">
+                    <h5 id="explanation-title"></h5>
+                    <p id="explanation-text"></p>
+                    <div id="rex-box" class="rex-tip d-none"><i class="fas fa-chalkboard-user"></i> <strong>REX / Conseil :</strong> <span id="rex-text"></span></div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                <button id="prev-btn" class="btn btn-outline-secondary" disabled><i class="fas fa-arrow-left"></i> Précédent</button>
+                <button id="next-btn" class="btn btn-audit">Suivant <i class="fas fa-arrow-right"></i></button>
+                <button id="finish-btn" class="btn btn-success d-none">Terminer <i class="fas fa-trophy"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal résultats -->
+<div class="modal fade" id="resultsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white"><h5 class="modal-title"><i class="fas fa-chart-line"></i> Félicitations !</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body text-center">
+                <div class="final-score" id="final-score-percentage">0%</div>
+                <p><span id="final-score-correct">0</span> / <span id="final-score-total">0</span> bonnes réponses</p>
+                <div class="progress mb-3"><div id="skill-progress" class="progress-bar" style="width:0%"></div></div>
+                <p id="final-message" class="fw-bold"></p>
+                <button id="restart-quiz-btn" class="btn btn-audit mt-3">Recommencer le quiz</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// 30 QUESTIONS POUR DÉBUTANTS (avec explications, REX, conseils)
+const QUESTIONS = [
+    { thematic: "CQRS+DB", question: "Que signifie l'acronyme CQRS ?", options: ["Command Query Responsibility Segregation", "Common Query Response System", "Complex Query Routing Service", "Central Queue Reconciliation System"], correct: "Command Query Responsibility Segregation", explanation: "CQRS signifie 'Ségrégation des responsabilités des commandes et des requêtes'. Il sépare les modèles d'écriture (commandes) et de lecture (requêtes).", rex: "REX : Une DSI bancaire a utilisé CQRS pour scaler les lectures sans impacter les écritures. Conseil : commencez par un simple monolithe, puis introduisez CQRS si besoin." },
+    { thematic: "Kafka", question: "À quoi sert Apache Kafka dans une architecture microservices ?", options: ["Bus de messages / plateforme de streaming", "Base de données relationnelle", "Serveur d'application", "Outil de monitoring"], correct: "Bus de messages / plateforme de streaming", explanation: "Kafka est un bus de messages distribué qui permet aux services de communiquer de manière asynchrone via des événements.", rex: "REX : Chez Uber, Kafka gère des millions d'événements de localisation par seconde. Conseil : utilisez Kafka pour découpler vos services." },
+    { thematic: "Event Sourcing", question: "Qu'est-ce que l'Event Sourcing ?", options: ["Stocker tous les événements métier plutôt que l'état final", "Stocker uniquement l'état final", "Une base de données NoSQL", "Un framework de test"], correct: "Stocker tous les événements métier plutôt que l'état final", explanation: "L'Event Sourcing enregistre chaque modification sous forme d'événement immuable. L'état est reconstruit en rejouant ces événements.", rex: "REX : Une banque utilise l'Event Sourcing pour l'audit complet des comptes. Conseil : prévoyez des snapshots pour éviter de rejouer trop d'événements." },
+    { thematic: "Outbox", question: "Quel problème résout le pattern Outbox ?", options: ["La perte d'événements entre une base de données et Kafka", "La lenteur des requêtes", "La sécurité des API", "La scalabilité des conteneurs"], correct: "La perte d'événements entre une base de données et Kafka", explanation: "L'Outbox garantit qu'un événement est publié dans Kafka seulement après un commit réussi en base, évitant les pertes.", rex: "REX : Un e-commerce a éliminé 99,9% des pertes de commandes avec l'Outbox. Conseil : ajoutez un index sur la colonne 'published'." },
+    { thematic: "CDC", question: "Que signifie CDC (Change Data Capture) ?", options: ["Capture des changements dans une base de données", "Continuous Deployment Control", "Central Data Catalog", "Code Dependency Checker"], correct: "Capture des changements dans une base de données", explanation: "CDC capture les insertions, mises à jour et suppressions à partir des journaux de la base (binlog, WAL) pour les envoyer vers Kafka.", rex: "REX : Un opérateur télécom a migré un CRM legacy sans toucher au code grâce à Debezium (CDC). Conseil : surveillez la taille des logs." },
+    { thematic: "CQRS+DB", question: "Dans CQRS, quelle est la source de vérité pour les écritures ?", options: ["La base de données d'écriture (Write DB)", "Kafka", "La base de données de lecture (Read DB)", "Le cache"], correct: "La base de données d'écriture (Write DB)", explanation: "La Write DB est la source de vérité. Toute commande y est écrite de manière transactionnelle avant de publier un événement.", rex: "REX : Une compagnie d'assurance utilise la Write DB pour garantir la cohérence des contrats. Conseil : ne jamais exposer la Write DB en lecture directe." },
+    { thematic: "Kafka", question: "Qu'est-ce qu'un topic dans Kafka ?", options: ["Un flux de messages (catégorie)", "Une base de données", "Un serveur", "Un client"], correct: "Un flux de messages (catégorie)", explanation: "Un topic est un canal nommé dans lequel les producteurs publient des messages et les consommateurs les lisent.", rex: "REX : Chez Netflix, chaque événement (lecture, clic) a son propre topic. Conseil : nommez les topics avec des noms métier explicites." },
+    { thematic: "Event Sourcing", question: "Pourquoi utilise-t-on des snapshots en Event Sourcing ?", options: ["Pour accélérer la reconstruction de l'état", "Pour supprimer des événements", "Pour chiffrer les données", "Pour tester le système"], correct: "Pour accélérer la reconstruction de l'état", explanation: "Un snapshot enregistre l'état à un instant T, évitant de rejouer tous les événements depuis le début.", rex: "REX : Une plateforme financière prend des snapshots toutes les 1000 transactions. Conseil : choisissez la fréquence selon la taille de l'agrégat." },
+    { thematic: "Outbox", question: "Quelle table est ajoutée dans le pattern Outbox ?", options: ["Une table 'outbox' dans la même base", "Une table séparée dans Kafka", "Une table dans Redis", "Une table temporaire"], correct: "Une table 'outbox' dans la même base", explanation: "La table outbox est créée dans la même base transactionnelle, afin de bénéficier de la transaction ACID.", rex: "REX : Une startup a réduit les pertes à 0% avec une table outbox PostgreSQL. Conseil : nettoyez régulièrement les lignes publiées." },
+    { thematic: "CDC", question: "Quel outil est le plus connu pour implémenter du CDC vers Kafka ?", options: ["Debezium", "Logstash", "Prometheus", "Grafana"], correct: "Debezium", explanation: "Debezium est un connecteur Kafka Connect qui capture les changements des bases (PostgreSQL, MySQL, etc.)", rex: "REX : De nombreuses DSI utilisent Debezium pour synchroniser leur legacy. Conseil : testez l'impact sur la source avant production." },
+    { thematic: "Kafka", question: "Qu'est-ce qu'un consumer group dans Kafka ?", options: ["Un groupe de consommateurs qui se partagent la lecture d'un topic", "Un groupe de producteurs", "Un groupe de brokers", "Un groupe de topics"], correct: "Un groupe de consommateurs qui se partagent la lecture d'un topic", explanation: "Les consommateurs d'un même groupe se répartissent les partitions d'un topic pour paralléliser la lecture.", rex: "REX : Chez LinkedIn, les consumer groups permettent de scaler le traitement des logs. Conseil : le nombre de consommateurs ne doit pas dépasser le nombre de partitions." },
+    { thematic: "CQRS+DB", question: "Quelle est la principale différence entre une commande et une requête ?", options: ["Une commande modifie l'état, une requête lit l'état", "Une commande est plus rapide", "Une requête utilise HTTP POST", "Il n'y a pas de différence"], correct: "Une commande modifie l'état, une requête lit l'état", explanation: "Les commandes (ex: créer une commande) modifient les données. Les requêtes (ex: consulter le solde) lisent sans modifier.", rex: "REX : Dans une API REST, POST/PUT/PATCH sont des commandes, GET est une requête. Conseil : appliquez ce principe dans vos services." },
+    { thematic: "Event Sourcing", question: "Un événement dans Event Sourcing est-il immuable ?", options: ["Oui, on ne modifie jamais un événement passé", "Non, on peut le modifier", "Seulement les événements récents", "Cela dépend de la base"], correct: "Oui, on ne modifie jamais un événement passé", explanation: "Les événements sont immuables. Pour corriger une erreur, on publie un événement compensatoire.", rex: "REX : Une banque a évité des incohérences en interdisant toute modification d'événement. Conseil : utilisez l'upcasting pour l'évolution des schémas." },
+    { thematic: "Outbox", question: "Quelle est la latence typique d'un Outbox avec polling ?", options: ["Quelques centaines de millisecondes", "Moins d'1 ms", "Plusieurs secondes", "Aucune latence"], correct: "Quelques centaines de millisecondes", explanation: "Le polling introduit un délai (ex: 200 ms) entre l'écriture en base et la publication dans Kafka.", rex: "REX : Un site e-commerce a accepté une latence de 300 ms pour garantir la fiabilité. Conseil : si vous avez besoin de moins de 50 ms, utilisez CDC sur la table outbox." },
+    { thematic: "CDC", question: "Debezium utilise quel mécanisme pour capturer les changements ?", options: ["Les journaux de transaction (binlog/WAL)", "Les triggers SQL", "Le polling de la table", "Les webhooks"], correct: "Les journaux de transaction (binlog/WAL)", explanation: "Debezium se connecte comme un réplica aux logs de la base, sans modifier l'application.", rex: "REX : Une DSI a capturé 10 000 changements/seconde sans impact sur l'application. Conseil : assurez-vous que la rétention des logs est suffisante." },
+    { thematic: "Kafka", question: "Que signifie 'offset' dans Kafka ?", options: ["La position d'un message dans une partition", "Le nom du topic", "L'adresse du broker", "La taille du message"], correct: "La position d'un message dans une partition", explanation: "Chaque message a un offset unique dans sa partition. Il permet de relire les messages à partir d'un point précis.", rex: "REX : Pour rejouer des événements, on réinitialise l'offset du consumer group. Conseil : stockez les offsets importants pour les reprises." },
+    { thematic: "CQRS+DB", question: "Peut-on avoir des bases de données différentes pour la lecture et l'écriture dans CQRS ?", options: ["Oui, c'est même recommandé", "Non, elles doivent être identiques", "Uniquement pour les petits volumes", "Seulement avec du NoSQL"], correct: "Oui, c'est même recommandé", explanation: "CQRS permet d'optimiser indépendamment la Write DB (ACID) et la Read DB (dénormalisée, indexée).", rex: "REX : Un réseau social utilise PostgreSQL pour l'écriture et Elasticsearch pour les recherches. Conseil : choisissez des moteurs adaptés à chaque usage." },
+    { thematic: "Event Sourcing", question: "Comment reconstruit-on l'état d'un agrégat en Event Sourcing ?", options: ["En rejouant tous ses événements", "En lisant une table d'état", "En appelant une API", "En utilisant un cache"], correct: "En rejouant tous ses événements", explanation: "On charge l'historique des événements de l'agrégat et on les applique séquentiellement pour retrouver l'état actuel.", rex: "REX : Un système de gestion de commandes reconstruit l'état en rejouant les événements depuis le dernier snapshot. Conseil : limitez le nombre d'événements par agrégat." },
+    { thematic: "Outbox", question: "Quel est le rôle du processus de relay dans l'Outbox ?", options: ["Lire la table outbox et publier les événements dans Kafka", "Écrire dans la base", "Nettoyer les logs", "Créer des snapshots"], correct: "Lire la table outbox et publier les événements dans Kafka", explanation: "Le relay (worker) interroge périodiquement la table outbox et envoie les nouveaux événements à Kafka.", rex: "REX : Un relay bien dimensionné peut traiter des milliers d'événements par seconde. Conseil : utilisez un index sur (published, created_at)." },
+    { thematic: "CDC", question: "Quel est l'avantage du CDC par rapport à l'Outbox ?", options: ["Aucune modification du code applicatif", "Latence plus faible", "Moins de consommation CPU", "Support de toutes les bases"], correct: "Aucune modification du code applicatif", explanation: "Le CDC capture les changements directement dans les logs, l'application n'a pas besoin d'écrire dans une table outbox.", rex: "REX : Une DSI a migré un ERP legacy sans une ligne de code. Conseil : idéal pour les progiciels dont on ne peut pas modifier le code." },
+    { thematic: "Kafka", question: "Quel est le rôle d'une partition dans Kafka ?", options: ["Permettre la scalabilité horizontale", "Stocker les clés", "Authentifier les clients", "Compresser les messages"], correct: "Permettre la scalabilité horizontale", explanation: "Les partitions permettent de paralléliser la lecture et l'écriture. Chaque partition est un log ordonné.", rex: "REX : Netflix utilise des centaines de partitions pour traiter des milliards d'événements. Conseil : choisissez un nombre de partitions en fonction du débit souhaité." },
+    { thematic: "CQRS+DB", question: "Que signifie 'eventual consistency' dans CQRS ?", options: ["Les vues de lecture peuvent être légèrement en retard", "Les écritures sont immédiates", "Les données sont toujours cohérentes", "Les événements sont perdus"], correct: "Les vues de lecture peuvent être légèrement en retard", explanation: "À cause de l'asynchronisme entre la Write DB et la Read DB, il peut y avoir un léger délai.", rex: "REX : Un site e-commerce accepte quelques secondes de délai pour la mise à jour du stock. Conseil : documentez ce délai auprès du métier." },
+    { thematic: "Event Sourcing", question: "Qu'est-ce qu'un événement compensatoire ?", options: ["Un événement qui annule un précédent événement", "Un événement de snapshot", "Un événement de validation", "Un événement de logging"], correct: "Un événement qui annule un précédent événement", explanation: "En cas d'erreur, on publie un événement compensatoire pour annuler les effets (ex: AnnulerPaiement).", rex: "REX : Dans une saga, les compensations sont essentielles pour maintenir la cohérence. Conseil : rendez les compensations idempotentes." },
+    { thematic: "Outbox", question: "Peut-on utiliser le CDC pour remplacer le polling dans l'Outbox ?", options: ["Oui, avec Debezium sur la table outbox", "Non, c'est impossible", "Seulement avec PostgreSQL", "Uniquement en mode batch"], correct: "Oui, avec Debezium sur la table outbox", explanation: "On peut configurer Debezium pour capturer les insertions dans la table outbox et les envoyer directement à Kafka.", rex: "REX : Une startup a réduit la latence de 500 ms à 150 ms avec cette approche. Conseil : attention à la charge supplémentaire." },
+    { thematic: "CDC", question: "Quel type de base Debezium ne supporte pas nativement ?", options: ["SQLite (fichier)", "PostgreSQL", "MySQL", "Oracle"], correct: "SQLite (fichier)", explanation: "Debezium nécessite des logs transactionnels (binlog/WAL), absents dans SQLite. Il supporte PostgreSQL, MySQL, Oracle, MongoDB, etc.", rex: "REX : Pour SQLite, on utilise d'autres solutions comme le polling. Conseil : préférez une base avec logs pour le CDC." },
+    { thematic: "Kafka", question: "Quelle commande permet de lire les messages d'un topic depuis le début ?", options: ["kafka-console-consumer --from-beginning", "kafka-topics --list", "kafka-producer --send", "kafka-consumer-groups --reset"], correct: "kafka-console-consumer --from-beginning", explanation: "Cette option force le consommateur à lire depuis le premier message (offset 0).", rex: "REX : Utilisez cette commande en test pour vérifier le contenu d'un topic. Conseil : ne le faites pas en production sans précaution." },
+    { thematic: "CQRS+DB", question: "Que faut-il éviter de faire avec la Write DB dans CQRS ?", options: ["L'exposer directement en lecture", "L'utiliser pour les écritures", "La répliquer", "L'indexer"], correct: "L'exposer directement en lecture", explanation: "La Write DB doit être réservée aux écritures. Les lectures doivent passer par la Read DB optimisée.", rex: "REX : Une DSI a subi des ralentissements car des requêtes lourdes étaient faites sur la Write DB. Conseil : appliquez CQRS strictement." },
+    { thematic: "Event Sourcing", question: "Quel est un inconvénient de l'Event Sourcing ?", options: ["Complexité accrue (versioning, snapshots)", "Manque de traçabilité", "Faible scalabilité", "Impossible de faire du replay"], correct: "Complexité accrue (versioning, snapshots)", explanation: "La gestion des versions d'événements et des snapshots ajoute de la complexité par rapport à un CRUD classique.", rex: "REX : Une startup a abandonné Event Sourcing car trop complexe pour son besoin simple. Conseil : réservez-le aux domaines où l'audit est critique." },
+    { thematic: "Outbox", question: "Que faire si le process de relay tombe en panne ?", options: ["Les événements restent dans la table outbox et seront publiés au redémarrage", "Les événements sont perdus", "Il faut recréer la table", "Kafka se charge du replay"], correct: "Les événements restent dans la table outbox et seront publiés au redémarrage", explanation: "La table outbox persiste les événements non publiés. Aucune perte de données.", rex: "REX : Une panne de relay de 2 heures n'a causé aucune perte. Conseil : surveillez la taille de la table outbox." },
+    { thematic: "CDC", question: "Quel est le format des messages produits par Debezium ?", options: ["JSON avec des champs 'before', 'after', 'op'", "XML", "CSV", "Avro brut"], correct: "JSON avec des champs 'before', 'after', 'op'", explanation: "Chaque message contient l'état avant/après et l'opération (c=create, u=update, d=delete).", rex: "REX : Ce format permet aux consommateurs de savoir exactement ce qui a changé. Conseil : utilisez le Schema Registry pour l'évolution." },
+    { thematic: "Kafka", question: "Qu'est-ce que le 'lag' d'un consumer ?", options: ["Le retard entre le dernier message produit et le dernier message consommé", "Le temps de réponse", "La taille du message", "Le nombre de partitions"], correct: "Le retard entre le dernier message produit et le dernier message consommé", explanation: "Un lag élevé indique que le consommateur n'arrive pas à suivre le flux.", rex: "REX : Une alerte sur le lag a permis de détecter un consumer lent. Conseil : surveillez le lag avec Prometheus." }
+];
+
+let selectedQuestions = [];
+let currentIndex = 0, score = 0, userAnswers = [], totalQuestions = 30;
+const settingsDiv = document.getElementById('settings-panel');
+const quizDiv = document.getElementById('quiz-content');
+const qCounter = document.getElementById('question-counter');
+const scoreSpan = document.getElementById('current-score');
+const progressBar = document.getElementById('progress-bar');
+const questionText = document.getElementById('question-text');
+const thematicBadge = document.getElementById('thematic-badge');
+const optionsDivEl = document.getElementById('options-container');
+const explanationBox = document.getElementById('explanation-box');
+const explanationTitle = document.getElementById('explanation-title');
+const explanationText = document.getElementById('explanation-text');
+const rexBox = document.getElementById('rex-box');
+const rexText = document.getElementById('rex-text');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const finishBtn = document.getElementById('finish-btn');
+const startBtn = document.getElementById('start-quiz-btn');
+
+function shuffleArray(arr) { for(let i=arr.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+
+function startQuiz() {
+    let count = parseInt(document.getElementById('question-count').value);
+    selectedQuestions = shuffleArray([...QUESTIONS]).slice(0, Math.min(count, QUESTIONS.length));
+    totalQuestions = selectedQuestions.length;
+    currentIndex = 0; score = 0; userAnswers = new Array(totalQuestions).fill(null);
+    settingsDiv.classList.add('d-none');
+    quizDiv.classList.remove('d-none');
+    displayQuestion(0);
+    updateScore();
+}
+function displayQuestion(idx) {
+    explanationBox.classList.add('d-none');
+    rexBox.classList.add('d-none');
+    let q = selectedQuestions[idx];
+    questionText.innerText = q.question;
+    thematicBadge.innerText = q.thematic;
+    thematicBadge.className = "badge-theme";
+    if(q.thematic === "CQRS+DB") thematicBadge.classList.add("badge-cqrs");
+    else if(q.thematic === "Kafka") thematicBadge.classList.add("badge-kafka");
+    else if(q.thematic === "Event Sourcing") thematicBadge.classList.add("badge-sourcing");
+    else if(q.thematic === "Outbox") thematicBadge.classList.add("badge-outbox");
+    else thematicBadge.classList.add("badge-cdc");
+    optionsDivEl.innerHTML = '';
+    let shuffledOps = shuffleArray([...q.options]);
+    shuffledOps.forEach(opt => {
+        let btn = document.createElement('button');
+        btn.className = 'btn option-btn';
+        btn.innerText = opt;
+        btn.onclick = () => selectAnswer(btn, opt, idx);
+        optionsDivEl.appendChild(btn);
+    });
+    if(userAnswers[idx] !== null) { showFeedback(idx); }
+    updateProgress();
+}
+function selectAnswer(btn, selected, idx) {
+    if(userAnswers[idx] !== null) return;
+    let q = selectedQuestions[idx];
+    let isCorrect = (selected === q.correct);
+    if(isCorrect) score++;
+    userAnswers[idx] = { selected, correct: q.correct, isCorrect };
+    updateScore();
+    showFeedback(idx);
+    document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+    document.querySelectorAll('.option-btn').forEach(b => {
+        if(b.innerText === q.correct) b.classList.add('correct');
+        else if(b.innerText === selected && !isCorrect) b.classList.add('incorrect');
+    });
+}
+function showFeedback(idx) {
+    let q = selectedQuestions[idx];
+    let ans = userAnswers[idx];
+    explanationText.innerText = q.explanation;
+    explanationTitle.innerText = ans.isCorrect ? "✅ Correct !" : "❌ Incorrect – La bonne réponse était : " + ans.correct;
+    explanationBox.classList.remove('d-none');
+    explanationBox.className = "explanation-box " + (ans.isCorrect ? "explanation-correct" : "explanation-incorrect");
+    if(q.rex) { rexText.innerText = q.rex; rexBox.classList.remove('d-none'); }
+}
+function updateScore() { scoreSpan.innerText = `Score: ${score}/${totalQuestions}`; }
+function updateProgress() { let percent = ((currentIndex+1)/totalQuestions)*100; progressBar.style.width = percent+'%'; qCounter.innerText = `Question ${currentIndex+1} / ${totalQuestions}`; }
+prevBtn.onclick = () => { if(currentIndex>0) { currentIndex--; displayQuestion(currentIndex); } };
+nextBtn.onclick = () => { if(currentIndex < totalQuestions-1) { currentIndex++; displayQuestion(currentIndex); } };
+finishBtn.onclick = () => showResults();
+function showResults() {
+    let percentage = (score/totalQuestions)*100;
+    document.getElementById('final-score-percentage').innerText = percentage.toFixed(0)+'%';
+    document.getElementById('final-score-correct').innerText = score;
+    document.getElementById('final-score-total').innerText = totalQuestions;
+    document.getElementById('skill-progress').style.width = percentage+'%';
+    let msg = percentage>=80 ? "Excellent ! Vous avez de solides bases. Passez au niveau expert." : (percentage>=50 ? "Bon début ! Revoyez les notions où vous avez hésité." : "Reprenez les fondamentaux, ce quiz est fait pour ça !");
+    document.getElementById('final-message').innerText = msg;
+    new bootstrap.Modal(document.getElementById('resultsModal')).show();
+}
+document.getElementById('restart-quiz-btn').onclick = () => { location.reload(); };
+startBtn.onclick = startQuiz;
+</script>
+</body>
+</html>
