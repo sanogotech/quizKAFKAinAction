@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Kafka · 80 questions · Débutant → Certification</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:linear-gradient(145deg,#0b1120,#1a2639);padding:1.5rem;min-height:100vh;}
+        .quiz-wrapper{max-width:1200px;margin:0 auto;}
+        .quiz-card{background:rgba(255,255,255,0.98);border-radius:2rem;overflow:hidden;box-shadow:0 25px 45px -12px rgba(0,0,0,0.4);}
+        .quiz-header{background:linear-gradient(135deg,#1a1e2c,#2d3e50);padding:2rem;color:white;border-bottom:4px solid #e63946;}
+        .badge-kafka{background:#e63946;padding:0.3rem 1.2rem;border-radius:40px;font-weight:600;font-size:0.85rem;display:inline-block;}
+        .progress-container{background:#f1f5f9;margin:1.5rem;padding:1rem;border-radius:1rem;}
+        .progress-bar-custom{background:linear-gradient(90deg,#f4a261,#e63946);}
+        .thematic-badge{display:inline-flex;align-items:center;gap:0.4rem;padding:0.4rem 1rem;border-radius:50px;font-weight:600;font-size:0.8rem;margin-bottom:1rem;}
+        .badge-beginner{background:#e0f2fe;color:#0369a1;}
+        .badge-advanced{background:#fae8ff;color:#86198f;}
+        .badge-cert{background:#fef3c7;color:#92400e;}
+        .option-btn{width:100%;text-align:left;padding:0.9rem 1.2rem;margin-bottom:0.7rem;border:1.5px solid #e2e8f0;border-radius:1rem;background:white;font-weight:500;transition:0.2s;}
+        .option-btn:hover:not([disabled]){border-color:#e63946;background:#fff5f5;transform:translateY(-2px);}
+        .option-btn.correct{background:#ecfdf5;border-color:#10b981;color:#065f46;}
+        .option-btn.incorrect{background:#fef2f2;border-color:#f97316;color:#7f1d1d;}
+        .explanation-box{padding:1rem;border-radius:1rem;background:#f8fafc;border-left:5px solid #e63946;margin-top:1.2rem;}
+        .tip-box{background:#fffbeb;border-left:4px solid #f4a261;padding:0.7rem;border-radius:0.8rem;margin-top:0.8rem;}
+        .btn-kafka{background:#e63946;color:white;border:none;}
+        .btn-kafka:hover{background:#b91c1c;transform:translateY(-2px);}
+        .final-score{font-size:3.5rem;font-weight:800;background:linear-gradient(135deg,#e63946,#f4a261);-webkit-background-clip:text;background-clip:text;color:transparent;}
+        @media (max-width:768px){body{padding:0.8rem;}.quiz-header h1{font-size:1.5rem;}}
+    </style>
+</head>
+<body>
+<div class="quiz-wrapper">
+    <div class="quiz-card">
+        <div class="quiz-header">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div><h1><i class="fas fa-chart-line me-2"></i> Monitoring Kafka · Quiz complet</h1><p class="mb-0 opacity-75">80 questions : 60 débutant · 10 avancé · 10 certification (EN)</p></div>
+                <div><span class="badge-kafka"><i class="fas fa-eye"></i> Niveau Monitoring</span></div>
+            </div>
+        </div>
+
+        <div id="settings-panel" class="p-4">
+            <h4><i class="fas fa-sliders-h"></i> Configuration</h4>
+            <div class="row g-3 mt-2">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Nombre de questions</label>
+                    <select id="question-count" class="form-select">
+                        <option value="20">20 questions (découverte)</option>
+                        <option value="40">40 questions (standard)</option>
+                        <option value="80" selected>80 questions (complet)</option>
+                    </select>
+                </div>
+                <div class="col-md-7 d-flex align-items-end"><button id="start-quiz-btn" class="btn btn-kafka w-100 py-2"><i class="fas fa-play"></i> Démarrer le quiz</button></div>
+            </div>
+            <div class="mt-4">
+                <h6><i class="fas fa-tags"></i> Thèmes</h6>
+                <div class="row">
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-beginner" checked> <label>📘 Débutant (60)</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-advanced" checked> <label>⚙️ Avancé (10)</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-cert" checked> <label>🌍 Certification EN (10)</label></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz-content" class="d-none">
+            <div class="progress-container">
+                <div class="d-flex justify-content-between"><span id="question-counter" class="fw-bold">Question 1 / 80</span><span id="current-score" class="fw-bold text-danger">Score: 0</span></div>
+                <div class="progress mt-2" style="height: 10px;"><div id="progress-bar" class="progress-bar progress-bar-custom" style="width:0%"></div></div>
+            </div>
+            <div class="px-4 pb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div id="thematic-badge" class="thematic-badge">Débutant</div>
+                        <h3 id="question-text" class="fs-4 fw-semibold mb-4"></h3>
+                        <div id="options-container"></div>
+                        <div id="explanation-box" class="explanation-box d-none">
+                            <h5 id="explanation-title"><i class="fas fa-info-circle"></i> Explication</h5>
+                            <p id="explanation-text"></p>
+                            <div id="tip-box" class="tip-box d-none"><i class="fas fa-lightbulb text-warning"></i> <strong>À retenir :</strong> <span id="tip-text"></span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-between mt-4 gap-2">
+                    <button id="prev-btn" class="btn btn-outline-secondary" disabled><i class="fas fa-chevron-left"></i> Précédent</button>
+                    <button id="next-btn" class="btn btn-kafka">Suivant <i class="fas fa-chevron-right"></i></button>
+                    <button id="finish-btn" class="btn btn-outline-success d-none">Terminer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="resultsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white"><h5 class="modal-title"><i class="fas fa-chart-line"></i> Résultat · Monitoring Kafka</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body p-4 text-center"><div class="final-score" id="final-score-percentage">0%</div><p id="final-score-text" class="lead"></p>
+            <div class="row"><div class="col-md-4"><div class="bg-light p-2 rounded"><div class="progress"><div id="beginner-skill" class="progress-bar bg-danger" style="width:0%"></div></div><p class="mt-1 small">Débutant</p></div></div>
+            <div class="col-md-4"><div class="bg-light p-2 rounded"><div class="progress"><div id="advanced-skill" class="progress-bar bg-warning" style="width:0%"></div></div><p class="mt-1 small">Avancé</p></div></div>
+            <div class="col-md-4"><div class="bg-light p-2 rounded"><div class="progress"><div id="cert-skill" class="progress-bar bg-success" style="width:0%"></div></div><p class="mt-1 small">Certification</p></div></div></div>
+            <hr><div id="final-recommendations"></div><p id="short-term" class="mt-2"></p><p id="long-term"></p></div>
+            <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button><button id="restart-quiz-btn" class="btn btn-kafka">Recommencer</button></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ======================= BANQUE DE 80 QUESTIONS MONITORING KAFKA =======================
+const QUESTIONS_BANK = [
+    // ------------------------- 60 DÉBUTANT -------------------------
+    { thematic:"Débutant", question:"Quel est le principal mécanisme de monitoring exposé par Kafka ?", options:["Métriques JMX","Logs applicatifs","API REST","Fichiers de configuration"], correctAnswer:"Métriques JMX", explanation:"Kafka expose toutes ses métriques via JMX (Java Management Extensions).", tip:"Activez JMX avec les flags JVM." },
+    { thematic:"Débutant", question:"Quel outil permet de visualiser les métriques JMX de Kafka ?", options:["JConsole / JVisualVM","Prometheus","Grafana","Kafka Tool"], correctAnswer:"JConsole / JVisualVM", explanation:"Ces outils se connectent au MBeanServer pour afficher les métriques.", tip:"JConsole est inclus dans le JDK." },
+    { thematic:"Débutant", question:"Quelle propriété permet d'exposer JMX à distance pour Kafka ?", options:["com.sun.management.jmxremote","jmx.port","kafka.jmx.enable","jmx.remote.port"], correctAnswer:"com.sun.management.jmxremote", explanation:"Ajoutez -Dcom.sun.management.jmxremote.port=9999 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false", tip:"Sécurisez en production." },
+    { thematic:"Débutant", question:"Qu'est-ce que le 'consumer lag' ?", options:["Le retard entre le dernier message produit et le message consommé","Le temps de traitement d'un message","Le nombre de messages en attente","La latence réseau"], correctAnswer:"Le retard entre le dernier message produit et le message consommé", explanation:"Un lag élevé signifie que le consommateur ne suit pas le rythme des producteurs.", tip:"Surveillez le lag avec kafka-consumer-groups." },
+    { thematic:"Débutant", question:"Quelle commande affiche le lag des consommateurs ?", options:["kafka-consumer-groups --describe --group <group>","kafka-lag --group","kafka-offset --lag","kafka-monitor --consumer"], correctAnswer:"kafka-consumer-groups --describe --group <group>", explanation:"La colonne LAG affiche le retard par partition.", tip:"Ajoutez --members pour voir les membres." },
+    { thematic:"Débutant", question:"Que mesure la métrique 'kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec' ?", options:["Taux de messages entrants par seconde","Taille des messages","Nombre de partitions","Nombre de brokers"], correctAnswer:"Taux de messages entrants par seconde", explanation:"Indique le débit d'écriture sur le broker.", tip:"Utile pour les alertes de surcharge." },
+    { thematic:"Débutant", question:"Que mesure la métrique 'kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec' ?", options:["Taux d'octets entrants par seconde","Taux de messages","Taux de compression","Latence"], correctAnswer:"Taux d'octets entrants par seconde", explanation:"Surveille le volume de données entrant dans le broker.", tip:"À comparer avec la bande passante réseau." },
+    { thematic:"Débutant", question:"Que mesure la métrique 'kafka.consumer:type=consumer-fetch-manager-metrics,client-id=*' ?", options:["records-lag-max","records-consumed-rate","fetch-rate","commit-rate"], correctAnswer:"records-lag-max", explanation:"Le lag maximum parmi toutes les partitions du consommateur.", tip:"Métrique clé pour les alertes." },
+    { thematic:"Débutant", question:"Quel est l'outil officiel de Confluent pour le monitoring ?", options:["Confluent Control Center","Kafka Manager","Kafka Monitor","Burrow"], correctAnswer:"Confluent Control Center", explanation:"Control Center fournit une interface graphique pour surveiller clusters, connecteurs, ksqlDB, etc.", tip:"Version commerciale." },
+    { thematic:"Débutant", question:"Qu'est-ce que Burrow (LinkedIn) ?", options:["Un outil de monitoring de lag multi-clusters","Un client Kafka","Un outil de compression","Un type de partition"], correctAnswer:"Un outil de monitoring de lag multi-clusters", explanation:"Burrow calcule le lag et émet des alertes basées sur des seuils.", tip:"Expose une API REST." },
+    { thematic:"Débutant", question:"Comment activer les métriques JMX dans un producteur Kafka (Java) ?", options:["Ajouter les flags JVM","Configurer producer.properties","Impossible","Activer dans le code"], correctAnswer:"Ajouter les flags JVM", explanation:"Les métriques JMX sont activées au niveau de la JVM, pas spécifiquement pour le producteur.", tip:"Utilisez -Dcom.sun.management.jmxremote." },
+    { thematic:"Débutant", question:"Quelle métrique indique qu'un broker est le leader d'une partition ?", options:["kafka.controller:type=ControllerStats,name=LeaderElectionRateAndTimeMs","kafka.server:type=Partition,name=UnderReplicatedPartitions","kafka.server:type=ReplicaManager,name=LeaderCount","kafka.log:type=Log,name=Size"], correctAnswer:"kafka.server:type=ReplicaManager,name=LeaderCount", explanation:"LeaderCount donne le nombre de partitions dont ce broker est leader.", tip:"Un déséquilibre peut nécessiter une réassignation." },
+    { thematic:"Débutant", question:"Que signifie la métrique 'UnderReplicatedPartitions' ?", options:["Nombre de partitions dont le nombre de réplicas synchrones est inférieur au facteur de réplication","Partitions sous-répliquées","Partitions en cours de réplication","Partitions corrompues"], correctAnswer:"Nombre de partitions dont le nombre de réplicas synchrones est inférieur au facteur de réplication", explanation:"Une valeur >0 indique un problème de réplication.", tip:"Alerte si >0 pendant plus de 5 minutes." },
+    { thematic:"Débutant", question:"Quelle métrique surveiller pour détecter un broker défaillant ?", options:["kafka.controller:type=ControllerStats,name=ActiveControllerCount","kafka.server:type=ReplicaManager,name=OfflineReplicaCount","kafka.server:type=BrokerTopicMetrics,name=TotalProduceRequests","kafka.network:type=RequestMetrics,name=RequestsPerSec"], correctAnswer:"kafka.server:type=ReplicaManager,name=OfflineReplicaCount", explanation:"OfflineReplicaCount > 0 signifie qu'un réplica n'est pas disponible.", tip:"Souvent lié à un broker down." },
+    { thematic:"Débutant", question:"Quel outil peut collecter les métriques Kafka et les envoyer à Prometheus ?", options:["JMX Exporter","Kafka Exporter","Prometheus JMX Exporter","Tous"], correctAnswer:"Tous", explanation:"JMX Exporter et Kafka Exporter sont deux solutions populaires.", tip:"Kafka Exporter se spécialise dans les métriques de consommation." },
+    { thematic:"Débutant", question:"Quelle métrique mesure le taux d'erreurs de production ?", options:["kafka.producer:type=producer-metrics,client-id=*:record-error-rate","kafka.server:type=BrokerTopicMetrics,name=FailedProduceRequestsPerSec","record-send-errors","both"], correctAnswer:"both", explanation:"Les deux métriques existent : côté producteur et côté broker.", tip:"Surveillez les deux." },
+    { thematic:"Débutant", question:"Comment surveiller la taille d'un topic (occupation disque) ?", options:["kafka-log-dirs --describe","kafka-topics --describe","kafka-disk-usage","kafka-topic --size"], correctAnswer:"kafka-log-dirs --describe", explanation:"Affiche la taille des logs par partition.", tip:"Utile pour la planification de la rétention." },
+    { thematic:"Débutant", question:"Que signifie le paramètre 'log.retention.bytes' ?", options:["Taille maximale des logs avant suppression","Durée de rétention","Nombre de segments","Taille des messages"], correctAnswer:"Taille maximale des logs avant suppression", explanation:"Quand la taille totale des logs d'un topic dépasse cette valeur, Kafka supprime les anciens segments.", tip:"Monitorer l'occupation disque." },
+    { thematic:"Débutant", question:"Quel est le port par défaut du serveur JMX pour un broker Kafka ?", options:["Non défini (à configurer)","9999","9092","8080"], correctAnswer:"Non défini (à configurer)", explanation:"Le port JMX doit être explicitement défini avec -Dcom.sun.management.jmxremote.port=...", tip:"Ne pas utiliser le même port que le broker." },
+    { thematic:"Débutant", question:"Comment vérifier qu'un broker Kafka est vivant (health check) ?", options:["kafka-broker-api-versions.sh","telnet <broker> 9092","curl http://broker:9093/health","Les deux premiers"], correctAnswer:"Les deux premiers", explanation:"Le broker répond sur le port 9092 (protocole binaire). kafka-broker-api-versions.sh est plus fiable.", tip:"Utilisez un health check TCP." },
+    { thematic:"Débutant", question:"Qu'est-ce que le 'request queue' d'un broker ?", options:["File d'attente des requêtes entrantes avant traitement","File d'attente des réponses","File d'attente des messages","File d'attente des métriques"], correctAnswer:"File d'attente des requêtes entrantes avant traitement", explanation:"Si la queue grossit, le broker est surchargé.", tip:"Métrique : RequestQueueSize." },
+    { thematic:"Débutant", question:"Que mesure 'RequestHandlerAvgIdlePercent' ?", options:["Pourcentage d'inactivité des handlers de requêtes (plus bas = plus chargé)","Pourcentage d'erreurs","Pourcentage de CPU","Pourcentage de mémoire"], correctAnswer:"Pourcentage d'inactivité des handlers de requêtes (plus bas = plus chargé)", explanation:"Un faible pourcentage signifie que les handlers sont occupés.", tip:"Alerter si < 30%." },
+    { thematic:"Débutant", question:"Quelle métrique indique le nombre de segments de log ouverts ?", options:["kafka.log:type=Log,name=NumLogSegments","kafka.log:type=Log,name=Size","kafka.log:type=Log,name=NumPartitions","kafka.log:type=Log,name=NumSegments"], correctAnswer:"kafka.log:type=Log,name=NumLogSegments", explanation:"Trop de petits segments peut dégrader les performances.", tip:"Ajustez log.segment.bytes." },
+    { thematic:"Débutant", question:"Comment obtenir les métriques d'un connecteur Kafka Connect ?", options:["Via JMX (connecteur-metrics)","Via l'API REST","Les deux","Aucune"], correctAnswer:"Les deux", explanation:"L'API REST donne l'état, JMX donne les métriques détaillées (taux, erreurs).", tip:"Utilisez l'API pour le statut, JMX pour les performances." },
+    { thematic:"Débutant", question:"Qu'est-ce que 'kafka.tools.JmxTool' ?", options:["Un outil en ligne de commande pour interroger JMX","Un connecteur","Un exporter","Un client"], correctAnswer:"Un outil en ligne de commande pour interroger JMX", explanation:"Permet de récupérer des métriques JMX dans un terminal.", tip:"kafka-run-class kafka.tools.JmxTool --object-name ..." },
+    { thematic:"Débutant", question:"Quelle métrique surveiller pour détecter un déséquilibre des leaders ?", options:["LeaderCount par broker","UnderReplicatedPartitions","OfflineReplicaCount","IsrShrinksPerSec"], correctAnswer:"LeaderCount par broker", explanation:"Un broker avec beaucoup plus de leaders que les autres peut être surchargé.", tip:"Utilisez kafka-reassign-partitions.sh pour équilibrer." },
+    { thematic:"Débutant", question:"Qu'est-ce que le 'ISR shrink rate' ?", options:["Fréquence à laquelle des réplicas sortent de l'ISR","Taux de réplication","Taux de compression","Taux d'erreurs"], correctAnswer:"Fréquence à laquelle des réplicas sortent de l'ISR", explanation:"Une augmentation indique des problèmes de réseau ou de performance des followers.", tip:"Métrique : kafka.controller:type=ControllerStats,name=IsrShrinksPerSec." },
+    { thematic:"Débutant", question:"Que signifie 'active controller count' ?", options:["Nombre de contrôleurs actifs dans le cluster (doit être 1)","Nombre de brokers","Nombre de partitions","Nombre de leaders"], correctAnswer:"Nombre de contrôleurs actifs dans le cluster (doit être 1)", explanation:"Le contrôleur gère l'élection des leaders. Si >1, split-brain. Si 0, cluster down.", tip:"Métrique critique." },
+    { thematic:"Débutant", question:"Comment surveiller les requêtes de production (produce) ?", options:["TotalProduceRequestsPerSec","ProduceMessageConversionsPerSec","FailedProduceRequestsPerSec","Toutes"], correctAnswer:"Toutes", explanation:"Taux de requêtes, conversions (si compression), et échecs.", tip:"Les échecs doivent être proches de 0." },
+    { thematic:"Débutant", question:"Quelle métrique mesure le temps moyen de traitement des requêtes de production ?", options:["kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=Produce","kafka.server:type=BrokerTopicMetrics,name=ProduceRequestTimeMs","kafka.producer:type=producer-metrics,name=request-latency-avg","kafka.server:type=BrokerTopicMetrics,name=TotalProduceRequests"], correctAnswer:"kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=Produce", explanation:"Temps passé en file d'attente avant traitement. Une augmentation indique une saturation.", tip:"Associé à RemoteTimeMs et TotalTimeMs." },
+    { thematic:"Débutant", question:"Comment surveiller l'utilisation du disque par Kafka ?", options:["Métrique kafka.log:type=Log,name=Size","df -h","kafka-log-dirs","Toutes"], correctAnswer:"Toutes", explanation:"Les métriques JMX donnent la taille par topic/partition, les commandes OS l'occupation globale.", tip:"Alerter à 80% d'occupation." },
+    { thematic:"Débutant", question:"Quel outil open source est souvent utilisé avec Prometheus pour visualiser les métriques Kafka ?", options:["Grafana","Kibana","Splunk","Datadog"], correctAnswer:"Grafana", explanation:"Grafana se connecte à Prometheus et permet des dashboards.", tip:"Il existe des dashboards préconçus pour Kafka." },
+    { thematic:"Débutant", question:"Qu'est-ce que 'kafka.network:type=SocketServer,name=NetworkProcessorAvgIdlePercent' ?", options:["Pourcentage d'inactivité des processeurs réseau (faible = saturation réseau)","Taux d'erreurs réseau","Nombre de connexions","Latence réseau"], correctAnswer:"Pourcentage d'inactivité des processeurs réseau (faible = saturation réseau)", explanation:"Si cette valeur descend sous 30%, le broker est saturé réseau.", tip:"Augmentez num.network.threads." },
+    { thematic:"Débutant", question:"Comment surveiller les requêtes de fetch (consommation) ?", options:["TotalFetchRequestsPerSec","FetchRequestTimeMs","FetchMessageConversionsPerSec","Toutes"], correctAnswer:"Toutes", explanation:"Les métriques fetch indiquent l'activité de lecture.", tip:"Un fort taux peut indiquer des consommateurs actifs." },
+    { thematic:"Débutant", question:"Qu'est-ce que le 'producer throttling' ?", options:["Limitation du débit des producteurs si quota dépassé","Compression","Réplication","Acquittement"], correctAnswer:"Limitation du débit des producteurs si quota dépassé", explanation:"Kafka peut limiter les producteurs en fonction des quotas configurés.", tip:"Métrique : ThrottleTimeMs." },
+    { thematic:"Débutant", question:"Quelle métrique indique le taux de compression des messages ?", options:["kafka.log:type=Log,name=CompressionRate","kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec vs MessagesInPerSec","kafka.producer:type=producer-metrics,name=compression-rate","Les deux"], correctAnswer:"Les deux", explanation:"Le ratio octets / messages donne une idée de la compression.", tip:"Une compression efficace réduit la bande passante." },
+    { thematic:"Débutant", question:"Comment surveiller les erreurs de sérialisation/désérialisation ?", options:["Métriques des clients (record-error-rate)","Logs des applications","kafka-run-class kafka.tools.JmxTool","Aucune"], correctAnswer:"Métriques des clients (record-error-rate)", explanation:"Les producteurs/consommateurs exposent des métriques d'erreur.", tip:"Ajoutez des alertes sur ces métriques." },
+    { thematic:"Débutant", question:"Quelle métrique JMX pour le nombre de partitions par broker ?", options:["kafka.server:type=ReplicaManager,name=PartitionCount","kafka.server:type=BrokerTopicMetrics,name=PartitionCount","kafka.controller:type=ControllerStats,name=PartitionCount","kafka.admin:type=Broker,name=PartitionCount"], correctAnswer:"kafka.server:type=ReplicaManager,name=PartitionCount", explanation:"Le nombre de partitions (leaders + followers) sur un broker.", tip:"Une répartition déséquilibrée peut nécessiter une réassignation." },
+    { thematic:"Débutant", question:"Qu'est-ce que le 'fetch request queue' ?", options:["File d'attente des requêtes de fetch","File d'attente des requêtes de production","File d'attente des métriques","File d'attente des logs"], correctAnswer:"File d'attente des requêtes de fetch", explanation:"Même principe que request queue, mais pour les fetch.", tip:"Surveillez FetchRequestQueueSize." },
+    { thematic:"Débutant", question:"Comment monitorer la latence des producteurs ?", options:["record-send-total-time-avg","request-latency-avg","record-queue-time-avg","Toutes"], correctAnswer:"Toutes", explanation:"Ces métriques JMX du producteur donnent la latence d'envoi.", tip:"Un pic peut indiquer un problème réseau ou broker." },
+    { thematic:"Débutant", question:"Quelle métrique pour les erreurs de connexion au broker ?", options:["kafka.network:type=SocketServer,name=FailedAuthenticationPerSec","kafka.network:type=SocketServer,name=ConnectionCloseRate","kafka.network:type=SocketServer,name=ConnectionCreateRate","kafka.network:type=SocketServer,name=ConnectionQueueSize"], correctAnswer:"kafka.network:type=SocketServer,name=FailedAuthenticationPerSec", explanation:"Taux d'échecs d'authentification (SASL/SSL).", tip:"Alerter si >0." },
+    { thematic:"Débutant", question:"Que signifie 'kafka.controller:type=ControllerStats,name=UncleanLeaderElectionsPerSec' ?", options:["Élections de leader non propres (perte de données)","Élections propres","Taux de réplication","Taux de compression"], correctAnswer:"Élections de leader non propres (perte de données)", explanation:"Se produit quand aucun ISR n'est disponible. Cela peut entraîner une perte de messages.", tip:"Doit toujours être 0." },
+    { thematic:"Débutant", question:"Comment configurer des alertes sur le lag consommateur ?", options:["Utiliser Burrow, Kafka Exporter, ou script kafka-consumer-groups","Configurer dans Kafka","Impossible","Uniquement avec Confluent Control Center"], correctAnswer:"Utiliser Burrow, Kafka Exporter, ou script kafka-consumer-groups", explanation:"Ces outils peuvent envoyer des alertes (Prometheus, Slack, etc.).", tip:"Sujet important." },
+    { thematic:"Débutant", question:"Quel est l'intérêt de monitorer le 'request queue time' et le 'response queue time' ?", options:["Identifier les goulots d'étranglement du broker","Mesurer le lag","Compter les messages","Voir la compression"], correctAnswer:"Identifier les goulots d'étranglement du broker", explanation:"Un request queue time élevé indique que le broker peine à traiter les requêtes.", tip:"Augmentez num.io.threads si nécessaire." },
+    { thematic:"Débutant", question:"Que mesure 'kafka.server:type=KafkaServer,name=BrokerState' ?", options:["État du broker (0=not running, 1=starting, 2=recovering, 3=running)","Nombre de connexions","Version du broker","Nombre de partitions"], correctAnswer:"État du broker (0=not running, 1=starting, 2=recovering, 3=running)", explanation:"Métrique clé pour savoir si le broker est opérationnel.", tip:"Alerter si différent de 3." },
+    { thematic:"Débutant", question:"Comment surveiller l'utilisation mémoire du broker (heap) ?", options:["java.lang:type=Memory","kafka.server:type=BrokerTopicMetrics,name=MemoryUsage","kafka.network:type=SocketServer,name=MemoryPool","kafka.log:type=Log,name=HeapUsage"], correctAnswer:"java.lang:type=Memory", explanation:"Métrique JMX standard de la JVM.", tip:"Surveillez le heap utilisé et les GC." },
+    { thematic:"Débutant", question:"Qu'est-ce que le 'log cleaner' dans Kafka ?", options:["Un thread qui nettoie les logs compactés","Un outil de suppression","Un thread de compression","Un thread de réplication"], correctAnswer:"Un thread qui nettoie les logs compactés", explanation:"Pour les topics compactés, le log cleaner supprime les anciennes valeurs des clés.", tip:"Surveillez 'log-cleaner-io-ratio'." },
+    { thematic:"Débutant", question:"Quelle métrique surveiller pour le log cleaner ?", options:["kafka.log:type=LogCleanerManager,name=MaxDirtyPercent","kafka.log:type=LogCleaner,name=CleanerIoRatio","kafka.log:type=LogCleaner,name=CleanedBytesPerSec","Toutes"], correctAnswer:"Toutes", explanation:"Indiquent l'efficacité du nettoyage.", tip:"MaxDirtyPercent devrait rester bas." },
+    { thematic:"Débutant", question:"Comment surveiller le taux de réplication ?", options:["kafka.server:type=ReplicaFetcherManager,name=ReplicaFetcherLagMax","kafka.server:type=ReplicaFetcherManager,name=ReplicaFetcherThreadCount","kafka.server:type=ReplicaFetcherManager,name=ReplicaFetcherRequestRate","kafka.server:type=ReplicaFetcherManager,name=ReplicaFetcherRequestLatency"], correctAnswer:"kafka.server:type=ReplicaFetcherManager,name=ReplicaFetcherLagMax", explanation:"Le lag maximum d'un follower par rapport au leader.", tip:"Doit rester faible." },
+    { thematic:"Débutant", question:"Qu'est-ce que le 'partition reassignment' monitoring ?", options:["Surveiller la progression de la réassignation de partitions","Surveiller les leaders","Surveiller les ISR","Surveiller les topics"], correctAnswer:"Surveiller la progression de la réassignation de partitions", explanation:"Pendant une réassignation, surveillez 'reassigning-partitions' dans les métriques.", tip:"kafka-reassign-partitions.sh --verify." },
+    { thematic:"Débutant", question:"Comment surveiller les quotas (client throttling) ?", options:["kafka.server:type=RequestQuotaManager,name=ThrottleTimeMs","kafka.server:type=ClientQuotaManager,name=ThrottleTimeMs","kafka.network:type=SocketServer,name=ThrottleRate","kafka.controller:type=ControllerStats,name=ThrottledRequests"], correctAnswer:"kafka.server:type=ClientQuotaManager,name=ThrottleTimeMs", explanation:"Temps de throttling appliqué aux clients.", tip:"Augmentez les quotas si trop de throttling." },
+    { thematic:"Débutant", question:"Quelle métrique pour le nombre de connexions réseau actives ?", options:["kafka.network:type=SocketServer,name=ConnectionCount","kafka.network:type=Processor,name=ConnectionCount","kafka.network:type=Acceptor,name=ConnectionCount","kafka.server:type=Network,name=ConnectionCount"], correctAnswer:"kafka.network:type=SocketServer,name=ConnectionCount", explanation:"Nombre total de connexions TCP.", tip:"Surveiller les fuites de connexions." },
+    { thematic:"Débutant", question:"Comment surveiller les erreurs de réseau (corruption, timeout) ?", options:["kafka.network:type=SocketServer,name=NetworkExceptionRate","kafka.network:type=SocketServer,name=CorruptedMessageRate","kafka.network:type=SocketServer,name=ConnectionResetRate","Toutes"], correctAnswer:"Toutes", explanation:"Ces métriques indiquent des problèmes réseau.", tip:"Alerter si >0." },
+    { thematic:"Débutant", question:"Qu'est-ce que le 'consumer group rebalance' monitoring ?", options:["Surveiller la fréquence des rééquilibrages","Surveiller le lag","Surveiller les offsets","Surveiller les topics"], correctAnswer:"Surveiller la fréquence des rééquilibrages", explanation:"Des rééquilibrages trop fréquents dégradent les performances.", tip:"Métrique : kafka.consumer:type=consumer-coordinator-metrics,name=rebalance-total." },
+    { thematic:"Débutant", question:"Comment obtenir des métriques sur les threads du broker ?", options:["java.lang:type=Threading","kafka.server:type=ThreadPool","kafka.utils:type=Thread","kafka.network:type=Thread"], correctAnswer:"java.lang:type=Threading", explanation:"ThreadCount, PeakThreadCount, etc.", tip:"Surveillez les threads bloqués." },
+    { thematic:"Débutant", question:"Que signifie 'kafka.log:type=Log,name=LogFlushRateAndTimeMs' ?", options:["Taux de flush des logs sur disque","Taux de lecture","Taux de compression","Taux de réplication"], correctAnswer:"Taux de flush des logs sur disque", explanation:"Un flush trop fréquent peut impacter les performances.", tip:"Ajustez log.flush.interval.messages." },
+    { thematic:"Débutant", question:"Comment surveiller l'utilisation CPU du broker ?", options:["Métriques OS via monitoring système","java.lang:type=OperatingSystem","kafka.server:type=BrokerTopicMetrics,name=CpuUsage","Les deux premiers"], correctAnswer:"Les deux premiers", explanation:"Les métriques OS sont plus fiables.", tip:"Surveillez le CPU système et utilisateur." },
+    { thematic:"Débutant", question:"Quel est le port JMX typique pour un broker Kafka ?", options:["9999","9092","8083","2181"], correctAnswer:"9999", explanation:"Souvent configuré sur 9999, mais peut être personnalisé.", tip:"Ne pas exposer publiquement." },
+
+    // ------------------------- 10 AVANCÉ -------------------------
+    { thematic:"Avancé", question:"Comment surveiller les performances des fenêtres (windows) dans Kafka Streams ?", options:["Métriques spécifiques : commit-latency, process-latency, suppress-emit","kafka.streams:type=stream-metrics","kafka.streams:type=rocksdb","Toutes"], correctAnswer:"Toutes", explanation:"Les métriques Streams incluent latence de traitement, taille de fenêtre, etc.", tip:"Surveillez 'supressed-emit-rate'." },
+    { thematic:"Avancé", question:"Quelle métrique indique le nombre de messages supprimés par la rétention ?", options:["kafka.log:type=Log,name=LogCleanerDeletedMessagesPerSec","kafka.log:type=Log,name=LogRetentionDeletedMessages","kafka.server:type=BrokerTopicMetrics,name=DeletedMessagesPerSec","kafka.log:type=LogCleaner,name=CleanedMessagesPerSec"], correctAnswer:"kafka.log:type=Log,name=LogRetentionDeletedMessages", explanation:"Nombre de messages supprimés par la politique de rétention.", tip:"Utile pour estimer le taux d'expiration." },
+    { thematic:"Avancé", question:"Comment détecter une dérive temporelle (clock drift) dans les timestamps des messages ?", options:["Comparer le timestamp du message avec le temps du broker","Utiliser kafka-dump-log","Vérifier les logs","Impossible"], correctAnswer:"Comparer le timestamp du message avec le temps du broker", explanation:"Un écart important peut indiquer des producteurs mal configurés.", tip:"Métrique : kafka.log:type=Log,name=LogAppendTimeMs." },
+    { thematic:"Avancé", question:"Quelle métrique permet de surveiller le taux de création de nouveaux segments de log ?", options:["kafka.log:type=Log,name=LogRollTimeMs","kafka.log:type=Log,name=LogRollCount","kafka.log:type=Log,name=NumLogSegments","kafka.log:type=Log,name=LogSegmentCount"], correctAnswer:"kafka.log:type=Log,name=LogRollCount", explanation:"Taux de création de nouveaux segments. Un taux élevé peut indiquer des segments trop petits.", tip:"Ajustez log.segment.bytes." },
+    { thematic:"Avancé", question:"Comment configurer des alertes avancées sur le lag avec Prometheus ?", options:["Utiliser le recording rule pour calculer le taux de croissance du lag","kafka_consumer_lag > 1000","sum(kafka_consumer_lag) by (consumer_group) > 10000","Toutes"], correctAnswer:"Toutes", explanation:"Le lag absolu et son taux de croissance sont utiles.", tip:"Un lag qui augmente constamment est problématique." },
+    { thematic:"Avancé", question:"Quelle métrique JMX pour le nombre de messages non nettoyables dans un log compacté ?", options:["kafka.log:type=LogCleanerManager,name=MaxDirtyPercent","kafka.log:type=LogCleanerManager,name=DirtyPercent","kafka.log:type=LogCleaner,name=UncleanableSegments","kafka.log:type=LogCleaner,name=CleanerBackoffMs"], correctAnswer:"kafka.log:type=LogCleanerManager,name=MaxDirtyPercent", explanation:"Pourcentage de saleté maximal parmi toutes les partitions. Si > 50%, le cleaner est en retard.", tip:"Augmentez les threads de cleaner." },
+    { thematic:"Avancé", question:"Comment monitorer les transactions et exactly-once ?", options:["kafka.server:type=TransactionCoordinator,name=TransactionCount","kafka.server:type=TransactionCoordinator,name=AbortedTransactionCount","kafka.server:type=TransactionCoordinator,name=TransactionErrorCount","Toutes"], correctAnswer:"Toutes", explanation:"Les métriques transactionnelles aident à détecter les abandons ou erreurs.", tip:"Surveillez les aborts." },
+    { thematic:"Avancé", question:"Quelle métrique indique le temps passé en GC (garbage collection) sur le broker ?", options:["java.lang:type=GarbageCollector,name=*,CollectionTime","kafka.server:type=BrokerTopicMetrics,name=GcTimeMs","kafka.utils:type=JvmMetrics,name=GcTime","kafka.network:type=SocketServer,name=GcTime"], correctAnswer:"java.lang:type=GarbageCollector,name=*,CollectionTime", explanation:"Un temps GC élevé impacte la latence.", tip:"Alerter si GC > 10% du temps." },
+    { thematic:"Avancé", question:"Comment surveiller l'état des tâches de standby dans Kafka Streams ?", options:["kafka.streams:type=stream-processor-node-metrics,name=standby-tasks","kafka.streams:type=stream-metrics,name=standby-task-count","kafka.streams:type=task-manager,name=standby-task-count","kafka.streams:type=stream-thread,name=standby-task-count"], correctAnswer:"kafka.streams:type=stream-metrics,name=standby-task-count", explanation:"Nombre de tâches standby actives.", tip:"Doit être égal à num.standby.replicas." },
+    { thematic:"Avancé", question:"Quel outil permet de visualiser la répartition des leaders et des ISR dans un cluster ?", options:["Cruise Control","Kafka Manager","Confluent Control Center","Tous"], correctAnswer:"Tous", explanation:"Cruise Control offre des recommandations d'équilibrage.", tip:"Utilisez Cruise Control pour l'auto-équilibrage." },
+
+    // ------------------------- 10 CERTIFICATION (ENGLISH) -------------------------
+    { thematic:"Certification (EN)", question:"Which metric indicates the total number of messages produced to a topic?", options:["kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec,topic=*","kafka.server:type=BrokerTopicMetrics,name=MessagesInTotal,topic=*","kafka.server:type=BrokerTopicMetrics,name=TotalMessagesIn","kafka.producer:type=producer-metrics,name=total-messages"], correctAnswer:"kafka.server:type=BrokerTopicMetrics,name=MessagesInTotal,topic=*", explanation:"The total count (not rate) is 'MessagesInTotal'.", tip:"Use rate for throughput, total for cumulative." },
+    { thematic:"Certification (EN)", question:"What does the metric 'kafka.controller:type=ControllerStats,name=ActiveControllerCount' value mean if it's 0?", options:["No active controller (cluster unavailable)","One controller","Controller election in progress","Multiple controllers"], correctAnswer:"No active controller (cluster unavailable)", explanation:"Exactly one controller must be active.", tip:"Alert if value != 1." },
+    { thematic:"Certification (EN)", question:"How to monitor Kafka Connect task failures?", options:["GET /connectors/<name>/tasks/<id>/status","JMX metrics","kafka-connect-status topic","All of the above"], correctAnswer:"All of the above", explanation:"REST API gives state, JMX gives metrics, internal topic stores status.", tip:"Monitor the status topic for lag." },
+    { thematic:"Certification (EN)", question:"Which metric is critical for detecting a slow consumer?", options:["records-lag-max","records-consumed-rate","fetch-rate","commit-rate"], correctAnswer:"records-lag-max", explanation:"High lag indicates the consumer cannot keep up.", tip:"Set alert threshold based on acceptable delay." },
+    { thematic:"Certification (EN)", question:"What is the purpose of the `kafka.tools.DumpLogSegments` tool in monitoring?", options:["Inspect log segments for corruption or unexpected data","Dump metrics","Delete log segments","Compress logs"], correctAnswer:"Inspect log segments for corruption or unexpected data", explanation:"Useful for forensic debugging when metrics show anomalies.", tip:"Run with --print-data-log to see messages." },
+    { thematic:"Certification (EN)", question:"Which JMX bean exposes the number of under-replicated partitions?", options:["kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions","kafka.controller:type=ControllerStats,name=UnderReplicatedPartitions","kafka.server:type=BrokerTopicMetrics,name=UnderReplicatedPartitions","kafka.cluster:type=Partition,name=UnderReplicated"], correctAnswer:"kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions", explanation:"This metric is a gauge. Non-zero means data at risk.", tip:"Alert immediately when > 0." },
+    { thematic:"Certification (EN)", question:"How can you monitor the size of the request queue in a broker?", options:["kafka.network:type=RequestChannel,name=RequestQueueSize","kafka.server:type=BrokerTopicMetrics,name=RequestQueueSize","kafka.network:type=SocketServer,name=RequestQueueSize","kafka.controller:type=ControllerStats,name=RequestQueueSize"], correctAnswer:"kafka.network:type=RequestChannel,name=RequestQueueSize", explanation:"A growing request queue indicates broker overload.", tip:"Alert if size > (num.io.threads * 2)." },
+    { thematic:"Certification (EN)", question:"What does the metric `kafka.log:type=Log,name=Size` represent?", options:["Current size of the log in bytes","Number of segments","Number of messages","Compression ratio"], correctAnswer:"Current size of the log in bytes", explanation:"For a partition, shows storage usage.", tip:"Monitor to avoid disk full." },
+    { thematic:"Certification (EN)", question:"Which tool can monitor Kafka consumer lag across multiple clusters and provide a REST API?", options:["Burrow","Kafka Exporter","Prometheus","JMXTrans"], correctAnswer:"Burrow", explanation:"Burrow was built by LinkedIn specifically for lag monitoring.", tip:"It calculates the lag and predicts if consumer is stuck." },
+    { thematic:"Certification (EN)", question:"What is the default JMX port for Kafka Connect workers?", options:["None (must be configured)","8083","9999","9092"], correctAnswer:"None (must be configured)", explanation:"JMX must be enabled explicitly with JVM flags, no default port.", tip:"Set -Dcom.sun.management.jmxremote.port=9999." }
+];
+
+console.log("Banque de questions Monitoring Kafka chargée : " + QUESTIONS_BANK.length);
+
+// ======================= LOGIQUE DU QUIZ =======================
+let currentQuestions = [];
+let userAnswers = [];
+let currentIdx = 0;
+let score = 0;
+
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function filterByDomains() {
+    const domains = [];
+    if (document.getElementById("dom-beginner").checked) domains.push("Débutant");
+    if (document.getElementById("dom-advanced").checked) domains.push("Avancé");
+    if (document.getElementById("dom-cert").checked) domains.push("Certification (EN)");
+    if (domains.length === 0) return QUESTIONS_BANK;
+    return QUESTIONS_BANK.filter(q => domains.includes(q.thematic));
+}
+
+function startQuiz() {
+    let count = parseInt(document.getElementById("question-count").value);
+    let filtered = filterByDomains();
+    if (filtered.length < count) count = filtered.length;
+    currentQuestions = shuffle(filtered).slice(0, count);
+    userAnswers = new Array(currentQuestions.length).fill(null);
+    score = 0;
+    currentIdx = 0;
+    document.getElementById("settings-panel").classList.add("d-none");
+    document.getElementById("quiz-content").classList.remove("d-none");
+    updateScore();
+    displayQuestion(0);
+}
+
+function displayQuestion(idx) {
+    const q = currentQuestions[idx];
+    document.getElementById("question-text").innerText = q.question;
+    const badgeSpan = document.getElementById("thematic-badge");
+    badgeSpan.innerText = q.thematic;
+    let badgeClass = "badge-beginner";
+    if (q.thematic === "Avancé") badgeClass = "badge-advanced";
+    if (q.thematic === "Certification (EN)") badgeClass = "badge-cert";
+    badgeSpan.className = "thematic-badge " + badgeClass;
+    
+    const container = document.getElementById("options-container");
+    container.innerHTML = "";
+    const shuffledOpts = shuffle([...q.options]);
+    shuffledOpts.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.className = "btn option-btn";
+        btn.onclick = () => selectAnswer(btn, opt, idx);
+        container.appendChild(btn);
+    });
+    document.getElementById("explanation-box").classList.add("d-none");
+    if (userAnswers[idx] !== null) showFeedback(idx);
+    updateProgress();
+    updateNav();
+}
+
+function selectAnswer(btn, selected, idx) {
+    if (userAnswers[idx] !== null) return;
+    const q = currentQuestions[idx];
+    const isCorrect = (selected === q.correctAnswer);
+    if (isCorrect) score++;
+    userAnswers[idx] = { selected, correct: q.correctAnswer, isCorrect };
+    updateScore();
+    showFeedback(idx);
+}
+
+function showFeedback(idx) {
+    const ans = userAnswers[idx];
+    if (!ans) return;
+    const q = currentQuestions[idx];
+    const btns = document.querySelectorAll(".option-btn");
+    btns.forEach(btn => {
+        btn.disabled = true;
+        if (btn.innerText === ans.correct) btn.classList.add("correct");
+        if (btn.innerText === ans.selected && !ans.isCorrect) btn.classList.add("incorrect");
+    });
+    document.getElementById("explanation-text").innerHTML = q.explanation;
+    document.getElementById("explanation-title").innerHTML = ans.isCorrect ? "✅ Correct !" : "❌ Incorrect";
+    document.getElementById("explanation-box").classList.remove("d-none");
+    const tipDiv = document.getElementById("tip-box");
+    if (q.tip) {
+        document.getElementById("tip-text").innerHTML = q.tip;
+        tipDiv.classList.remove("d-none");
+    } else {
+        tipDiv.classList.add("d-none");
+    }
+}
+
+function updateProgress() {
+    const perc = ((currentIdx + 1) / currentQuestions.length) * 100;
+    document.getElementById("progress-bar").style.width = perc + "%";
+    document.getElementById("question-counter").innerText = `Question ${currentIdx+1}/${currentQuestions.length}`;
+}
+
+function updateScore() {
+    document.getElementById("current-score").innerText = `Score: ${score}/${currentQuestions.length}`;
+}
+
+function updateNav() {
+    document.getElementById("prev-btn").disabled = (currentIdx === 0);
+    const isLast = (currentIdx === currentQuestions.length - 1);
+    document.getElementById("next-btn").classList.toggle("d-none", isLast);
+    document.getElementById("finish-btn").classList.toggle("d-none", !isLast);
+}
+
+function next() {
+    if (currentIdx < currentQuestions.length - 1) {
+        currentIdx++;
+        displayQuestion(currentIdx);
+    }
+}
+
+function prev() {
+    if (currentIdx > 0) {
+        currentIdx--;
+        displayQuestion(currentIdx);
+    }
+}
+
+function finish() {
+    showModal();
+}
+
+function showModal() {
+    const percent = (score / currentQuestions.length) * 100;
+    document.getElementById("final-score-percentage").innerText = `${percent.toFixed(0)}%`;
+    document.getElementById("final-score-text").innerHTML = `${score}/${currentQuestions.length} bonnes réponses`;
+    
+    let beginnerCorrect = 0, advancedCorrect = 0, certCorrect = 0;
+    let beginnerTotal = 0, advancedTotal = 0, certTotal = 0;
+    userAnswers.forEach((a, i) => {
+        if (a) {
+            const theme = currentQuestions[i].thematic;
+            if (theme === "Débutant") { beginnerTotal++; if (a.isCorrect) beginnerCorrect++; }
+            else if (theme === "Avancé") { advancedTotal++; if (a.isCorrect) advancedCorrect++; }
+            else { certTotal++; if (a.isCorrect) certCorrect++; }
+        }
+    });
+    const beginnerPct = beginnerTotal ? (beginnerCorrect / beginnerTotal) * 100 : 0;
+    const advancedPct = advancedTotal ? (advancedCorrect / advancedTotal) * 100 : 0;
+    const certPct = certTotal ? (certCorrect / certTotal) * 100 : 0;
+    document.getElementById("beginner-skill").style.width = beginnerPct + "%";
+    document.getElementById("advanced-skill").style.width = advancedPct + "%";
+    document.getElementById("cert-skill").style.width = certPct + "%";
+    
+    let recos = "";
+    if (percent >= 80) recos = "Excellent ! Vous maîtrisez le monitoring Kafka (JMX, métriques, alertes).";
+    else if (percent >= 60) recos = "Bien, mais approfondissez les métriques spécifiques (Streams, Connect, lag).";
+    else recos = "Revoyez les bases du monitoring : JMX, outils CLI, métriques essentielles.";
+    document.getElementById("final-recommendations").innerHTML = `<div class="alert alert-info">${recos}</div>`;
+    document.getElementById("short-term").innerHTML = "Pratiquez avec JConsole sur un broker local, explorez les MBeans.";
+    document.getElementById("long-term").innerHTML = "Pour la certification, apprenez à interpréter les métriques et configurer des alertes (Prometheus/Grafana).";
+    
+    new bootstrap.Modal(document.getElementById("resultsModal")).show();
+}
+
+function restart() {
+    document.getElementById("settings-panel").classList.remove("d-none");
+    document.getElementById("quiz-content").classList.add("d-none");
+    const modal = bootstrap.Modal.getInstance(document.getElementById("resultsModal"));
+    if (modal) modal.hide();
+}
+
+// Événements
+document.getElementById("start-quiz-btn").onclick = startQuiz;
+document.getElementById("next-btn").onclick = next;
+document.getElementById("prev-btn").onclick = prev;
+document.getElementById("finish-btn").onclick = finish;
+document.getElementById("restart-quiz-btn").onclick = restart;
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
