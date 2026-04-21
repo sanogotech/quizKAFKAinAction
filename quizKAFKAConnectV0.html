@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kafka Connect & Debezium CDC · 80 questions · Débutant → Certification</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:linear-gradient(145deg,#0b1120,#1a2639);padding:1.5rem;min-height:100vh;}
+        .quiz-wrapper{max-width:1200px;margin:0 auto;}
+        .quiz-card{background:rgba(255,255,255,0.98);border-radius:2rem;overflow:hidden;box-shadow:0 25px 45px -12px rgba(0,0,0,0.4);}
+        .quiz-header{background:linear-gradient(135deg,#1a1e2c,#2d3e50);padding:2rem;color:white;border-bottom:4px solid #e63946;}
+        .badge-kafka{background:#e63946;padding:0.3rem 1.2rem;border-radius:40px;font-weight:600;font-size:0.85rem;display:inline-block;}
+        .progress-container{background:#f1f5f9;margin:1.5rem;padding:1rem;border-radius:1rem;}
+        .progress-bar-custom{background:linear-gradient(90deg,#f4a261,#e63946);}
+        .thematic-badge{display:inline-flex;align-items:center;gap:0.4rem;padding:0.4rem 1rem;border-radius:50px;font-weight:600;font-size:0.8rem;margin-bottom:1rem;}
+        .badge-beginner{background:#e0f2fe;color:#0369a1;}
+        .badge-advanced{background:#fae8ff;color:#86198f;}
+        .badge-cert{background:#fef3c7;color:#92400e;}
+        .option-btn{width:100%;text-align:left;padding:0.9rem 1.2rem;margin-bottom:0.7rem;border:1.5px solid #e2e8f0;border-radius:1rem;background:white;font-weight:500;transition:0.2s;}
+        .option-btn:hover:not([disabled]){border-color:#e63946;background:#fff5f5;transform:translateY(-2px);}
+        .option-btn.correct{background:#ecfdf5;border-color:#10b981;color:#065f46;}
+        .option-btn.incorrect{background:#fef2f2;border-color:#f97316;color:#7f1d1d;}
+        .explanation-box{padding:1rem;border-radius:1rem;background:#f8fafc;border-left:5px solid #e63946;margin-top:1.2rem;}
+        .tip-box{background:#fffbeb;border-left:4px solid #f4a261;padding:0.7rem;border-radius:0.8rem;margin-top:0.8rem;}
+        .btn-kafka{background:#e63946;color:white;border:none;}
+        .btn-kafka:hover{background:#b91c1c;transform:translateY(-2px);}
+        .final-score{font-size:3.5rem;font-weight:800;background:linear-gradient(135deg,#e63946,#f4a261);-webkit-background-clip:text;background-clip:text;color:transparent;}
+        @media (max-width:768px){body{padding:0.8rem;}.quiz-header h1{font-size:1.5rem;}}
+    </style>
+</head>
+<body>
+<div class="quiz-wrapper">
+    <div class="quiz-card">
+        <div class="quiz-header">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div><h1><i class="fas fa-plug me-2"></i> Kafka Connect & Debezium · Quiz complet</h1><p class="mb-0 opacity-75">80 questions : 60 débutant · 10 avancé · 10 certification (EN)</p></div>
+                <div><span class="badge-kafka"><i class="fas fa-database"></i> Niveau Connect/CDC</span></div>
+            </div>
+        </div>
+
+        <div id="settings-panel" class="p-4">
+            <h4><i class="fas fa-sliders-h"></i> Configuration</h4>
+            <div class="row g-3 mt-2">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Nombre de questions</label>
+                    <select id="question-count" class="form-select">
+                        <option value="20">20 questions (découverte)</option>
+                        <option value="40">40 questions (standard)</option>
+                        <option value="80" selected>80 questions (complet)</option>
+                    </select>
+                </div>
+                <div class="col-md-7 d-flex align-items-end"><button id="start-quiz-btn" class="btn btn-kafka w-100 py-2"><i class="fas fa-play"></i> Démarrer le quiz</button></div>
+            </div>
+            <div class="mt-4">
+                <h6><i class="fas fa-tags"></i> Thèmes</h6>
+                <div class="row">
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-beginner" checked> <label>📘 Débutant (60)</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-advanced" checked> <label>⚙️ Avancé (10)</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-cert" checked> <label>🌍 Certification EN (10)</label></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz-content" class="d-none">
+            <div class="progress-container">
+                <div class="d-flex justify-content-between"><span id="question-counter" class="fw-bold">Question 1 / 80</span><span id="current-score" class="fw-bold text-danger">Score: 0</span></div>
+                <div class="progress mt-2" style="height: 10px;"><div id="progress-bar" class="progress-bar progress-bar-custom" style="width:0%"></div></div>
+            </div>
+            <div class="px-4 pb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div id="thematic-badge" class="thematic-badge">Débutant</div>
+                        <h3 id="question-text" class="fs-4 fw-semibold mb-4"></h3>
+                        <div id="options-container"></div>
+                        <div id="explanation-box" class="explanation-box d-none">
+                            <h5 id="explanation-title"><i class="fas fa-info-circle"></i> Explication</h5>
+                            <p id="explanation-text"></p>
+                            <div id="tip-box" class="tip-box d-none"><i class="fas fa-lightbulb text-warning"></i> <strong>À retenir :</strong> <span id="tip-text"></span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-between mt-4 gap-2">
+                    <button id="prev-btn" class="btn btn-outline-secondary" disabled><i class="fas fa-chevron-left"></i> Précédent</button>
+                    <button id="next-btn" class="btn btn-kafka">Suivant <i class="fas fa-chevron-right"></i></button>
+                    <button id="finish-btn" class="btn btn-outline-success d-none">Terminer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="resultsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white"><h5 class="modal-title"><i class="fas fa-plug"></i> Résultat · Kafka Connect & Debezium</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body p-4 text-center"><div class="final-score" id="final-score-percentage">0%</div><p id="final-score-text" class="lead"></p>
+            <div class="row"><div class="col-md-4"><div class="bg-light p-2 rounded"><div class="progress"><div id="beginner-skill" class="progress-bar bg-danger" style="width:0%"></div></div><p class="mt-1 small">Débutant</p></div></div>
+            <div class="col-md-4"><div class="bg-light p-2 rounded"><div class="progress"><div id="advanced-skill" class="progress-bar bg-warning" style="width:0%"></div></div><p class="mt-1 small">Avancé</p></div></div>
+            <div class="col-md-4"><div class="bg-light p-2 rounded"><div class="progress"><div id="cert-skill" class="progress-bar bg-success" style="width:0%"></div></div><p class="mt-1 small">Certification</p></div></div></div>
+            <hr><div id="final-recommendations"></div><p id="short-term" class="mt-2"></p><p id="long-term"></p></div>
+            <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button><button id="restart-quiz-btn" class="btn btn-kafka">Recommencer</button></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ======================= BANQUE DE 80 QUESTIONS KAFKA CONNECT & DEBEZIUM =======================
+const QUESTIONS_BANK = [
+    // ------------------------- 60 DÉBUTANT -------------------------
+    { thematic:"Débutant", question:"Qu'est-ce que Kafka Connect ?", options:["Un framework pour intégrer Kafka avec des systèmes externes","Une base de données","Un outil de monitoring","Un langage de streaming"], correctAnswer:"Un framework pour intégrer Kafka avec des systèmes externes", explanation:"Kafka Connect permet d'importer/exporter des données entre Kafka et d'autres systèmes (bases de données, fichiers, cloud).", tip:"Il fonctionne en mode standalone ou distribué." },
+    { thematic:"Débutant", question:"Quelle est la différence entre un connecteur source et un connecteur sink ?", options:["Source importe dans Kafka, sink exporte depuis Kafka","Source exporte, sink importe","Source pour fichiers, sink pour bases","Aucune différence"], correctAnswer:"Source importe dans Kafka, sink exporte depuis Kafka", explanation:"Un connecteur source lit depuis un système externe et écrit dans Kafka. Un sink lit depuis Kafka et écrit vers un système externe.", tip:"Exemple : JDBC source (MySQL → Kafka), JDBC sink (Kafka → PostgreSQL)." },
+    { thematic:"Débutant", question:"Qu'est-ce qu'une tâche (task) dans Kafka Connect ?", options:["Une unité de travail parallélisée d'un connecteur","Un thread","Un worker","Une configuration"], correctAnswer:"Une unité de travail parallélisée d'un connecteur", explanation:"Chaque connecteur peut avoir plusieurs tâches pour paralléliser le traitement.", tip:"Le nombre de tâches est configurable via tasks.max." },
+    { thematic:"Débutant", question:"Que sont les workers dans Kafka Connect ?", options:["Les processus qui exécutent les connecteurs et les tâches","Les brokers Kafka","Les topics","Les clients"], correctAnswer:"Les processus qui exécutent les connecteurs et les tâches", explanation:"Les workers sont les nœuds du cluster Connect. Ils distribuent les tâches.", tip:"En mode distribué, plusieurs workers forment un cluster." },
+    { thematic:"Débutant", question:"Comment déployer Kafka Connect en mode distribué ?", options:["connect-distributed.sh","connect-standalone.sh","kafka-connect-start.sh","connect-cluster.sh"], correctAnswer:"connect-distributed.sh", explanation:"connect-distributed.sh démarre un worker en mode distribué (cluster).", tip:"Utilisez connect-standalone.sh pour le développement." },
+    { thematic:"Débutant", question:"Quelle API REST permet de gérer les connecteurs ?", options:["Port 8083 par défaut","Port 9092","Port 8080","Port 2181"], correctAnswer:"Port 8083 par défaut", explanation:"L'API REST de Kafka Connect écoute sur le port 8083 (configurable).", tip:"Exemple : curl http://localhost:8083/connectors" },
+    { thematic:"Débutant", question:"Comment lister tous les connecteurs actifs via l'API REST ?", options:["GET /connectors","GET /connectors/list","GET /connectors/status","GET /connectors/all"], correctAnswer:"GET /connectors", explanation:"curl -X GET http://localhost:8083/connectors", tip:"Ajoutez ?expand=info&expand=status pour plus de détails." },
+    { thematic:"Débutant", question:"Qu'est-ce qu'un converter dans Kafka Connect ?", options:["Convertit les données entre le format du système et Kafka","Un type de connecteur","Un outil de compression","Un SMT"], correctAnswer:"Convertit les données entre le format du système et Kafka", explanation:"Les converters (JSON, Avro, Protobuf) sérialisent/désérialisent les messages.", tip:"key.converter et value.converter sont configurables." },
+    { thematic:"Débutant", question:"Que signifie SMT (Single Message Transform) ?", options:["Une transformation appliquée à chaque message individuellement","Un type de connecteur","Un mode de déploiement","Un outil de monitoring"], correctAnswer:"Une transformation appliquée à chaque message individuellement", explanation:"Les SMT permettent de modifier, filtrer ou renommer les champs des messages.", tip:"Exemple : MaskField, InsertField, RegexRouter." },
+    { thematic:"Débutant", question:"Qu'est-ce que Debezium ?", options:["Une plateforme CDC (Change Data Capture) basée sur Kafka Connect","Un connecteur JDBC","Un outil de compression","Un langage de requête"], correctAnswer:"Une plateforme CDC (Change Data Capture) basée sur Kafka Connect", explanation:"Debezium capture les changements (INSERT, UPDATE, DELETE) des bases de données en temps réel.", tip:"Supporte MySQL, PostgreSQL, MongoDB, Oracle, etc." },
+    { thematic:"Débutant", question:"Que signifie CDC (Change Data Capture) ?", options:["Capture des modifications de données en temps réel","Compression de données","Chiffrement des données","Déduplication"], correctAnswer:"Capture des modifications de données en temps réel", explanation:"CDC écoute les logs (binlog, WAL) et propage chaque changement.", tip:"Utilisé pour la réplication, les caches, les data lakes." },
+    { thematic:"Débutant", question:"Quelle source de CDC utilise Debezium pour MySQL ?", options:["Le binlog (binary log)","Le WAL","L'oplog","Le redo log"], correctAnswer:"Le binlog (binary log)", explanation:"Debezium MySQL lit le binlog avec le format ROW.", tip:"Activez binlog_format=ROW." },
+    { thematic:"Débutant", question:"Quelle source de CDC utilise Debezium pour PostgreSQL ?", options:["Le WAL (Write-Ahead Log)","Le binlog","Le journal des transactions","Le redo log"], correctAnswer:"Le WAL (Write-Ahead Log)", explanation:"Debezium PostgreSQL utilise le décodage logique (plugin pgoutput ou wal2json).", tip:"Configurez wal_level=logical." },
+    { thematic:"Débutant", question:"Qu'est-ce qu'un snapshot dans Debezium ?", options:["Une capture initiale de l'état existant d'une table","Une sauvegarde","Un instantané de configuration","Un type de fenêtre"], correctAnswer:"Une capture initiale de l'état existant d'une table", explanation:"Au premier démarrage, Debezium prend un snapshot de la table avant de suivre les changements.", tip:"snapshot.mode contrôle ce comportement." },
+    { thematic:"Débutant", question:"Quelle configuration désactive le snapshot ?", options:["snapshot.mode=never","snapshot.mode=off","snapshot.enabled=false","snapshot.mode=skip"], correctAnswer:"snapshot.mode=never", explanation:"snapshot.mode=never évite de prendre un snapshot initial.", tip:"Utile si la table est déjà initialisée." },
+    { thematic:"Débutant", question:"Que signifie le paramètre 'table.include.list' ?", options:["Liste des tables à capturer (inclusion)","Liste des tables à exclure","Liste des bases","Liste des colonnes"], correctAnswer:"Liste des tables à capturer (inclusion)", explanation:"Exemple : \"public.users,public.orders\".", tip:"Utilisez des expressions régulières." },
+    { thematic:"Débutant", question:"Que signifie le paramètre 'column.exclude.list' ?", options:["Exclut certaines colonnes des messages CDC","Inclut des colonnes","Exclut des tables","Exclut des bases"], correctAnswer:"Exclut certaines colonnes des messages CDC", explanation:"Utile pour masquer des données sensibles (ex: mot de passe).", tip:"Exemple : \"password,ssn\"." },
+    { thematic:"Débutant", question:"Quel est le format typique d'un message Debezium ?", options:["Un struct avec before, after, source, op, ts_ms","Un simple JSON","Un Avro","Un CSV"], correctAnswer:"Un struct avec before, after, source, op, ts_ms", explanation:"Le message contient l'état avant, l'état après, les métadonnées source, l'opération (c=create, u=update, d=delete).", tip:"op='r' pour snapshot." },
+    { thematic:"Débutant", question:"Que signifie 'op' = 'd' dans un message Debezium ?", options:["DELETE (suppression)","UPDATE","CREATE","READ"], correctAnswer:"DELETE (suppression)", explanation:"op='d' indique une suppression. Le champ 'before' contient la ligne supprimée.", tip:"'after' est null pour un delete." },
+    { thematic:"Débutant", question:"Comment démarrer un connecteur Debezium via l'API REST ?", options:["POST /connectors avec la configuration JSON","PUT /connector","GET /debezium/start","START CONNECTOR"], correctAnswer:"POST /connectors avec la configuration JSON", explanation:"curl -X POST -H 'Content-Type: application/json' --data @config.json http://localhost:8083/connectors", tip:"Le nom du connecteur est dans la configuration." },
+    { thematic:"Débutant", question:"Quelle commande supprime un connecteur ?", options:["DELETE /connectors/<name>","REMOVE /connectors/<name>","DELETE CONNECTOR <name>","DROP CONNECTOR"], correctAnswer:"DELETE /connectors/<name>", explanation:"curl -X DELETE http://localhost:8083/connectors/my-connector", tip:"La suppression arrête les tâches et nettoie les ressources." },
+    { thematic:"Débutant", question:"Qu'est-ce que le 'offset storage' dans Kafka Connect ?", options:["Un topic Kafka qui stocke la position des connecteurs source","Un fichier local","Une base de données","Un cache mémoire"], correctAnswer:"Un topic Kafka qui stocke la position des connecteurs source", explanation:"Les offsets permettent de reprendre la lecture après un redémarrage.", tip:"Topic par défaut : connect-offsets." },
+    { thematic:"Débutant", question:"Quelle propriété définit le topic des offsets ?", options:["offset.storage.topic","offset.topic","storage.offset.topic","connect.offset.topic"], correctAnswer:"offset.storage.topic", explanation:"Dans connect-distributed.properties : offset.storage.topic=connect-offsets", tip:"Doit avoir une réplication élevée." },
+    { thematic:"Débutant", question:"Que signifie 'tasks.max' dans la configuration d'un connecteur ?", options:["Nombre maximum de tâches parallèles","Nombre de threads","Nombre de workers","Nombre de partitions"], correctAnswer:"Nombre maximum de tâches parallèles", explanation:"Kafka Connect peut paralléliser le travail en plusieurs tâches.", tip:"Le nombre réel de tâches est limité par les partitions." },
+    { thematic:"Débutant", question:"Comment redémarrer un connecteur défaillant via l'API REST ?", options:["POST /connectors/<name>/restart","PUT /connectors/<name>/restart","GET /connectors/<name>/restart","POST /connectors/<name>/reset"], correctAnswer:"POST /connectors/<name>/restart", explanation:"curl -X POST http://localhost:8083/connectors/my-connector/restart", tip:"Utile en cas d'erreur temporaire." },
+    { thematic:"Débutant", question:"Comment redémarrer une tâche spécifique ?", options:["POST /connectors/<name>/tasks/<taskId>/restart","POST /connectors/<name>/restart/task/<taskId>","GET /connectors/<name>/tasks/<taskId>/restart","PUT /connectors/<name>/tasks/<taskId>/restart"], correctAnswer:"POST /connectors/<name>/tasks/<taskId>/restart", explanation:"Exemple : curl -X POST http://localhost:8083/connectors/my-connector/tasks/0/restart", tip:"Voir les IDs des tâches avec /connectors/<name>/status." },
+    { thematic:"Débutant", question:"Qu'est-ce qu'une Dead Letter Queue (DLQ) dans Kafka Connect ?", options:["Un topic où sont envoyés les messages en erreur","Un topic normal","Une file d'attente de suppression","Un outil de logging"], correctAnswer:"Un topic où sont envoyés les messages en erreur", explanation:"Les DLQ évitent la perte de données en cas d'erreur de traitement.", tip:"Configurée avec errors.deadletterqueue.topic.name." },
+    { thematic:"Débutant", question:"Quelle propriété active la tolérance aux erreurs ?", options:["errors.tolerance=all","skip.errors=true","tolerate.errors=yes","errors.ignore=true"], correctAnswer:"errors.tolerance=all", explanation:"errors.tolerance=all ignore les erreurs et continue. Par défaut, none (fatale).", tip:"Combinez avec DLQ." },
+    { thematic:"Débutant", question:"Qu'est-ce que le mode 'standalone' de Kafka Connect ?", options:["Un seul worker, pas de cluster","Un mode distribué","Un mode sans Kafka","Un mode debug"], correctAnswer:"Un seul worker, pas de cluster", explanation:"Standalone est simple pour le développement ou les tests.", tip:"Utilisez connect-standalone.sh." },
+    { thematic:"Débutant", question:"Comment installer un plugin (connecteur) dans Kafka Connect ?", options:["Déposer le JAR dans le répertoire plugin.path","Utiliser l'API REST","Utiliser Maven","Compiler le plugin"], correctAnswer:"Déposer le JAR dans le répertoire plugin.path", explanation:"Kafka Connect scanne plugin.path pour charger les connecteurs.", tip:"Redémarrez les workers après ajout." },
+    { thematic:"Débutant", question:"Quel connecteur permet de lire des fichiers ?", options:["FileStreamSourceConnector","JDBCSourceConnector","Debezium","S3SourceConnector"], correctAnswer:"FileStreamSourceConnector", explanation:"Il lit un fichier ligne par ligne et écrit dans Kafka.", tip:"Inclus dans Kafka par défaut." },
+    { thematic:"Débutant", question:"Quel connecteur permet d'écrire dans des fichiers ?", options:["FileStreamSinkConnector","JDBCSinkConnector","ElasticsearchSink","S3Sink"], correctAnswer:"FileStreamSinkConnector", explanation:"Il lit un topic Kafka et écrit dans un fichier.", tip:"Utile pour les tests." },
+    { thematic:"Débutant", question:"Qu'est-ce que le JDBC Source Connector ?", options:["Importe des données d'une base relationnelle vers Kafka","Exporte de Kafka vers une base","Connecte deux bases","Un SMT"], correctAnswer:"Importe des données d'une base relationnelle vers Kafka", explanation:"Il peut utiliser le mode incrementing ou timestamp pour les requêtes.", tip:"Mode bulk ou incrementing." },
+    { thematic:"Débutant", question:"Qu'est-ce que le JDBC Sink Connector ?", options:["Exporte des données de Kafka vers une base SQL","Importe d'une base","Convertit les formats","Filtre les messages"], correctAnswer:"Exporte des données de Kafka vers une base SQL", explanation:"Il écrit les messages Kafka dans une table SQL.", tip:"Support upsert et delete." },
+    { thematic:"Débutant", question:"Qu'est-ce qu'un SMT 'MaskField' ?", options:["Masque la valeur d'un champ (ex: remplace par ***)","Supprime un champ","Ajoute un champ","Renomme un champ"], correctAnswer:"Masque la valeur d'un champ (ex: remplace par ***)", explanation:"Utilisé pour les données sensibles.", tip:"transforms.mask.fields=credit_card" },
+    { thematic:"Débutant", question:"Qu'est-ce qu'un SMT 'RegexRouter' ?", options:["Renomme le topic de destination avec une regex","Filtre les messages","Ajoute une regex","Supprime des champs"], correctAnswer:"Renomme le topic de destination avec une regex", explanation:"Permet de router dynamiquement les messages vers des topics.", tip:"Exemple : regex=\"(.*)\", replacement=\"prefix-$1\"." },
+    { thematic:"Débutant", question:"Comment voir le statut d'un connecteur ?", options:["GET /connectors/<name>/status","GET /connectors/<name>/state","GET /connectors/<name>/health","GET /connectors/<name>/info"], correctAnswer:"GET /connectors/<name>/status", explanation:"Retourne l'état du connecteur et de ses tâches (RUNNING, FAILED, PAUSED).", tip:"Utilisez curl." },
+    { thematic:"Débutant", question:"Comment mettre en pause un connecteur ?", options:["PUT /connectors/<name>/pause","POST /connectors/<name>/pause","GET /connectors/<name>/pause","PUT /connectors/<name>/stop"], correctAnswer:"PUT /connectors/<name>/pause", explanation:"La pause stoppe le traitement sans supprimer le connecteur.", tip:"Reprenez avec /resume." },
+    { thematic:"Débutant", question:"Quelle est l'utilité du paramètre 'key.converter.schemas.enable' ?", options:["Inclure ou non le schéma dans le message","Activer les clés","Désactiver les schémas","Configurer Avro"], correctAnswer:"Inclure ou non le schéma dans le message", explanation:"false pour un JSON simple, true pour un message avec schéma.", tip:"Pour Avro, généralement true." },
+    { thematic:"Débutant", question:"Qu'est-ce que le Schema Registry dans l'écosystème Confluent ?", options:["Un service central pour stocker et valider les schémas","Une base de données","Un connecteur","Un outil de streaming"], correctAnswer:"Un service central pour stocker et valider les schémas", explanation:"Il permet l'évolution des schémas (Avro, JSON, Protobuf) sans casser les applications.", tip:"Utilisé par les converters Avro." },
+    { thematic:"Débutant", question:"Quelle propriété définit l'URL du Schema Registry pour un connecteur ?", options:["key.converter.schema.registry.url","schema.registry.url","avro.schema.registry","registry.url"], correctAnswer:"key.converter.schema.registry.url", explanation:"Exemple : key.converter.schema.registry.url=http://schema-registry:8081", tip:"Indispensable pour AvroConverter." },
+    { thematic:"Débutant", question:"Qu'est-ce qu'un connecteur S3 Sink ?", options:["Exporte les données de Kafka vers Amazon S3","Importe de S3","Synchronise S3 avec Kafka","Un connecteur source"], correctAnswer:"Exporte les données de Kafka vers Amazon S3", explanation:"Très utilisé pour les data lakes.", tip:"Partitionnement temporel." },
+    { thematic:"Débutant", question:"Qu'est-ce qu'un connecteur Elasticsearch Sink ?", options:["Indexe les messages Kafka dans Elasticsearch","Lit depuis Elasticsearch","Connecte Elasticsearch à Kafka","Un connecteur source"], correctAnswer:"Indexe les messages Kafka dans Elasticsearch", explanation:"Pour la recherche et l'analyse en temps réel.", tip:"Configurez write.method=upsert." },
+    { thematic:"Débutant", question:"Comment augmenter le nombre de tâches d'un connecteur existant ?", options:["Mettre à jour la configuration via API REST (PUT /connectors/<name>/config)","Redémarrer le connecteur","Supprimer et recréer","Modifier le fichier de propriétés"], correctAnswer:"Mettre à jour la configuration via API REST (PUT /connectors/<name>/config)", explanation:"Changer tasks.max et envoyer la nouvelle config.", tip:"Le connecteur redémarre avec le nouveau nombre de tâches." },
+    { thematic:"Débutant", question:"Que signifie l'état 'FAILED' pour une tâche ?", options:["La tâche a rencontré une erreur fatale","La tâche est en pause","La tâche est arrêtée","La tâche fonctionne"], correctAnswer:"La tâche a rencontré une erreur fatale", explanation:"Consultez les logs pour diagnostiquer.", tip:"Redémarrez la tâche avec /restart." },
+    { thematic:"Débutant", question:"Comment visualiser la configuration d'un connecteur ?", options:["GET /connectors/<name>/config","GET /connectors/<name>","GET /connectors/<name>/settings","GET /connectors/<name>/props"], correctAnswer:"GET /connectors/<name>/config", explanation:"curl -X GET http://localhost:8083/connectors/my-connector/config", tip:"Renvoie la configuration JSON." },
+    { thematic:"Débutant", question:"Que fait la propriété 'transforms' dans un connecteur ?", options:["Définit une chaîne de SMT","Définit le convertisseur","Définit le nombre de tâches","Définit le topic"], correctAnswer:"Définit une chaîne de SMT", explanation:"transforms=rename,uppercase. Puis transforms.rename.type=...", tip:"L'ordre des transformations est important." },
+    { thematic:"Débutant", question:"Quelle est la commande pour lister les plugins disponibles ?", options:["GET /connector-plugins","GET /plugins","GET /connectors/plugins","GET /plugins/list"], correctAnswer:"GET /connector-plugins", explanation:"curl http://localhost:8083/connector-plugins", tip:"Affiche les classes de connecteurs installées." },
+    { thematic:"Débutant", question:"Qu'est-ce qu'un connecteur HTTP Sink ?", options:["Envoie des messages Kafka vers des endpoints HTTP","Lit depuis HTTP","Convertit HTTP en Kafka","Un connecteur source"], correctAnswer:"Envoie des messages Kafka vers des endpoints HTTP", explanation:"Pour les webhooks ou les API REST.", tip:"Configurer http.api.url et request.method." },
+    { thematic:"Débutant", question:"Qu'est-ce que le paramètre 'poll.interval.ms' dans un connecteur source ?", options:["Intervalle entre deux lectures de la source","Intervalle de commit","Timeout de connexion","Intervalle de heartbeat"], correctAnswer:"Intervalle entre deux lectures de la source", explanation:"Pour les sources basées sur le polling (ex: JDBC).", tip:"Valeur par défaut 1000ms." },
+    { thematic:"Débutant", question:"Comment configurer un connecteur pour qu'il écrive dans plusieurs topics ?", options:["Utiliser topics.regex ou topics","Plusieurs sinks","Un seul topic par connecteur","Impossible"], correctAnswer:"Utiliser topics.regex ou topics", explanation:"Un connecteur sink peut s'abonner à plusieurs topics (liste ou regex).", tip:"topics=order,payment,user" },
+    { thematic:"Débutant", question:"Que signifie 'connector.class' dans la configuration ?", options:["La classe Java du connecteur","Le nom du connecteur","Le type de converter","Le nom du topic"], correctAnswer:"La classe Java du connecteur", explanation:"Exemple : io.debezium.connector.mysql.MySqlConnector", tip:"Doit être dans le plugin.path." },
+    { thematic:"Débutant", question:"Quelle propriété définit le serveur MySQL pour Debezium ?", options:["database.hostname","mysql.host","db.host","database.server"], correctAnswer:"database.hostname", explanation:"database.hostname=localhost", tip:"database.port=3306" },
+    { thematic:"Débutant", question:"Qu'est-ce que le 'database.server.id' dans Debezium MySQL ?", options:["Un ID unique pour le connecteur dans le cluster MySQL","L'ID du serveur Kafka","L'ID de la base","Un numéro de port"], correctAnswer:"Un ID unique pour le connecteur dans le cluster MySQL", explanation:"Il doit être unique parmi tous les slaves et connecteurs Debezium.", tip:"Généralement un nombre aléatoire." },
+    { thematic:"Débutant", question:"Que fait la propriété 'database.history.kafka.topic' ?", options:["Stocke l'historique des schémas DDL","Stocke les offsets","Stocke les messages","Stocke les logs d'erreur"], correctAnswer:"Stocke l'historique des schémas DDL", explanation:"Debezium utilise ce topic pour conserver les changements de structure des tables.", tip:"Topic unique par serveur de base." },
+    { thematic:"Débutant", question:"Qu'est-ce qu'un 'slot' dans Debezium PostgreSQL ?", options:["Un mécanisme de réplication logique pour conserver le WAL","Un type de table","Une partition","Un index"], correctAnswer:"Un mécanisme de réplication logique pour conserver le WAL", explanation:"Le slot garantit que le WAL n'est pas purgé tant que Debezium n'a pas lu les changements.", tip:"Nom configurable via slot.name." },
+    { thematic:"Débutant", question:"Comment réinitialiser un slot PostgreSQL ?", options:["DROP slot puis recréer","DELETE slot","RESET slot","TRUNCATE slot"], correctAnswer:"DROP slot puis recréer", explanation:"SELECT pg_drop_replication_slot('slot_name');", tip:"Attention, cela peut causer une perte de données." },
+
+    // ------------------------- 10 AVANCÉ -------------------------
+    { thematic:"Avancé", question:"Comment configurer Debezium pour éviter les snapshots répétés ?", options:["snapshot.mode=when_needed","snapshot.mode=never","snapshot.mode=initial_only","snapshot.mode=always"], correctAnswer:"snapshot.mode=when_needed", explanation:"when_needed ne prend un snapshot que si le connecteur n'a jamais enregistré d'offset.", tip:"Utile pour les reprises." },
+    { thematic:"Avancé", question:"Quelle est la meilleure pratique pour gérer les grandes tables lors du snapshot Debezium ?", options:["snapshot.fetch.size=5000","augmenter le timeout","snapshot.delay.ms=1000","utiliser snapshot.locking.mode=minimal"], correctAnswer:"snapshot.locking.mode=minimal", explanation:"Minimal réduit les locks sur les tables.", tip:"Pour MySQL, utiliser snapshot.locking.mode=none si possible." },
+    { thematic:"Avancé", question:"Comment optimiser un connecteur JDBC source pour un débit élevé ?", options:["batch.size=10000, poll.interval.ms=100","diminuer le batch","désactiver la compression","augmenter les threads"], correctAnswer:"batch.size=10000, poll.interval.ms=100", explanation:"Des batches plus gros et un polling plus rapide améliorent le débit.", tip:"Surveillez les métriques." },
+    { thematic:"Avancé", question:"Quelle configuration permet de transformer un message Debezium pour ne garder que le champ 'after' ?", options:["transforms.unwrap.type=io.debezium.transforms.ExtractNewRecordState","transforms.flatten","transforms.extract.after","transforms.remove.before"], correctAnswer:"transforms.unwrap.type=io.debezium.transforms.ExtractNewRecordState", explanation:"Ce SMT supprime le wrapper Debezium et ne garde que 'after'.", tip:"Très utilisé pour simplifier le payload." },
+    { thematic:"Avancé", question:"Comment configurer Debezium pour envoyer les suppressions (delete) en tant que messages tombstone ?", options:["transforms.unwrap.delete.handling.mode=rewrite","transforms.delete.tombstone=true","delete.handling.mode=drop","unwrap.delete.tombstone=true"], correctAnswer:"transforms.unwrap.delete.handling.mode=rewrite", explanation:"Rewriting envoie un message avec null pour la valeur (tombstone).", tip:"Utile pour la compaction." },
+    { thematic:"Avancé", question:"Quelle est la stratégie pour migrer un connecteur JDBC source d'un mode incrementing à timestamp+incrementing ?", options:["Ajouter timestamp.column.name","Changer le mode","Reconfigurer avec mode=timestamp+incrementing","Toutes ces réponses"], correctAnswer:"Toutes ces réponses", explanation:"mode=timestamp+incrementing combine les deux pour éviter les trous.", tip:"Nécessite une colonne monotone (id) et une colonne temps." },
+    { thematic:"Avancé", question:"Comment gérer les erreurs de désérialisation dans un connecteur sink ?", options:["errors.tolerance=all + DLQ","errors.ignore=true","skip.bad.messages","fail.fast"], correctAnswer:"errors.tolerance=all + DLQ", explanation:"Ainsi les messages corrompus sont redirigés vers la DLQ sans stopper le connecteur.", tip:"Surveillez la DLQ." },
+    { thematic:"Avancé", question:"Quel paramètre contrôle le nombre maximum de tentatives en cas d'erreur réseau pour un connecteur ?", options:["task.max.retries","max.retries","errors.retry.timeout","retry.backoff.ms"], correctAnswer:"task.max.retries", explanation:"Défaut : 10. Augmentez pour les réseaux instables.", tip:"Associé à task.retry.backoff.ms." },
+    { thematic:"Avancé", question:"Comment configurer Debezium pour capturer les changements de schéma (DDL) ?", options:["include.schema.changes=true","capture.ddl=true","schema.changes.enabled","ddl.capture=true"], correctAnswer:"include.schema.changes=true", explanation:"Par défaut, Debezium inclut les DDL dans le topic d'historique.", tip:"Utile pour les évolutions." },
+    { thematic:"Avancé", question:"Quelle est la différence entre un connecteur Debezium en mode 'initial' et 'initial_only' ?", options:["initial_only ne capture que le snapshot puis s'arrête","initial capture snapshot + streaming","initial_only ne prend pas de snapshot","initial_only ignore les streaming"], correctAnswer:"initial_only ne capture que le snapshot puis s'arrête", explanation:"initial_only est utile pour des migrations ponctuelles.", tip:"À ne pas utiliser pour du CDC continu." },
+
+    // ------------------------- 10 CERTIFICATION (ENGLISH) -------------------------
+    { thematic:"Certification (EN)", question:"What is the default REST API port for Kafka Connect?", options:["8083","8080","9092","8081"], correctAnswer:"8083", explanation:"The default port is 8083. Configurable with rest.port.", tip:"Check with curl http://localhost:8083/connectors." },
+    { thematic:"Certification (EN)", question:"Which SMT is used to rename the output topic?", options:["RegexRouter","RenameTopic","TopicRouter","RegexTopic"], correctAnswer:"RegexRouter", explanation:"RegexRouter uses regex to rewrite the topic name.", tip:"Example: transforms.route.regex = \"(.*)\", replacement = \"prefix-$1\"." },
+    { thematic:"Certification (EN)", question:"How to enable exactly-once delivery in Kafka Connect sink?", options:["Using idempotent producer and transactional boundaries","exactly.once=true","delivery.guarantee=exactly_once","sink.exactly.once"], correctAnswer:"Using idempotent producer and transactional boundaries", explanation:"Kafka Connect supports exactly-once via sink.transactional.boundary and idempotent producer.", tip:"Set sink.transactional.boundary=connector." },
+    { thematic:"Certification (EN)", question:"What does 'include.schema.changes' in Debezium do?", options:["Captures DDL changes in the history topic","Includes schema in each message","Captures schema evolution","Enables Avro"], correctAnswer:"Captures DDL changes in the history topic", explanation:"When true, DDL statements are written to the database history topic.", tip:"Useful for auditing schema changes." },
+    { thematic:"Certification (EN)", question:"Which connector mode is recommended for production (high availability)?", options:["Distributed mode","Standalone mode","Embedded mode","Local mode"], correctAnswer:"Distributed mode", explanation:"Distributed mode provides fault tolerance and scalability with multiple workers.", tip:"Use at least 3 workers." },
+    { thematic:"Certification (EN)", question:"What is the purpose of 'errors.deadletterqueue.topic.replication.factor'?", options:["Replication factor for the DLQ topic","Number of retries","DLQ retention","DLQ partition count"], correctAnswer:"Replication factor for the DLQ topic", explanation:"Ensures the DLQ topic is fault-tolerant.", tip:"Set to at least 3." },
+    { thematic:"Certification (EN)", question:"How to monitor the lag of a source connector?", options:["Monitor the consumer lag of the source connector's internal topics","Monitor the database","Check the connector status","Use JMX"], correctAnswer:"Monitor the consumer lag of the source connector's internal topics", explanation:"Source connectors write to Kafka; lag is measured from the source system's perspective.", tip:"For Debezium, monitor the database heartbeat." },
+    { thematic:"Certification (EN)", question:"What does 'transforms.unwrap.delete.handling.mode=rewrite' do?", options:["Sends a tombstone message for deletes","Drops delete events","Converts delete to update","Logs the delete"], correctAnswer:"Sends a tombstone message for deletes", explanation:"The tombstone (null value) allows Kafka log compaction to clean up deleted keys.", tip:"Essential for tables with primary keys." },
+    { thematic:"Certification (EN)", question:"Which property configures the directory for plugin JARs in Kafka Connect?", options:["plugin.path","plugin.dir","connector.plugin.path","connect.plugins"], correctAnswer:"plugin.path", explanation:"Comma-separated list of directories containing connector plugins.", tip:"Example: plugin.path=/usr/share/java,/etc/kafka/plugins" },
+    { thematic:"Certification (EN)", question:"How to resume a paused connector via REST API?", options:["PUT /connectors/<name>/resume","POST /connectors/<name>/resume","GET /connectors/<name>/resume","PUT /connectors/<name>/start"], correctAnswer:"PUT /connectors/<name>/resume", explanation:"curl -X PUT http://localhost:8083/connectors/my-connector/resume", tip:"Pause with /pause." }
+];
+
+console.log("Banque de questions Kafka Connect & Debezium chargée : " + QUESTIONS_BANK.length);
+
+// ======================= LOGIQUE DU QUIZ =======================
+let currentQuestions = [];
+let userAnswers = [];
+let currentIdx = 0;
+let score = 0;
+
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function filterByDomains() {
+    const domains = [];
+    if (document.getElementById("dom-beginner").checked) domains.push("Débutant");
+    if (document.getElementById("dom-advanced").checked) domains.push("Avancé");
+    if (document.getElementById("dom-cert").checked) domains.push("Certification (EN)");
+    if (domains.length === 0) return QUESTIONS_BANK;
+    return QUESTIONS_BANK.filter(q => domains.includes(q.thematic));
+}
+
+function startQuiz() {
+    let count = parseInt(document.getElementById("question-count").value);
+    let filtered = filterByDomains();
+    if (filtered.length < count) count = filtered.length;
+    currentQuestions = shuffle(filtered).slice(0, count);
+    userAnswers = new Array(currentQuestions.length).fill(null);
+    score = 0;
+    currentIdx = 0;
+    document.getElementById("settings-panel").classList.add("d-none");
+    document.getElementById("quiz-content").classList.remove("d-none");
+    updateScore();
+    displayQuestion(0);
+}
+
+function displayQuestion(idx) {
+    const q = currentQuestions[idx];
+    document.getElementById("question-text").innerText = q.question;
+    const badgeSpan = document.getElementById("thematic-badge");
+    badgeSpan.innerText = q.thematic;
+    let badgeClass = "badge-beginner";
+    if (q.thematic === "Avancé") badgeClass = "badge-advanced";
+    if (q.thematic === "Certification (EN)") badgeClass = "badge-cert";
+    badgeSpan.className = "thematic-badge " + badgeClass;
+    
+    const container = document.getElementById("options-container");
+    container.innerHTML = "";
+    const shuffledOpts = shuffle([...q.options]);
+    shuffledOpts.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.className = "btn option-btn";
+        btn.onclick = () => selectAnswer(btn, opt, idx);
+        container.appendChild(btn);
+    });
+    document.getElementById("explanation-box").classList.add("d-none");
+    if (userAnswers[idx] !== null) showFeedback(idx);
+    updateProgress();
+    updateNav();
+}
+
+function selectAnswer(btn, selected, idx) {
+    if (userAnswers[idx] !== null) return;
+    const q = currentQuestions[idx];
+    const isCorrect = (selected === q.correctAnswer);
+    if (isCorrect) score++;
+    userAnswers[idx] = { selected, correct: q.correctAnswer, isCorrect };
+    updateScore();
+    showFeedback(idx);
+}
+
+function showFeedback(idx) {
+    const ans = userAnswers[idx];
+    if (!ans) return;
+    const q = currentQuestions[idx];
+    const btns = document.querySelectorAll(".option-btn");
+    btns.forEach(btn => {
+        btn.disabled = true;
+        if (btn.innerText === ans.correct) btn.classList.add("correct");
+        if (btn.innerText === ans.selected && !ans.isCorrect) btn.classList.add("incorrect");
+    });
+    document.getElementById("explanation-text").innerHTML = q.explanation;
+    document.getElementById("explanation-title").innerHTML = ans.isCorrect ? "✅ Correct !" : "❌ Incorrect";
+    document.getElementById("explanation-box").classList.remove("d-none");
+    const tipDiv = document.getElementById("tip-box");
+    if (q.tip) {
+        document.getElementById("tip-text").innerHTML = q.tip;
+        tipDiv.classList.remove("d-none");
+    } else {
+        tipDiv.classList.add("d-none");
+    }
+}
+
+function updateProgress() {
+    const perc = ((currentIdx + 1) / currentQuestions.length) * 100;
+    document.getElementById("progress-bar").style.width = perc + "%";
+    document.getElementById("question-counter").innerText = `Question ${currentIdx+1}/${currentQuestions.length}`;
+}
+
+function updateScore() {
+    document.getElementById("current-score").innerText = `Score: ${score}/${currentQuestions.length}`;
+}
+
+function updateNav() {
+    document.getElementById("prev-btn").disabled = (currentIdx === 0);
+    const isLast = (currentIdx === currentQuestions.length - 1);
+    document.getElementById("next-btn").classList.toggle("d-none", isLast);
+    document.getElementById("finish-btn").classList.toggle("d-none", !isLast);
+}
+
+function next() {
+    if (currentIdx < currentQuestions.length - 1) {
+        currentIdx++;
+        displayQuestion(currentIdx);
+    }
+}
+
+function prev() {
+    if (currentIdx > 0) {
+        currentIdx--;
+        displayQuestion(currentIdx);
+    }
+}
+
+function finish() {
+    showModal();
+}
+
+function showModal() {
+    const percent = (score / currentQuestions.length) * 100;
+    document.getElementById("final-score-percentage").innerText = `${percent.toFixed(0)}%`;
+    document.getElementById("final-score-text").innerHTML = `${score}/${currentQuestions.length} bonnes réponses`;
+    
+    let beginnerCorrect = 0, advancedCorrect = 0, certCorrect = 0;
+    let beginnerTotal = 0, advancedTotal = 0, certTotal = 0;
+    userAnswers.forEach((a, i) => {
+        if (a) {
+            const theme = currentQuestions[i].thematic;
+            if (theme === "Débutant") { beginnerTotal++; if (a.isCorrect) beginnerCorrect++; }
+            else if (theme === "Avancé") { advancedTotal++; if (a.isCorrect) advancedCorrect++; }
+            else { certTotal++; if (a.isCorrect) certCorrect++; }
+        }
+    });
+    const beginnerPct = beginnerTotal ? (beginnerCorrect / beginnerTotal) * 100 : 0;
+    const advancedPct = advancedTotal ? (advancedCorrect / advancedTotal) * 100 : 0;
+    const certPct = certTotal ? (certCorrect / certTotal) * 100 : 0;
+    document.getElementById("beginner-skill").style.width = beginnerPct + "%";
+    document.getElementById("advanced-skill").style.width = advancedPct + "%";
+    document.getElementById("cert-skill").style.width = certPct + "%";
+    
+    let recos = "";
+    if (percent >= 80) recos = "Excellent ! Vous maîtrisez Kafka Connect et Debezium. Prêt pour la certification.";
+    else if (percent >= 60) recos = "Bien, mais revoyez les concepts avancés (SMT, optimisation, CDC).";
+    else recos = "Reprenez les bases (connecteurs source/sink, API REST, snapshot) puis réessayez.";
+    document.getElementById("final-recommendations").innerHTML = `<div class="alert alert-info">${recos}</div>`;
+    document.getElementById("short-term").innerHTML = "Pratiquez avec un connecteur fichier, puis JDBC, puis Debezium sur MySQL en Docker.";
+    document.getElementById("long-term").innerHTML = "Pour la certification, étudiez les SMT, la gestion des erreurs, le monitoring et les patterns CDC avancés.";
+    
+    new bootstrap.Modal(document.getElementById("resultsModal")).show();
+}
+
+function restart() {
+    document.getElementById("settings-panel").classList.remove("d-none");
+    document.getElementById("quiz-content").classList.add("d-none");
+    const modal = bootstrap.Modal.getInstance(document.getElementById("resultsModal"));
+    if (modal) modal.hide();
+}
+
+// Événements
+document.getElementById("start-quiz-btn").onclick = startQuiz;
+document.getElementById("next-btn").onclick = next;
+document.getElementById("prev-btn").onclick = prev;
+document.getElementById("finish-btn").onclick = finish;
+document.getElementById("restart-quiz-btn").onclick = restart;
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
