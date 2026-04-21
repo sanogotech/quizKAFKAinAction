@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kafka Tests · 80 questions · Débutant → Certification</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:linear-gradient(145deg,#0b1120,#1a2639);padding:1.5rem;min-height:100vh;}
+        .quiz-wrapper{max-width:1200px;margin:0 auto;}
+        .quiz-card{background:rgba(255,255,255,0.98);border-radius:2rem;overflow:hidden;box-shadow:0 25px 45px -12px rgba(0,0,0,0.4);}
+        .quiz-header{background:linear-gradient(135deg,#1a1e2c,#2d3e50);padding:2rem;color:white;border-bottom:4px solid #e63946;}
+        .badge-kafka{background:#e63946;padding:0.3rem 1.2rem;border-radius:40px;font-weight:600;font-size:0.85rem;display:inline-block;}
+        .progress-container{background:#f1f5f9;margin:1.5rem;padding:1rem;border-radius:1rem;}
+        .progress-bar-custom{background:linear-gradient(90deg,#f4a261,#e63946);}
+        .thematic-badge{display:inline-flex;align-items:center;gap:0.4rem;padding:0.4rem 1rem;border-radius:50px;font-weight:600;font-size:0.8rem;margin-bottom:1rem;}
+        .badge-beginner{background:#e0f2fe;color:#0369a1;}
+        .badge-advanced{background:#fae8ff;color:#86198f;}
+        .badge-cert{background:#fef3c7;color:#92400e;}
+        .option-btn{width:100%;text-align:left;padding:0.9rem 1.2rem;margin-bottom:0.7rem;border:1.5px solid #e2e8f0;border-radius:1rem;background:white;font-weight:500;transition:0.2s;}
+        .option-btn:hover:not([disabled]){border-color:#e63946;background:#fff5f5;transform:translateY(-2px);}
+        .option-btn.correct{background:#ecfdf5;border-color:#10b981;color:#065f46;}
+        .option-btn.incorrect{background:#fef2f2;border-color:#f97316;color:#7f1d1d;}
+        .explanation-box{padding:1rem;border-radius:1rem;background:#f8fafc;border-left:5px solid #e63946;margin-top:1.2rem;}
+        .tip-box{background:#fffbeb;border-left:4px solid #f4a261;padding:0.7rem;border-radius:0.8rem;margin-top:0.8rem;}
+        .btn-kafka{background:#e63946;color:white;border:none;}
+        .btn-kafka:hover{background:#b91c1c;transform:translateY(-2px);}
+        .final-score{font-size:3.5rem;font-weight:800;background:linear-gradient(135deg,#e63946,#f4a261);-webkit-background-clip:text;background-clip:text;color:transparent;}
+        @media (max-width:768px){body{padding:0.8rem;}.quiz-header h1{font-size:1.5rem;}}
+    </style>
+</head>
+<body>
+<div class="quiz-wrapper">
+    <div class="quiz-card">
+        <div class="quiz-header">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div><h1><i class="fas fa-vial me-2"></i> Kafka Tests · Quiz complet</h1><p class="mb-0 opacity-75">80 questions : 60 débutant · 10 avancé · 10 certification (EN)</p></div>
+                <div><span class="badge-kafka"><i class="fas fa-flask"></i> Niveau Test</span></div>
+            </div>
+        </div>
+
+        <div id="settings-panel" class="p-4">
+            <h4><i class="fas fa-sliders-h"></i> Configuration</h4>
+            <div class="row g-3 mt-2">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Nombre de questions</label>
+                    <select id="question-count" class="form-select">
+                        <option value="20">20 questions (découverte)</option>
+                        <option value="40">40 questions (standard)</option>
+                        <option value="80" selected>80 questions (complet)</option>
+                    </select>
+                </div>
+                <div class="col-md-7 d-flex align-items-end"><button id="start-quiz-btn" class="btn btn-kafka w-100 py-2"><i class="fas fa-play"></i> Démarrer le quiz</button></div>
+            </div>
+            <div class="mt-4">
+                <h6><i class="fas fa-tags"></i> Thèmes</h6>
+                <div class="row">
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-beginner" checked> <label>📘 Débutant (60)</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-advanced" checked> <label>⚙️ Avancé (10)</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-cert" checked> <label>🌍 Certification EN (10)</label></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz-content" class="d-none">
+            <div class="progress-container">
+                <div class="d-flex justify-content-between"><span id="question-counter" class="fw-bold">Question 1 / 80</span><span id="current-score" class="fw-bold text-danger">Score: 0</span></div>
+                <div class="progress mt-2" style="height: 10px;"><div id="progress-bar" class="progress-bar progress-bar-custom" style="width:0%"></div></div>
+            </div>
+            <div class="px-4 pb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div id="thematic-badge" class="thematic-badge">Débutant</div>
+                        <h3 id="question-text" class="fs-4 fw-semibold mb-4"></h3>
+                        <div id="options-container"></div>
+                        <div id="explanation-box" class="explanation-box d-none">
+                            <h5 id="explanation-title"><i class="fas fa-info-circle"></i> Explication</h5>
+                            <p id="explanation-text"></p>
+                            <div id="tip-box" class="tip-box d-none"><i class="fas fa-lightbulb text-warning"></i> <strong>À retenir :</strong> <span id="tip-text"></span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-between mt-4 gap-2">
+                    <button id="prev-btn" class="btn btn-outline-secondary" disabled><i class="fas fa-chevron-left"></i> Précédent</button>
+                    <button id="next-btn" class="btn btn-kafka">Suivant <i class="fas fa-chevron-right"></i></button>
+                    <button id="finish-btn" class="btn btn-outline-success d-none">Terminer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="resultsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white"><h5 class="modal-title"><i class="fas fa-vial"></i> Résultat · Tests Kafka</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body p-4 text-center"><div class="final-score" id="final-score-percentage">0%</div><p id="final-score-text" class="lead"></p>
+            <div class="row"><div class="col-md-4"><div class="bg-light p-2 rounded"><div class="progress"><div id="beginner-skill" class="progress-bar bg-danger" style="width:0%"></div></div><p class="mt-1 small">Débutant</p></div></div>
+            <div class="col-md-4"><div class="bg-light p-2 rounded"><div class="progress"><div id="advanced-skill" class="progress-bar bg-warning" style="width:0%"></div></div><p class="mt-1 small">Avancé</p></div></div>
+            <div class="col-md-4"><div class="bg-light p-2 rounded"><div class="progress"><div id="cert-skill" class="progress-bar bg-success" style="width:0%"></div></div><p class="mt-1 small">Certification</p></div></div></div>
+            <hr><div id="final-recommendations"></div><p id="short-term" class="mt-2"></p><p id="long-term"></p></div>
+            <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button><button id="restart-quiz-btn" class="btn btn-kafka">Recommencer</button></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ======================= BANQUE DE 80 QUESTIONS TESTS KAFKA =======================
+const QUESTIONS_BANK = [
+    // ------------------------- 60 DÉBUTANT -------------------------
+    { thematic:"Débutant", question:"Quel outil permet de tester une topologie Kafka Streams sans cluster Kafka réel ?", options:["TopologyTestDriver","MockConsumer","EmbeddedKafka","KafkaUnit"], correctAnswer:"TopologyTestDriver", explanation:"TopologyTestDriver simule l'exécution d'une topologie sans broker, idéal pour les tests unitaires.", tip:"Utilisez TestInputTopic et TestOutputTopic." },
+    { thematic:"Débutant", question:"Que permet de faire EmbeddedKafka ?", options:["Lancer un broker Kafka in-memory pour les tests d'intégration","Simuler une topologie","Mock les producteurs","Simuler un connecteur"], correctAnswer:"Lancer un broker Kafka in-memory pour les tests d'intégration", explanation:"EmbeddedKafka démarre un vrai broker Kafka en mémoire, utilisable avec Spring Kafka ou kafka-clients.", tip:"Nécessite la dépendance spring-kafka-test." },
+    { thematic:"Débutant", question:"Quelle dépendance Maven ajouter pour TopologyTestDriver ?", options:["kafka-streams-test-utils","kafka-test-utils","kafka-clients","kafka-streams"], correctAnswer:"kafka-streams-test-utils", explanation:"Ce module contient TopologyTestDriver, TestInputTopic, TestOutputTopic.", tip:"Scope test." },
+    { thematic:"Débutant", question:"Comment injecter des messages dans TopologyTestDriver ?", options:["TestInputTopic.pipeInput()","TestOutputTopic.readValue()","TestDriver.send()","KafkaStreams.send()"], correctAnswer:"TestInputTopic.pipeInput()", explanation:"TestInputTopic.pipeInput(key, value) simule l'arrivée d'un message.", tip:"pipeInput() peut prendre aussi un timestamp." },
+    { thematic:"Débutant", question:"Comment lire les résultats depuis TopologyTestDriver ?", options:["TestOutputTopic.readValue()","TestOutputTopic.readKeyValue()","TestInputTopic.readOutput()","TestDriver.getOutput()"], correctAnswer:"TestOutputTopic.readValue()", explanation:"TestOutputTopic.readValue() retourne la valeur du message suivant.", tip:"readValuesToList() pour tous les messages." },
+    { thematic:"Débutant", question:"Quelle annotation JUnit 5 est souvent utilisée avec EmbeddedKafka ?", options:["@EmbeddedKafka","@KafkaTest","@BrokerTest","@EmbeddedBroker"], correctAnswer:"@EmbeddedKafka", explanation:"Annotation de spring-kafka-test pour démarrer un broker embarqué avant les tests.", tip:"Configurable avec partitions, topics, etc." },
+    { thematic:"Débutant", question:"Comment créer un producteur Mock pour tester une application sans Kafka ?", options:["MockProducer","MockKafkaProducer","FakeProducer","TestProducer"], correctAnswer:"MockProducer", explanation:"MockProducer (org.apache.kafka.clients.producer.MockProducer) implémente Producer et permet de vérifier les appels.", tip:"Vérifiez history() après les appels." },
+    { thematic:"Débutant", question:"Comment créer un consommateur Mock pour les tests ?", options:["MockConsumer","MockKafkaConsumer","FakeConsumer","TestConsumer"], correctAnswer:"MockConsumer", explanation:"MockConsumer permet de simuler des assignations de partitions et des messages.", tip:"Utilisez addRecord() pour alimenter." },
+    { thematic:"Débutant", question:"Quelle classe permet de capturer les messages produits par un MockProducer ?", options:["MockProducer.history()","MockProducer.records()","MockProducer.messages()","MockProducer.getRecords()"], correctAnswer:"MockProducer.history()", explanation:"history() retourne une liste des ProducerRecord envoyés.", tip:"Vérifiez la clé, la valeur et le topic." },
+    { thematic:"Débutant", question:"Comment tester qu'un message a bien été produit sur un topic avec MockProducer ?", options:["Assertions sur history()","Vérifier le broker","Utiliser un consommateur réel","Tester les logs"], correctAnswer:"Assertions sur history()", explanation:"history() contient tous les messages envoyés.", tip:"Assert.assertEquals(1, producer.history().size())." },
+    { thematic:"Débutant", question:"Qu'est-ce que TestInputTopic dans TopologyTestDriver ?", options:["Un utilitaire pour envoyer des messages dans la topologie","Un utilitaire pour lire la sortie","Un mock de consommateur","Un mock de producteur"], correctAnswer:"Un utilitaire pour envoyer des messages dans la topologie", explanation:"Il simule les partitions d'entrée.", tip:"Création via driver.createInputTopic()." },
+    { thematic:"Débutant", question:"Quelle méthode de TestOutputTopic lit toutes les valeurs sous forme de liste ?", options:["readValuesToList()","readAllValues()","getValues()","valuesToList()"], correctAnswer:"readValuesToList()", explanation:"readValuesToList() bloque jusqu'à ce que le nombre demandé de messages soit disponible ou que le timeout soit atteint.", tip:"Utile pour les tests de fenêtrage." },
+    { thematic:"Débutant", question:"Que permet de faire l'outil kafka-verifiable-producer ?", options:["Envoyer des messages avec séquence pour validation","Tester les performances","Simuler un cluster","Lire des messages"], correctAnswer:"Envoyer des messages avec séquence pour validation", explanation:"Il envoie des messages avec un numéro de séquence ; kafka-verifiable-consumer vérifie la complétude.", tip:"Utilisé dans les tests d'intégration système." },
+    { thematic:"Débutant", question:"Que permet de faire l'outil kafka-verifiable-consumer ?", options:["Consommer et signaler les messages manquants/dupliqués","Produire des messages","Tester les performances","Simuler des pannes"], correctAnswer:"Consommer et signaler les messages manquants/dupliqués", explanation:"Il vérifie l'intégrité du flux.", tip:"Souvent utilisé avec kafka-verifiable-producer." },
+    { thematic:"Débutant", question:"Comment réinitialiser l'état d'une application Kafka Streams pour un test ?", options:["KafkaStreams.cleanUp()","streams.reset()","streams.deleteState()","streams.clear()"], correctAnswer:"KafkaStreams.cleanUp()", explanation:"cleanUp() supprime les stores locaux du répertoire state.dir.", tip:"À appeler avant de démarrer un nouveau test." },
+    { thematic:"Débutant", question:"Quelle propriété utiliser pour isoler les tests Streams (éviter conflit de state.dir) ?", options:["state.dir avec un chemin unique","application.id différent","num.stream.threads","commit.interval.ms"], correctAnswer:"state.dir avec un chemin unique", explanation:"Chaque test doit avoir son propre répertoire d'état.", tip:"Utilisez Files.createTempDirectory()." },
+    { thematic:"Débutant", question:"Qu'est-ce que le package kafka.streams.test ?", options:["Un package pour les tests (TopologyTestDriver)","Un package de production","Un package de monitoring","Un package de connect"], correctAnswer:"Un package pour les tests (TopologyTestDriver)", explanation:"Il contient les classes d'aide aux tests.", tip:"Ne pas utiliser en production." },
+    { thematic:"Débutant", question:"Comment simuler le passage du temps dans TopologyTestDriver ?", options:["TestDriver.advanceWallClockTime()","TimeUnit.sleep()","Thread.sleep()","StreamsBuilder.advanceTime()"], correctAnswer:"TestDriver.advanceWallClockTime()", explanation:"Avance l'horloge virtuelle pour déclencher les fenêtres et les purge.", tip:"Utile pour les fenêtres temporelles." },
+    { thematic:"Débutant", question:"Quelle dépendance Maven pour EmbeddedKafka avec Spring Boot ?", options:["spring-kafka-test","kafka-spring-test","embedded-kafka-spring","spring-boot-starter-test"], correctAnswer:"spring-kafka-test", explanation:"Ce starter inclut EmbeddedKafka, KafkaTestUtils, etc.", tip:"Ajoutez-la en scope test." },
+    { thematic:"Débutant", question:"Que permet de faire KafkaTestUtils (Spring Kafka) ?", options:["Attendre qu'un message soit consommé, obtenir des records","Créer des topics","Configurer des brokers","Simuler des erreurs"], correctAnswer:"Attendre qu'un message soit consommé, obtenir des records", explanation:"KafkaTestUtils.getSingleRecord() est très pratique.", tip:"Utilisez avec EmbeddedKafka." },
+    { thematic:"Débutant", question:"Comment tester un consommateur Kafka avec MockConsumer ?", options:["MockConsumer.addRecord() puis réveiller le consommateur","Utiliser un vrai broker","Utiliser un producteur mock","Tester avec JUnit"], correctAnswer:"MockConsumer.addRecord() puis réveiller le consommateur", explanation:"Ajoutez des records à des partitions assignées, puis poll().", tip:"Utilisez schedulePollTask() pour simuler le temps." },
+    { thematic:"Débutant", question:"Que signifie 'test coverage' pour les applications Kafka ?", options:["Mesurer le pourcentage de code testé","Nombre de tests","Temps d'exécution des tests","Nombre de bugs"], correctAnswer:"Mesurer le pourcentage de code testé", explanation:"Jacoco, par exemple, peut mesurer la couverture des topologies Kafka Streams.", tip:"Visez >80%." },
+    { thematic:"Débutant", question:"Comment tester qu'un SMT (Single Message Transform) fonctionne correctement ?", options:["Instancier le SMT, configurer, appliquer sur un record","Déployer en production","Utiliser un connecteur réel","Utiliser Kafka Connect"], correctAnswer:"Instancier le SMT, configurer, appliquer sur un record", explanation:"Les SMT sont testables unitairement avec des ConnectRecord factices.", tip:"Testez aussi la configuration invalide." },
+    { thematic:"Débutant", question:"Quelle classe de test utiliser pour simuler un connecteur source ?", options:["SourceConnectorTest","MockSourceConnector","ConnectorTest","SourceTaskTest"], correctAnswer:"SourceConnectorTest", explanation:"SourceConnectorTest est une classe utilitaire (non officielle) mais on peut mocker Task et Context.", tip:"Utilisez Mockito pour les dépendances." },
+    { thematic:"Débutant", question:"Comment vérifier qu'un message a bien été écrit dans un topic avec EmbeddedKafka ?", options:["KafkaTestUtils.getSingleRecord()","Consommer avec un vrai consommateur","Lire le fichier de log","Vérifier le offset"], correctAnswer:"KafkaTestUtils.getSingleRecord()", explanation:"Cette méthode attend et retourne le premier message du topic.", tip:"Timeout paramétrable." },
+    { thematic:"Débutant", question:"Quel est l'avantage de TopologyTestDriver par rapport à EmbeddedKafka pour les tests Streams ?", options:["Plus rapide (pas de broker réel)","Plus réaliste","Support de Exactly-once","Support des fenêtres"], correctAnswer:"Plus rapide (pas de broker réel)", explanation:"TopologyTestDriver s'exécute en mémoire, sans réseau ni disque.", tip:"Idéal pour des centaines de tests." },
+    { thematic:"Débutant", question:"Que faut-il configurer dans TopologyTestDriver pour les serdes ?", options:["Les sérialiseurs sont définis dans la topologie ou les propriétés","Rien, il utilise des sérialiseurs par défaut","Il faut les passer dans le constructeur","Uniquement pour les clés"], correctAnswer:"Les sérialiseurs sont définis dans la topologie ou les propriétés", explanation:"Les serdes des topics d'entrée/sortie doivent correspondre à ceux de la topologie.", tip:"Utilisez Serdes.serdeFrom() si nécessaire." },
+    { thematic:"Débutant", question:"Comment tester les exceptions dans un processeur Kafka Streams ?", options:["Lancer l'exception dans un test et vérifier","Attraper dans le producteur","Ignorer","Tester avec un vrai cluster"], correctAnswer:"Lancer l'exception dans un test et vérifier", explanation:"Avec TopologyTestDriver, les exceptions sont propagées, vous pouvez les capturer.", tip:"Utilisez assertThrows." },
+    { thematic:"Débutant", question:"Quelle est l'utilité de la méthode `close()` sur KafkaStreams dans un test ?", options:["Fermer proprement l'application et libérer les ressources","Stopper le test","Supprimer les topics","Commit les offsets"], correctAnswer:"Fermer proprement l'application et libérer les ressources", explanation:"Dans les tests, il est important d'appeler close() pour libérer les threads.", tip:"Utilisez try-with-resources ou @AfterEach." },
+    { thematic:"Débutant", question:"Comment tester une KTable matérialisée avec TopologyTestDriver ?", options:["Accéder au store via testDriver.getKeyValueStore()","Lire le topic changelog","Utiliser TestOutputTopic","Impossible"], correctAnswer:"Accéder au store via testDriver.getKeyValueStore()", explanation:"testDriver.getKeyValueStore(storeName) permet d'interroger l'état de la KTable.", tip:"Le store doit être nommé avec Materialized.as()." },
+    { thematic:"Débutant", question:"Quel outil peut générer des données de test pour Kafka ?", options:["kafka-datagen","kafka-producer-perf-test","kafka-console-producer","kafka-verifiable-producer"], correctAnswer:"kafka-datagen", explanation:"kafka-datagen (Confluent) génère des données synthétiques basées sur un schéma Avro.", tip:"Utile pour les tests de charge." },
+    { thematic:"Débutant", question:"Comment tester la résilience d'un consommateur (reprise après erreur) ?", options:["Simuler une exception dans le traitement, vérifier le commit","Redémarrer le broker","Couper le réseau","Tester avec un mock"], correctAnswer:"Simuler une exception dans le traitement, vérifier le commit", explanation:"Avec MockConsumer, vous pouvez contrôler les erreurs et vérifier les offsets.", tip:"Vérifiez que le consommateur relit le même message." },
+    { thematic:"Débutant", question:"Qu'est-ce qu'un 'test de bout en bout' pour Kafka ?", options:["Produire et consommer des messages avec un vrai cluster","Tester une classe unitaire","Tester un connecteur","Tester un SMT"], correctAnswer:"Produire et consommer des messages avec un vrai cluster", explanation:"Les tests end-to-end valident l'intégration complète avec un broker réel.", tip:"Souvent réalisés avec EmbeddedKafka ou Testcontainers." },
+    { thematic:"Débutant", question:"Quelle bibliothèque permet de lancer un cluster Kafka dans un conteneur Docker pour les tests ?", options:["Testcontainers","EmbeddedKafka","MockKafka","KafkaUnit"], correctAnswer:"Testcontainers", explanation:"Testcontainers gère des conteneurs Docker pour les tests d'intégration.", tip:"Très réaliste mais plus lent." },
+    { thematic:"Débutant", question:"Comment vérifier qu'un message est bien sérialisé/désérialisé correctement ?", options:["Tester le serializer/deserializer avec des objets","Utiliser un producteur réel","Vérifier les logs","Compiler le code"], correctAnswer:"Tester le serializer/deserializer avec des objets", explanation:"Créez un objet, sérialisez, désérialisez, comparez.", tip:"Utilisez Serdes.serdeFrom().serializer().serialize()" },
+    { thematic:"Débutant", question:"Quel est le rôle de @TempDir dans les tests Kafka Streams ?", options:["Créer un répertoire temporaire pour state.dir","Créer un topic temporaire","Créer un broker temporaire","Créer un fichier de logs"], correctAnswer:"Créer un répertoire temporaire pour state.dir", explanation:"Chaque test peut avoir son propre répertoire d'état pour éviter les conflits.", tip:"Utilisez avec Files.createTempDirectory." },
+    { thematic:"Débutant", question:"Comment tester la configuration d'un producteur (acks, retries) ?", options:["Configurer un MockProducer et vérifier les appels","Utiliser un vrai broker","Vérifier les logs","Tester avec un consommateur"], correctAnswer:"Configurer un MockProducer et vérifier les appels", explanation:"MockProducer expose les paramètres de configuration.", tip:"Vérifiez que les retries sont respectés." },
+    { thematic:"Débutant", question:"Que permet d'isoler l'annotation @DirtiesContext dans les tests Spring Kafka ?", options:["Recharger le contexte après chaque test","Nettoyer les topics","Supprimer les brokers","Réinitialiser les consommateurs"], correctAnswer:"Recharger le contexte après chaque test", explanation:"Utile pour éviter les interférences entre tests avec EmbeddedKafka.", tip:"Peut ralentir les tests." },
+    { thematic:"Débutant", question:"Comment tester un connecteur sink sans écrire dans une vraie base ?", options:["MockSinkTask","MockDatabase","Utiliser un vrai test","Embedded database"], correctAnswer:"MockSinkTask", explanation:"Vous pouvez mocker l'interface SinkTask et vérifier les appels put().", tip:"Testez les méthodes open(), put(), flush(), close()." },
+    { thematic:"Débutant", question:"Quelle est la bonne pratique pour nommer les topics dans les tests ?", options:["Utiliser des noms uniques (ex: topic-test-${timestamp})","Toujours utiliser 'test-topic'","Utiliser des UUID","Utiliser des noms de production"], correctAnswer:"Utiliser des noms uniques (ex: topic-test-${timestamp})", explanation:"Évite les collisions entre tests parallèles.", tip:"JUnit 5 peut générer des noms dynamiques." },
+    { thematic:"Débutant", question:"Comment mesurer les performances d'un producteur en test ?", options:["kafka-producer-perf-test","JMeter","TopologyTestDriver","MockProducer"], correctAnswer:"kafka-producer-perf-test", explanation:"Cet outil officiel mesure le débit et la latence.", tip:"Testez avec différents batch.size." },
+    { thematic:"Débutant", question:"Que signifie 'test double' dans le contexte Kafka ?", options:["Mock, stub, fake pour remplacer des composants réels","Deux tests identiques","Un test paramétré","Un test de performance"], correctAnswer:"Mock, stub, fake pour remplacer des composants réels", explanation:"MockProducer, MockConsumer, etc. sont des test doubles.", tip:"Utilisez-les pour isoler la logique métier." },
+    { thematic:"Débutant", question:"Comment tester qu'un message est bien partitionné selon la clé ?", options:["Calculer la partition attendue avec le partitionneur et comparer","Vérifier dans le broker","Lire les logs","Utiliser un consommateur"], correctAnswer:"Calculer la partition attendue avec le partitionneur et comparer", explanation:"Vous pouvez mocker le partitionneur et vérifier l'appel.", tip:"Testez aussi la cohérence du partitionnement." },
+    { thematic:"Débutant", question:"Quel est le rôle de la méthode `clear()` sur MockConsumer ?", options:["Supprimer tous les records ajoutés","Réinitialiser les offsets","Fermer le consommateur","Commit les offsets"], correctAnswer:"Supprimer tous les records ajoutés", explanation:"Utile entre deux scénarios de test.", tip:"Appelez clear() puis addRecord()." },
+    { thematic:"Débutant", question:"Comment tester l'ordre des messages dans une partition avec TopologyTestDriver ?", options:["Les messages sont lus dans l'ordre d'injection","Utiliser un timestamp","Vérifier les offsets","Impossible"], correctAnswer:"Les messages sont lus dans l'ordre d'injection", explanation:"TopologyTestDriver respecte l'ordre FIFO par partition.", tip:"Injectez les messages dans l'ordre attendu." },
+    { thematic:"Débutant", question:"Quelle dépendance ajouter pour utiliser Testcontainers Kafka ?", options:["testcontainers-kafka","kafka-testcontainers","embedded-kafka-testcontainers","docker-kafka"], correctAnswer:"testcontainers-kafka", explanation:"Le module spécifique pour Kafka.", tip:"Version ≥ 1.16.0." },
+    { thematic:"Débutant", question:"Comment obtenir un EmbeddedKafka broker avec un nombre de partitions spécifique ?", options:["@EmbeddedKafka(partitions=6)","@KafkaTest(partitions=6)","@BrokerConfig(partitions=6)","@EmbeddedBroker(partitions=6)"], correctAnswer:"@EmbeddedKafka(partitions=6)", explanation:"L'annotation spring-kafka-test accepte partitions, topics, etc.", tip:"Par défaut, une seule partition." },
+    { thematic:"Débutant", question:"Quelle est la différence entre TopologyTestDriver et Testcontainers pour tester Kafka Streams ?", options:["TopologyTestDriver est plus rapide mais moins réaliste (pas de sérialisation réseau)","Testcontainers est plus rapide","Ils sont identiques","TopologyTestDriver nécessite Docker"], correctAnswer:"TopologyTestDriver est plus rapide mais moins réaliste (pas de sérialisation réseau)", explanation:"TopologyTestDriver s'exécute en mémoire, Testcontainers lance un vrai broker.", tip:"Utilisez les deux : unitaires avec TTD, intégration avec Testcontainers." },
+    { thematic:"Débutant", question:"Comment tester qu'un connecteur Debezium capture bien les changements ?", options:["Utiliser EmbeddedKafka + EmbeddedDatabase (H2) + DebeziumEmbedded","Tester en production","Mock le binlog","Utiliser un vrai cluster MySQL"], correctAnswer:"Utiliser EmbeddedKafka + EmbeddedDatabase (H2) + DebeziumEmbedded", explanation:"Debezium fournit un module de test pour lancer un broker et une base embarquée.", tip:"Dépendance debezium-embedded." },
+    { thematic:"Débutant", question:"Quelle classe permet de démarrer un cluster Kafka in-memory (sans Docker) pour les tests ?", options:["KafkaTestCluster","EmbeddedKafkaCluster (kafka-junit)","MockKafkaCluster","InMemoryKafka"], correctAnswer:"EmbeddedKafkaCluster (kafka-junit)", explanation:"Le projet kafka-junit fournit une classe EmbeddedKafkaCluster.", tip:"Utilisez @ClassRule." },
+    { thematic:"Débutant", question:"Comment tester qu'une application Kafka Streams traite exactement une fois (exactly-once) ?", options:["Injecter un message, stopper brutalement, redémarrer, vérifier l'absence de doublon","Vérifier la configuration","Tester avec un producteur idempotent","Utiliser TopologyTestDriver"], correctAnswer:"Injecter un message, stopper brutalement, redémarrer, vérifier l'absence de doublon", explanation:"C'est un test d'intégration difficile mais essentiel.", tip:"Utilisez Testcontainers et kill -9 sur le process." },
+    { thematic:"Débutant", question:"Quel est l'intérêt de la méthode `commitSync()` dans les tests de consommateurs ?", options:["S'assurer que les offsets sont bien persistés avant de vérifier","Augmenter les performances","Simuler un commit asynchrone","Tester les erreurs"], correctAnswer:"S'assurer que les offsets sont bien persistés avant de vérifier", explanation:"Dans un test, vous pouvez attendre le commit pour valider l'état.", tip:"MockConsumer peut simuler des commits." },
+    { thematic:"Débutant", question:"Comment tester un SMT qui transforme la clé d'un message ?", options:["Appliquer le SMT sur un record, vérifier la clé","Tester avec un connecteur réel","Vérifier le topic de sortie","Utiliser TopologyTestDriver"], correctAnswer:"Appliquer le SMT sur un record, vérifier la clé", explanation:"Un SMT est une fonction pure : testez-la unitairement.", tip:"Utilisez ConnectRecord avec clé et valeur." },
+    { thematic:"Débutant", question:"Que permet l'outil 'kafka-dump-log' dans un contexte de test ?", options:["Inspecter le contenu d'un segment de log pour déboguer","Supprimer un log","Créer un topic","Lire un message"], correctAnswer:"Inspecter le contenu d'un segment de log pour déboguer", explanation:"Utile pour valider manuellement ce qui a été écrit sur disque lors d'un test.", tip:"Très bas niveau." },
+
+    // ------------------------- 10 AVANCÉ -------------------------
+    { thematic:"Avancé", question:"Comment tester la reprise après une panne de broker avec exactly-once ?", options:["Lancer un test avec Testcontainers, tuer un broker, vérifier que les messages ne sont ni perdus ni dupliqués","Simuler une exception","Redémarrer l'application","Tester avec TopologyTestDriver"], correctAnswer:"Lancer un test avec Testcontainers, tuer un broker, vérifier que les messages ne sont ni perdus ni dupliqués", explanation:"C'est un test de résilience avancé qui nécessite un vrai cluster.", tip:"Utilisez Toxiproxy pour injecter des pannes réseau." },
+    { thematic:"Avancé", question:"Comment simuler des données tardives (late events) dans un test de fenêtrage ?", options:["Injecter des messages avec des timestamps anciens via TopologyTestDriver","Utiliser Thread.sleep()","Modifier l'horloge du système","Impossible"], correctAnswer:"Injecter des messages avec des timestamps anciens via TopologyTestDriver", explanation:"pipeInput(key, value, timestamp) permet de définir un timestamp personnalisé.", tip:"Testez le grace period." },
+    { thematic:"Avancé", question:"Quel pattern utiliser pour tester des requêtes interactives (Interactive Queries) ?", options:["Lancer un vrai cluster, interroger le store via API REST","Utiliser TopologyTestDriver et accéder au store","MockKafkaStreams","EmbeddedKafka"], correctAnswer:"Utiliser TopologyTestDriver et accéder au store", explanation:"TopologyTestDriver expose le store matérialisé via getKeyValueStore().", tip:"Vérifiez l'état après injection." },
+    { thematic:"Avancé", question:"Comment tester un connecteur JDBC source sans base de données réelle ?", options:["Utiliser une base H2 embarquée","Mock le JDBC","Utiliser un fichier CSV","Tester avec un vrai cluster"], correctAnswer:"Utiliser une base H2 embarquée", explanation:"H2 en mémoire est légère et supporte JDBC.", tip:"Créez une table de test et insérez des données." },
+    { thematic:"Avancé", question:"Comment valider le comportement d'une application Kafka Streams en présence de repartitioning ?", options:["Tester avec TopologyTestDriver et observer les topics internes","EmbeddedKafka","Mock les repartitions","Impossible"], correctAnswer:"Tester avec TopologyTestDriver et observer les topics internes", explanation:"TTD crée des topics internes virtuels. Vous pouvez y envoyer/lire.", tip:"Utilisez createInputTopic() sur le topic de repartition." },
+    { thematic:"Avancé", question:"Quelle stratégie pour tester l'évolution de schéma avec Avro et Schema Registry ?", options:["Démarrer un Schema Registry de test (MockSchemaRegistry)","Tester avec des fichiers Avro","Ignorer les schémas","Utiliser JSON"], correctAnswer:"Démarrer un Schema Registry de test (MockSchemaRegistry)", explanation:"Confluent fournit MockSchemaRegistryClient pour les tests unitaires.", tip:"Injectez-le dans le converter." },
+    { thematic:"Avancé", question:"Comment tester le mécanisme de 'standby task' de Kafka Streams ?", options:["Lancer deux instances de l'application, tuer l'une, vérifier la reprise","TopologyTestDriver ne le supporte pas","EmbeddedKafka avec plusieurs threads","Mock les tâches"], correctAnswer:"Lancer deux instances de l'application, tuer l'une, vérifier la reprise", explanation:"Nécessite un vrai cluster distribué (Testcontainers).", tip:"Surveillez les métriques de réplication." },
+    { thematic:"Avancé", question:"Quel outil permet d'injecter des pannes réseau (latence, coupure) dans les tests Kafka ?", options:["Toxiproxy","MockNetwork","NetEm","ChaosMesh"], correctAnswer:"Toxiproxy", explanation:"Toxiproxy est un proxy TCP qui peut simuler des latences, des pannes, etc.", tip:"Intégration avec Testcontainers." },
+    { thematic:"Avancé", question:"Comment tester une application Kafka Streams avec des fenêtres de session (session windows) ?", options:["Injecter des messages avec des timestamps espacés pour créer/session","Utiliser advanceWallClockTime","Impossible","Mock les fenêtres"], correctAnswer:"Injecter des messages avec des timestamps espacés pour créer/session", explanation:"Les fenêtres de session dépendent de l'inactivité. Contrôlez les timestamps.", tip:"Testez la fusion de sessions." },
+    { thematic:"Avancé", question:"Quelle est la bonne pratique pour tester un SMT qui interagit avec des headers ?", options:["Créer un ConnectRecord avec des headers, appliquer le SMT, vérifier les headers","Tester avec un connecteur réel","Utiliser un mock de record","Ignorer les headers"], correctAnswer:"Créer un ConnectRecord avec des headers, appliquer le SMT, vérifier les headers", explanation:"Headers sont des paires clé-valeur. Testez l'ajout, la suppression, la modification.", tip:"Utilisez new Record(...).headers().add()." },
+
+    // ------------------------- 10 CERTIFICATION (ENGLISH) -------------------------
+    { thematic:"Certification (EN)", question:"Which test utility is fastest for Kafka Streams unit tests?", options:["TopologyTestDriver","EmbeddedKafka","Testcontainers","MockConsumer"], correctAnswer:"TopologyTestDriver", explanation:"It runs in-memory without a real broker.", tip:"Use it for pure logic tests." },
+    { thematic:"Certification (EN)", question:"What does `TestOutputTopic.readKeyValuesToMap()` do?", options:["Returns a map of key-value pairs consumed so far","Reads all messages as a list","Reads only keys","Clears the output"], correctAnswer:"Returns a map of key-value pairs consumed so far", explanation:"Useful when you expect a unique key per output.", tip:"Fails on duplicate keys." },
+    { thematic:"Certification (EN)", question:"How to test a Kafka Streams application that uses `punctuate()` (Processor API)?", options:["Advance wall-clock time with TopologyTestDriver","Use Thread.sleep()","EmbeddedKafka","MockProcessorContext"], correctAnswer:"Advance wall-clock time with TopologyTestDriver", explanation:"TopologyTestDriver.advanceWallClockTime() triggers punctuations.", tip:"Simulate time passing." },
+    { thematic:"Certification (EN)", question:"Which annotation in Spring Kafka test creates a new EmbeddedKafka broker before each test method?", options:["@DirtiesContext","@EmbeddedKafka","@BeforeEach","@TestKafka"], correctAnswer:"@DirtiesContext", explanation:"@DirtiesContext forces context reload, which restarts the embedded broker.", tip:"Can be slow." },
+    { thematic:"Certification (EN)", question:"What is the purpose of `MockProducer`'s `autoComplete` flag?", options:["Automatically complete send() futures","Automatically flush","Automatically close","Automatically retry"], correctAnswer:"Automatically complete send() futures", explanation:"If true, send() completes immediately. If false, you must complete manually.", tip:"Use false to test retry logic." },
+    { thematic:"Certification (EN)", question:"How can you test exactly-once semantics with `MockProducer`?", options:["You cannot, use EmbeddedKafka","Use MockProducer with transactions","Use `enable.idempotence` in config","MockProducer supports exactly-once"], correctAnswer:"You cannot, use EmbeddedKafka", explanation:"Exactly-once requires a real broker with transaction support.", tip:"Use Testcontainers for exactly-once tests." },
+    { thematic:"Certification (EN)", question:"What is `KafkaTestUtils.getSingleRecord()` timeout behavior?", options:["Throws timeout exception if no message","Returns null","Blocks forever","Returns empty record"], correctAnswer:"Throws timeout exception if no message", explanation:"The default timeout is 5 seconds (configurable).", tip:"Catch the exception for negative tests." },
+    { thematic:"Certification (EN)", question:"How to test a custom `TimestampExtractor`?", options:["Create a ConsumerRecord with custom timestamp, call extract()","Use TopologyTestDriver","EmbeddedKafka","MockTimestampExtractor"], correctAnswer:"Create a ConsumerRecord with custom timestamp, call extract()", explanation:"TimestampExtractor is a pure function, testable unitarily.", tip:"Test edge cases (null timestamp)." },
+    { thematic:"Certification (EN)", question:"Which tool can simulate broker failures in integration tests?", options:["Toxiproxy","MockBroker","Testcontainers' Chaos Monkey","Kafka Failover"], correctAnswer:"Toxiproxy", explanation:"Toxiproxy can inject latency, disconnections, etc.", tip:"Use with Testcontainers Toxiproxy module." },
+    { thematic:"Certification (EN)", question:"What is the recommended way to test a `SourceTask` for Kafka Connect?", options:["MockSourceTaskContext, call poll() and verify records","Run with Connect worker","Use EmbeddedKafka","TopologyTestDriver"], correctAnswer:"MockSourceTaskContext, call poll() and verify records", explanation:"Mock the context and test the task in isolation.", tip:"Also test start(), stop(), and version()." }
+];
+
+console.log("Banque de questions Tests Kafka chargée : " + QUESTIONS_BANK.length);
+
+// ======================= LOGIQUE DU QUIZ =======================
+let currentQuestions = [];
+let userAnswers = [];
+let currentIdx = 0;
+let score = 0;
+
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function filterByDomains() {
+    const domains = [];
+    if (document.getElementById("dom-beginner").checked) domains.push("Débutant");
+    if (document.getElementById("dom-advanced").checked) domains.push("Avancé");
+    if (document.getElementById("dom-cert").checked) domains.push("Certification (EN)");
+    if (domains.length === 0) return QUESTIONS_BANK;
+    return QUESTIONS_BANK.filter(q => domains.includes(q.thematic));
+}
+
+function startQuiz() {
+    let count = parseInt(document.getElementById("question-count").value);
+    let filtered = filterByDomains();
+    if (filtered.length < count) count = filtered.length;
+    currentQuestions = shuffle(filtered).slice(0, count);
+    userAnswers = new Array(currentQuestions.length).fill(null);
+    score = 0;
+    currentIdx = 0;
+    document.getElementById("settings-panel").classList.add("d-none");
+    document.getElementById("quiz-content").classList.remove("d-none");
+    updateScore();
+    displayQuestion(0);
+}
+
+function displayQuestion(idx) {
+    const q = currentQuestions[idx];
+    document.getElementById("question-text").innerText = q.question;
+    const badgeSpan = document.getElementById("thematic-badge");
+    badgeSpan.innerText = q.thematic;
+    let badgeClass = "badge-beginner";
+    if (q.thematic === "Avancé") badgeClass = "badge-advanced";
+    if (q.thematic === "Certification (EN)") badgeClass = "badge-cert";
+    badgeSpan.className = "thematic-badge " + badgeClass;
+    
+    const container = document.getElementById("options-container");
+    container.innerHTML = "";
+    const shuffledOpts = shuffle([...q.options]);
+    shuffledOpts.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.className = "btn option-btn";
+        btn.onclick = () => selectAnswer(btn, opt, idx);
+        container.appendChild(btn);
+    });
+    document.getElementById("explanation-box").classList.add("d-none");
+    if (userAnswers[idx] !== null) showFeedback(idx);
+    updateProgress();
+    updateNav();
+}
+
+function selectAnswer(btn, selected, idx) {
+    if (userAnswers[idx] !== null) return;
+    const q = currentQuestions[idx];
+    const isCorrect = (selected === q.correctAnswer);
+    if (isCorrect) score++;
+    userAnswers[idx] = { selected, correct: q.correctAnswer, isCorrect };
+    updateScore();
+    showFeedback(idx);
+}
+
+function showFeedback(idx) {
+    const ans = userAnswers[idx];
+    if (!ans) return;
+    const q = currentQuestions[idx];
+    const btns = document.querySelectorAll(".option-btn");
+    btns.forEach(btn => {
+        btn.disabled = true;
+        if (btn.innerText === ans.correct) btn.classList.add("correct");
+        if (btn.innerText === ans.selected && !ans.isCorrect) btn.classList.add("incorrect");
+    });
+    document.getElementById("explanation-text").innerHTML = q.explanation;
+    document.getElementById("explanation-title").innerHTML = ans.isCorrect ? "✅ Correct !" : "❌ Incorrect";
+    document.getElementById("explanation-box").classList.remove("d-none");
+    const tipDiv = document.getElementById("tip-box");
+    if (q.tip) {
+        document.getElementById("tip-text").innerHTML = q.tip;
+        tipDiv.classList.remove("d-none");
+    } else {
+        tipDiv.classList.add("d-none");
+    }
+}
+
+function updateProgress() {
+    const perc = ((currentIdx + 1) / currentQuestions.length) * 100;
+    document.getElementById("progress-bar").style.width = perc + "%";
+    document.getElementById("question-counter").innerText = `Question ${currentIdx+1}/${currentQuestions.length}`;
+}
+
+function updateScore() {
+    document.getElementById("current-score").innerText = `Score: ${score}/${currentQuestions.length}`;
+}
+
+function updateNav() {
+    document.getElementById("prev-btn").disabled = (currentIdx === 0);
+    const isLast = (currentIdx === currentQuestions.length - 1);
+    document.getElementById("next-btn").classList.toggle("d-none", isLast);
+    document.getElementById("finish-btn").classList.toggle("d-none", !isLast);
+}
+
+function next() {
+    if (currentIdx < currentQuestions.length - 1) {
+        currentIdx++;
+        displayQuestion(currentIdx);
+    }
+}
+
+function prev() {
+    if (currentIdx > 0) {
+        currentIdx--;
+        displayQuestion(currentIdx);
+    }
+}
+
+function finish() {
+    showModal();
+}
+
+function showModal() {
+    const percent = (score / currentQuestions.length) * 100;
+    document.getElementById("final-score-percentage").innerText = `${percent.toFixed(0)}%`;
+    document.getElementById("final-score-text").innerHTML = `${score}/${currentQuestions.length} bonnes réponses`;
+    
+    let beginnerCorrect = 0, advancedCorrect = 0, certCorrect = 0;
+    let beginnerTotal = 0, advancedTotal = 0, certTotal = 0;
+    userAnswers.forEach((a, i) => {
+        if (a) {
+            const theme = currentQuestions[i].thematic;
+            if (theme === "Débutant") { beginnerTotal++; if (a.isCorrect) beginnerCorrect++; }
+            else if (theme === "Avancé") { advancedTotal++; if (a.isCorrect) advancedCorrect++; }
+            else { certTotal++; if (a.isCorrect) certCorrect++; }
+        }
+    });
+    const beginnerPct = beginnerTotal ? (beginnerCorrect / beginnerTotal) * 100 : 0;
+    const advancedPct = advancedTotal ? (advancedCorrect / advancedTotal) * 100 : 0;
+    const certPct = certTotal ? (certCorrect / certTotal) * 100 : 0;
+    document.getElementById("beginner-skill").style.width = beginnerPct + "%";
+    document.getElementById("advanced-skill").style.width = advancedPct + "%";
+    document.getElementById("cert-skill").style.width = certPct + "%";
+    
+    let recos = "";
+    if (percent >= 80) recos = "Excellent ! Vous maîtrisez les tests Kafka (unitaires, intégration, end-to-end).";
+    else if (percent >= 60) recos = "Bien, mais approfondissez les outils comme TopologyTestDriver et EmbeddedKafka.";
+    else recos = "Revoyez les bases des tests : TopologyTestDriver, MockProducer, EmbeddedKafka.";
+    document.getElementById("final-recommendations").innerHTML = `<div class="alert alert-info">${recos}</div>`;
+    document.getElementById("short-term").innerHTML = "Pratiquez avec TopologyTestDriver sur une topologie simple, puis ajoutez EmbeddedKafka.";
+    document.getElementById("long-term").innerHTML = "Pour la certification, entraînez-vous aux tests de résilience, exactly-once, et SMT.";
+    
+    new bootstrap.Modal(document.getElementById("resultsModal")).show();
+}
+
+function restart() {
+    document.getElementById("settings-panel").classList.remove("d-none");
+    document.getElementById("quiz-content").classList.add("d-none");
+    const modal = bootstrap.Modal.getInstance(document.getElementById("resultsModal"));
+    if (modal) modal.hide();
+}
+
+// Événements
+document.getElementById("start-quiz-btn").onclick = startQuiz;
+document.getElementById("next-btn").onclick = next;
+document.getElementById("prev-btn").onclick = prev;
+document.getElementById("finish-btn").onclick = finish;
+document.getElementById("restart-quiz-btn").onclick = restart;
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
