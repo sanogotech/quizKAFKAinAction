@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KSQLDB Quiz · 80 questions · Débutant → Certification</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:linear-gradient(145deg,#0b1120,#1a2639);padding:1.5rem;min-height:100vh;}
+        .quiz-wrapper{max-width:1200px;margin:0 auto;}
+        .quiz-card{background:rgba(255,255,255,0.98);border-radius:2rem;overflow:hidden;box-shadow:0 25px 45px -12px rgba(0,0,0,0.4);}
+        .quiz-header{background:linear-gradient(135deg,#1a1e2c,#2d3e50);padding:2rem;color:white;border-bottom:4px solid #e63946;}
+        .badge-kafka{background:#e63946;padding:0.3rem 1.2rem;border-radius:40px;font-weight:600;font-size:0.85rem;display:inline-block;}
+        .progress-container{background:#f1f5f9;margin:1.5rem;padding:1rem;border-radius:1rem;}
+        .progress-bar-custom{background:linear-gradient(90deg,#f4a261,#e63946);}
+        .thematic-badge{display:inline-flex;align-items:center;gap:0.4rem;padding:0.4rem 1rem;border-radius:50px;font-weight:600;font-size:0.8rem;margin-bottom:1rem;}
+        .badge-beginner{background:#e0f2fe;color:#0369a1;}
+        .badge-advanced{background:#fae8ff;color:#86198f;}
+        .badge-cert{background:#fef3c7;color:#92400e;}
+        .option-btn{width:100%;text-align:left;padding:0.9rem 1.2rem;margin-bottom:0.7rem;border:1.5px solid #e2e8f0;border-radius:1rem;background:white;font-weight:500;transition:0.2s;}
+        .option-btn:hover:not([disabled]){border-color:#e63946;background:#fff5f5;transform:translateY(-2px);}
+        .option-btn.correct{background:#ecfdf5;border-color:#10b981;color:#065f46;}
+        .option-btn.incorrect{background:#fef2f2;border-color:#f97316;color:#7f1d1d;}
+        .explanation-box{padding:1rem;border-radius:1rem;background:#f8fafc;border-left:5px solid #e63946;margin-top:1.2rem;}
+        .tip-box{background:#fffbeb;border-left:4px solid #f4a261;padding:0.7rem;border-radius:0.8rem;margin-top:0.8rem;}
+        .btn-kafka{background:#e63946;color:white;border:none;}
+        .btn-kafka:hover{background:#b91c1c;transform:translateY(-2px);}
+        .final-score{font-size:3.5rem;font-weight:800;background:linear-gradient(135deg,#e63946,#f4a261);-webkit-background-clip:text;background-clip:text;color:transparent;}
+        @media (max-width:768px){body{padding:0.8rem;}.quiz-header h1{font-size:1.5rem;}}
+    </style>
+</head>
+<body>
+<div class="quiz-wrapper">
+    <div class="quiz-card">
+        <div class="quiz-header">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div><h1><i class="fas fa-database me-2"></i> KSQLDB · Quiz complet</h1><p class="mb-0 opacity-75">80 questions : 60 débutant · 10 avancé · 10 certification (EN)</p></div>
+                <div><span class="badge-kafka"><i class="fas fa-stream"></i> Niveau ksqlDB</span></div>
+            </div>
+        </div>
+
+        <div id="settings-panel" class="p-4">
+            <h4><i class="fas fa-sliders-h"></i> Configuration</h4>
+            <div class="row g-3 mt-2">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Nombre de questions</label>
+                    <select id="question-count" class="form-select">
+                        <option value="20">20 questions (découverte)</option>
+                        <option value="40">40 questions (standard)</option>
+                        <option value="80" selected>80 questions (complet)</option>
+                    </select>
+                </div>
+                <div class="col-md-7 d-flex align-items-end"><button id="start-quiz-btn" class="btn btn-kafka w-100 py-2"><i class="fas fa-play"></i> Démarrer le quiz</button></div>
+            </div>
+            <div class="mt-4">
+                <h6><i class="fas fa-tags"></i> Thèmes</h6>
+                <div class="row">
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-beginner" checked> <label>📘 Débutant (60)</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-advanced" checked> <label>⚙️ Avancé (10)</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-cert" checked> <label>🌍 Certification EN (10)</label></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz-content" class="d-none">
+            <div class="progress-container">
+                <div class="d-flex justify-content-between"><span id="question-counter" class="fw-bold">Question 1 / 80</span><span id="current-score" class="fw-bold text-danger">Score: 0</span></div>
+                <div class="progress mt-2" style="height: 10px;"><div id="progress-bar" class="progress-bar progress-bar-custom" style="width:0%"></div></div>
+            </div>
+            <div class="px-4 pb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div id="thematic-badge" class="thematic-badge">Débutant</div>
+                        <h3 id="question-text" class="fs-4 fw-semibold mb-4"></h3>
+                        <div id="options-container"></div>
+                        <div id="explanation-box" class="explanation-box d-none">
+                            <h5 id="explanation-title"><i class="fas fa-info-circle"></i> Explication</h5>
+                            <p id="explanation-text"></p>
+                            <div id="tip-box" class="tip-box d-none"><i class="fas fa-lightbulb text-warning"></i> <strong>À retenir :</strong> <span id="tip-text"></span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-between mt-4 gap-2">
+                    <button id="prev-btn" class="btn btn-outline-secondary" disabled><i class="fas fa-chevron-left"></i> Précédent</button>
+                    <button id="next-btn" class="btn btn-kafka">Suivant <i class="fas fa-chevron-right"></i></button>
+                    <button id="finish-btn" class="btn btn-outline-success d-none">Terminer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="resultsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white"><h5 class="modal-title"><i class="fas fa-database"></i> Résultat · KSQLDB</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body p-4 text-center"><div class="final-score" id="final-score-percentage">0%</div><p id="final-score-text" class="lead"></p>
+            <div class="row"><div class="col-md-4"><div class="bg-light p-2 rounded"><div class="progress"><div id="beginner-skill" class="progress-bar bg-danger" style="width:0%"></div></div><p class="mt-1 small">Débutant</p></div></div>
+            <div class="col-md-4"><div class="bg-light p-2 rounded"><div class="progress"><div id="advanced-skill" class="progress-bar bg-warning" style="width:0%"></div></div><p class="mt-1 small">Avancé</p></div></div>
+            <div class="col-md-4"><div class="bg-light p-2 rounded"><div class="progress"><div id="cert-skill" class="progress-bar bg-success" style="width:0%"></div></div><p class="mt-1 small">Certification</p></div></div></div>
+            <hr><div id="final-recommendations"></div><p id="short-term" class="mt-2"></p><p id="long-term"></p></div>
+            <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button><button id="restart-quiz-btn" class="btn btn-kafka">Recommencer</button></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ======================= BANQUE DE 80 QUESTIONS KSQLDB =======================
+// 60 débutant, 10 avancé, 10 certification (anglais)
+const QUESTIONS_BANK = [
+    // ------------------------- 60 DÉBUTANT -------------------------
+    { thematic:"Débutant", question:"Qu'est-ce que ksqlDB ?", options:["Un moteur de streaming SQL pour Kafka","Une base de données relationnelle","Un outil ETL","Un langage de programmation"], correctAnswer:"Un moteur de streaming SQL pour Kafka", explanation:"ksqlDB permet d'interroger des flux Kafka avec du SQL en temps réel.", tip:"C'est une alternative à Kafka Streams avec une syntaxe SQL." },
+    { thematic:"Débutant", question:"Quelle est la différence entre un STREAM et une TABLE dans ksqlDB ?", options:["Stream = append-only, Table = mutable (état par clé)","Stream = table, Table = stream","Stream = fenêtre, Table = agrégat","Aucune différence"], correctAnswer:"Stream = append-only, Table = mutable (état par clé)", explanation:"Un STREAM est un flux d'événements immuable. Une TABLE représente l'état actuel d'une clé.", tip:"Une TABLE dérive généralement d'un STREAM via GROUP BY." },
+    { thematic:"Débutant", question:"Comment créer un STREAM à partir d'un topic Kafka ?", options:["CREATE STREAM ... WITH (KAFKA_TOPIC='...')","CREATE TOPIC STREAM","ADD STREAM","DEFINE STREAM"], correctAnswer:"CREATE STREAM ... WITH (KAFKA_TOPIC='...')", explanation:"La clause WITH spécifie le topic Kafka et le format de valeur.", tip:"Exemple : CREATE STREAM orders (id VARCHAR KEY, amount INT) WITH (KAFKA_TOPIC='orders', VALUE_FORMAT='JSON');" },
+    { thematic:"Débutant", question:"Quelle requête permet de voir les changements en continu ?", options:["SELECT ... EMIT CHANGES","SELECT ... CONTINUOUS","SELECT ... STREAM","SELECT ... LIVE"], correctAnswer:"SELECT ... EMIT CHANGES", explanation:"EMIT CHANGES transforme une requête SELECT en push query (flux continu).", tip:"Utilisez-la pour des tableaux de bord temps réel." },
+    { thematic:"Débutant", question:"Qu'est-ce qu'une push query dans ksqlDB ?", options:["Requête continue qui émet les résultats au fur et à mesure","Requête ponctuelle","Requête sur une table","Requête de suppression"], correctAnswer:"Requête continue qui émet les résultats au fur et à mesure", explanation:"Une push query reste active et envoie chaque nouveau résultat au client.", tip:"Syntaxe : SELECT ... FROM stream EMIT CHANGES;" },
+    { thematic:"Débutant", question:"Qu'est-ce qu'une pull query ?", options:["Requête ponctuelle sur une table matérialisée (état actuel)","Requête continue","Requête sur un stream","Requête d'insertion"], correctAnswer:"Requête ponctuelle sur une table matérialisée (état actuel)", explanation:"Une pull query interroge l'état d'une TABLE et se termine.", tip:"Exemple : SELECT * FROM user_table WHERE id='123';" },
+    { thematic:"Débutant", question:"Quelle clause rend une requête persistante (création d'un nouveau stream/table) ?", options:["CREATE STREAM ... AS SELECT","SELECT ... INTO","INSERT INTO ... SELECT","DEFINE STREAM AS"], correctAnswer:"CREATE STREAM ... AS SELECT", explanation:"Les requêtes persistantes écrivent les résultats dans un nouveau topic Kafka.", tip:"C'est l'équivalent d'une vue matérialisée." },
+    { thematic:"Débutant", question:"Quel format de valeur est le plus couramment utilisé avec ksqlDB ?", options:["JSON","CSV","XML","Parquet"], correctAnswer:"JSON", explanation:"JSON est léger et lisible. ksqlDB supporte aussi Avro, Protobuf, etc.", tip:"Préférez Avro avec Schema Registry pour l'évolution." },
+    { thematic:"Débutant", question:"Comment spécifier la clé d'un stream ?", options:["Colonne avec KEY (ex: id VARCHAR KEY)","PRIMARY KEY","PARTITION BY","UNIQUE KEY"], correctAnswer:"Colonne avec KEY (ex: id VARCHAR KEY)", explanation:"La colonne marquée KEY est utilisée pour le partitionnement Kafka.", tip:"La clé est essentielle pour les jointures et les agrégations." },
+    { thematic:"Débutant", question:"Quelle est la fonction pour obtenir l'heure actuelle en timestamp Unix ?", options:["UNIX_TIMESTAMP()","NOW()","CURRENT_TIMESTAMP","GETTIME()"], correctAnswer:"UNIX_TIMESTAMP()", explanation:"UNIX_TIMESTAMP() retourne le nombre de secondes depuis 1970.", tip:"Utile pour les fenêtres basées sur le temps de traitement." },
+    { thematic:"Débutant", question:"Quel type de fenêtre n'a pas de chevauchement ?", options:["TUMBLING","HOPPING","SESSION","SLIDING"], correctAnswer:"TUMBLING", explanation:"Les fenêtres tumbling sont fixes et contiguës.", tip:"Syntaxe : WINDOW TUMBLING (SIZE 10 SECONDS)" },
+    { thematic:"Débutant", question:"Quelle clause permet de grouper par fenêtre temporelle ?", options:["WINDOW","GROUP BY TIME","INTERVAL","PARTITION BY"], correctAnswer:"WINDOW", explanation:"La clause WINDOW s'utilise avec GROUP BY pour les agrégations temporelles.", tip:"Exemple : GROUP BY user_id WINDOW TUMBLING (SIZE 1 MINUTE)" },
+    { thematic:"Débutant", question:"Comment lister tous les streams dans ksqlDB ?", options:["LIST STREAMS;","SHOW STREAMS;","DESCRIBE STREAMS;","SELECT * FROM STREAMS;"], correctAnswer:"LIST STREAMS;", explanation:"LIST STREAMS; affiche tous les streams définis.", tip:"LIST TABLES; pour les tables." },
+    { thematic:"Débutant", question:"Comment décrire la structure d'un stream ?", options:["DESCRIBE stream_name;","SHOW SCHEMA stream_name;","EXPLAIN stream_name;","PRINT stream_name;"], correctAnswer:"DESCRIBE stream_name;", explanation:"DESCRIBE affiche les colonnes, le topic source, etc.", tip:"Ajoutez EXTENDED pour plus de détails." },
+    { thematic:"Débutant", question:"Quelle commande permet de voir les requêtes actives ?", options:["LIST QUERIES;","SHOW QUERIES;","SELECT * FROM QUERIES;","DISPLAY QUERIES;"], correctAnswer:"LIST QUERIES;", explanation:"LIST QUERIES; montre toutes les requêtes persistantes et push.", tip:"Terminez une requête avec TERMINATE query_id;" },
+    { thematic:"Débutant", question:"Comment insérer une ligne dans un stream ?", options:["INSERT INTO stream_name (col1, col2) VALUES (val1, val2);","ADD ROW TO stream_name;","PUT INTO stream_name;","INSERT STREAM stream_name;"], correctAnswer:"INSERT INTO stream_name (col1, col2) VALUES (val1, val2);", explanation:"INSERT INTO ajoute un événement dans le stream (donc dans le topic Kafka sous-jacent).", tip:"Utile pour les tests." },
+    { thematic:"Débutant", question:"Qu'est-ce que le paramètre VALUE_FORMAT dans la clause WITH ?", options:["Le format de sérialisation de la valeur (JSON, AVRO, ...)","Le format de la clé","Le format du timestamp","Le format du topic"], correctAnswer:"Le format de sérialisation de la valeur (JSON, AVRO, ...)", explanation:"Définit comment la valeur du message est encodée.", tip:"Pour Avro, il faut un Schema Registry." },
+    { thematic:"Débutant", question:"Quelle fonction extrait un champ d'un JSON ?", options:["EXTRACTJSONFIELD(json, '$.field')","JSON_EXTRACT(json, 'field')","GET_JSON(json, 'field')","JSON_VALUE(json, 'field')"], correctAnswer:"EXTRACTJSONFIELD(json, '$.field')", explanation:"EXTRACTJSONFIELD permet d'accéder à une propriété d'un objet JSON.", tip:"Utilisez des guillemets simples pour le chemin." },
+    { thematic:"Débutant", question:"Que signifie EMIT CHANGES dans une requête ?", options:["La requête est continue (push)","La requête est ponctuelle","La requête met à jour une table","La requête supprime des données"], correctAnswer:"La requête est continue (push)", explanation:"Sans EMIT CHANGES, la requête est une pull query (ponctuelle).", tip:"Toute requête SELECT sur un STREAM doit inclure EMIT CHANGES." },
+    { thematic:"Débutant", question:"Comment créer une table à partir d'un stream ?", options:["CREATE TABLE table_name AS SELECT ... FROM stream GROUP BY key;","CREATE STREAM AS TABLE;","CONVERT STREAM TO TABLE;","ALTER STREAM TO TABLE;"], correctAnswer:"CREATE TABLE table_name AS SELECT ... FROM stream GROUP BY key;", explanation:"Une table s'obtient en groupant un stream par une clé et en agrégeant.", tip:"La clé de la table est la colonne GROUP BY." },
+    { thematic:"Débutant", question:"Quelle est la fonction de fenêtrage pour les sessions ?", options:["WINDOW SESSION (gap seconds)","WINDOW SESSION (SIZE seconds)","WINDOW SESSION (INTERVAL seconds)","WINDOW SESSION (GAP seconds)"], correctAnswer:"WINDOW SESSION (gap seconds)", explanation:"Exemple : WINDOW SESSION (30 SECONDS) ferme la session après 30s d'inactivité.", tip:"Le gap est la durée d'inactivité." },
+    { thematic:"Débutant", question:"Comment arrêter une requête persistante ?", options:["TERMINATE query_id;","STOP QUERY query_id;","DROP QUERY query_id;","KILL QUERY query_id;"], correctAnswer:"TERMINATE query_id;", explanation:"TERMINATE arrête la requête et libère les ressources.", tip:"Obtenez l'ID avec LIST QUERIES;" },
+    { thematic:"Débutant", question:"Que fait la fonction UCASE() ?", options:["Convertit une chaîne en majuscules","Convertit en minuscules","Calcule la longueur","Extrait une sous-chaîne"], correctAnswer:"Convertit une chaîne en majuscules", explanation:"UCASE(str) = UPPER(str).", tip:"Utilisez LCASE() pour les minuscules." },
+    { thematic:"Débutant", question:"Quelle est la différence entre une table normale et une table de fenêtrage ?", options:["Une table de fenêtrage a une clé composée (clé + fenêtre)","Une table normale n'a pas de fenêtre","Les fenêtres ne s'appliquent qu'aux streams","Aucune différence"], correctAnswer:"Une table de fenêtrage a une clé composée (clé + fenêtre)", explanation:"Quand on utilise WINDOW dans une agrégation, le résultat est une table avec des clés windowed.", tip:"Les colonnes WINDOWSTART et WINDOWEND sont disponibles." },
+    { thematic:"Débutant", question:"Quelle commande permet de voir le contenu d'un topic Kafka directement depuis ksqlDB ?", options:["PRINT topic_name;","SHOW TOPIC topic_name;","SELECT * FROM topic_name;","DESCRIBE TOPIC topic_name;"], correctAnswer:"PRINT topic_name;", explanation:"PRINT affiche les messages bruts d'un topic, sans schéma.", tip:"Utile pour déboguer." },
+    { thematic:"Débutant", question:"Que signifie la propriété KAFKA_TOPIC dans la clause WITH ?", options:["Le nom du topic Kafka source ou sink","Le nom du cluster","Le nom du stream","Le nom du serveur"], correctAnswer:"Le nom du topic Kafka source ou sink", explanation:"C'est le topic sous-jacent qui contient les données.", tip:"Le topic doit exister ou être créé automatiquement." },
+    { thematic:"Débutant", question:"Comment modifier le niveau de parallélisme d'une requête ?", options:["SET 'ksql.streams.num.stream.threads'='4';","ALTER QUERY ...","CHANGE PARALLELISM","CONFIGURE THREADS"], correctAnswer:"SET 'ksql.streams.num.stream.threads'='4';", explanation:"Cette propriété contrôle le nombre de threads pour l'exécution.", tip:"Valeur par défaut : 4." },
+    { thematic:"Débutant", question:"Quelle est la fonction d'agrégation pour collecter les valeurs dans une liste ?", options:["COLLECT_LIST(col)","ARRAY_AGG(col)","LIST_AGG(col)","GROUP_CONCAT(col)"], correctAnswer:"COLLECT_LIST(col)", explanation:"COLLECT_LIST retourne une ARRAY contenant toutes les valeurs.", tip:"Attention à la taille mémoire." },
+    { thematic:"Débutant", question:"Comment supprimer un stream ?", options:["DROP STREAM stream_name;","DELETE STREAM stream_name;","REMOVE STREAM stream_name;","DROP STREAM IF EXISTS stream_name;"], correctAnswer:"DROP STREAM stream_name;", explanation:"DROP STREAM supprime la définition, mais pas le topic Kafka sous-jacent.", tip:"Ajoutez IF EXISTS pour éviter les erreurs." },
+    { thematic:"Débutant", question:"Que fait la fonction TIMESTAMPTOSTRING(ts, 'yyyy-MM-dd') ?", options:["Convertit un timestamp en chaîne formatée","Convertit une chaîne en timestamp","Extrait l'année","Calcule la différence"], correctAnswer:"Convertit un timestamp en chaîne formatée", explanation:"Exemple : TIMESTAMPTOSTRING(ts, 'yyyy-MM-dd HH:mm:ss')", tip:"Utilisez STRINGTOTIMESTAMP pour l'inverse." },
+    { thematic:"Débutant", question:"Qu'est-ce qu'un 'pull query' sur une table ?", options:["SELECT ... FROM table WHERE ... (sans EMIT CHANGES)","SELECT ... FROM table EMIT CHANGES","SELECT ... FROM stream","INSERT INTO table"], correctAnswer:"SELECT ... FROM table WHERE ... (sans EMIT CHANGES)", explanation:"Les pull queries retournent l'état actuel et se terminent.", tip:"Elles sont rapides pour les points d'accès API." },
+    { thematic:"Débutant", question:"Comment activer le mode headless (sans serveur REST) ?", options:["Démarrer avec --queries-file file.sql","Utiliser --headless","Configurer ksql.headless=true","Mode offline"], correctAnswer:"Démarrer avec --queries-file file.sql", explanation:"En mode headless, ksqlDB exécute les requêtes d'un fichier au démarrage.", tip:"Idéal pour la production." },
+    { thematic:"Débutant", question:"Quelle est la fonction pour obtenir la valeur la plus récente d'une colonne dans une fenêtre ?", options:["LATEST_BY_OFFSET(col)","LAST_VALUE(col)","MAX(col)","LATEST(col)"], correctAnswer:"LATEST_BY_OFFSET(col)", explanation:"LATEST_BY_OFFSET renvoie la valeur du message avec l'offset le plus élevé dans le groupe.", tip:"Utile pour garder la dernière valeur." },
+    { thematic:"Débutant", question:"Comment voir la configuration actuelle de ksqlDB ?", options:["SHOW PROPERTIES;","LIST CONFIGS;","DESCRIBE CONFIG;","GET PROPERTIES;"], correctAnswer:"SHOW PROPERTIES;", explanation:"Affiche toutes les propriétés de session et serveur.", tip:"Filtrez avec LIKE." },
+    { thematic:"Débutant", question:"Que signifie 'ksql.service.id' ?", options:["Identifiant du service (préfixe des topics internes)","Adresse du serveur","Nom du cluster","ID de la requête"], correctAnswer:"Identifiant du service (préfixe des topics internes)", explanation:"Ce paramètre permet d'isoler plusieurs instances ksqlDB sur le même cluster.", tip:"Changez-le pour chaque environnement." },
+    { thematic:"Débutant", question:"Comment joindre un stream et une table ?", options:["SELECT ... FROM stream LEFT JOIN table ON stream.key = table.key","JOIN STREAM TABLE","MERGE","UNION"], correctAnswer:"SELECT ... FROM stream LEFT JOIN table ON stream.key = table.key", explanation:"La jointure Stream-Table enrichit chaque événement avec l'état actuel de la table.", tip:"La table doit être co-partitionnée avec le stream." },
+    { thematic:"Débutant", question:"Quelle est la différence entre une fenêtre HOPPING et TUMBLING ?", options:["Hopping chevauche, Tumbling non","Tumbling chevauche","Les deux sont identiques","Hopping est pour les sessions"], correctAnswer:"Hopping chevauche, Tumbling non", explanation:"Hopping avance par pas plus petits que la taille, Tumbling a des intervalles contigus.", tip:"Utilisez HOPPING pour des métriques glissantes." },
+    { thematic:"Débutant", question:"Comment spécifier le timestamp des messages pour les fenêtres ?", options:["Avec la clause WITH (TIMESTAMP='colonne')","Avec SET TIMESTAMP","Dans le SELECT","Dans le GROUP BY"], correctAnswer:"Avec la clause WITH (TIMESTAMP='colonne')", explanation:"La colonne timestamp doit être de type BIGINT (Unix epoch) ou STRING formaté.", tip:"Définissez aussi TIMESTAMP_FORMAT si nécessaire." },
+    { thematic:"Débutant", question:"Que signifie la propriété PARTITIONS dans la clause WITH ?", options:["Nombre de partitions du topic sous-jacent","Nombre de réplicas","Nombre de threads","Nombre de fenêtres"], correctAnswer:"Nombre de partitions du topic sous-jacent", explanation:"Permet de créer un topic avec ce nombre de partitions s'il n'existe pas.", tip:"Doit correspondre aux autres streams pour les jointures." },
+    { thematic:"Débutant", question:"Comment filtrer les lignes d'un stream ?", options:["WHERE condition","HAVING condition","FILTER condition","LIMIT condition"], correctAnswer:"WHERE condition", explanation:"WHERE s'utilise dans SELECT pour filtrer avant l'agrégation.", tip:"Pour les agrégations, utilisez HAVING après GROUP BY." },
+    { thematic:"Débutant", question:"Quelle est la fonction d'agrégation pour le nombre d'occurrences ?", options:["COUNT(*)","SUM(col)","AVG(col)","COUNT_DISTINCT(col)"], correctAnswer:"COUNT(*)", explanation:"COUNT(*) compte les lignes dans le groupe.", tip:"COUNT(col) ignore les NULL." },
+    { thematic:"Débutant", question:"Comment obtenir la valeur minimum d'une colonne ?", options:["MIN(col)","LOWEST(col)","LEAST(col)","SMALLEST(col)"], correctAnswer:"MIN(col)", explanation:"MIN retourne la plus petite valeur numérique ou alphabétique.", tip:"Pour les chaînes, c'est l'ordre lexicographique." },
+    { thematic:"Débutant", question:"Que fait la fonction CONCAT(str1, str2) ?", options:["Concatène deux chaînes","Compare deux chaînes","Extrait une sous-chaîne","Convertit en majuscules"], correctAnswer:"Concatène deux chaînes", explanation:"CONCAT('a','b') -> 'ab'", tip:"Utilisez CONCAT_WS pour un séparateur." },
+    { thematic:"Débutant", question:"Comment lister les connecteurs Kafka Connect depuis ksqlDB ?", options:["SHOW CONNECTORS;","LIST CONNECTORS;","DESCRIBE CONNECTORS;","SELECT * FROM CONNECTORS;"], correctAnswer:"SHOW CONNECTORS;", explanation:"Affiche les connecteurs disponibles.", tip:"ksqlDB peut interagir avec Connect." },
+    { thematic:"Débutant", question:"Qu'est-ce que le paramètre 'auto.offset.reset' dans ksqlDB ?", options:["Définit où commencer la lecture (earliest/latest)","Réinitialise les offsets","Supprime les topics","Change la rétention"], correctAnswer:"Définit où commencer la lecture (earliest/latest)", explanation:"Par défaut 'latest' pour les requêtes push.", tip:"Pour reprocesser, utilisez 'earliest'." },
+    { thematic:"Débutant", question:"Comment créer un stream avec des données Avro et Schema Registry ?", options:["VALUE_FORMAT='AVRO' et spécifier le registre","VALUE_FORMAT='AVRO_SCHEMA'","FORMAT='AVRO'","AVRO avec URL"], correctAnswer:"VALUE_FORMAT='AVRO' et spécifier le registre", explanation:"Il faut aussi ksql.schema.registry.url dans la configuration.", tip:"Le registre gère l'évolution des schémas." },
+    { thematic:"Débutant", question:"Que signifie la colonne ROWTIME dans un stream ?", options:["Timestamp du message (basé sur le champ timestamp ou le temps du broker)","Clé du message","Offset du message","Numéro de partition"], correctAnswer:"Timestamp du message (basé sur le champ timestamp ou le temps du broker)", explanation:"ROWTIME est utilisé par défaut pour les fenêtres.", tip:"Vous pouvez le personnaliser avec TIMESTAMP." },
+    { thematic:"Débutant", question:"Comment supprimer une table ?", options:["DROP TABLE table_name;","DELETE TABLE table_name;","DROP TABLE IF EXISTS table_name;","REMOVE TABLE table_name;"], correctAnswer:"DROP TABLE table_name;", explanation:"Supprime la définition de la table (pas le topic).", tip:"Précédez de IF EXISTS pour la robustesse." },
+    { thematic:"Débutant", question:"Qu'est-ce qu'une UDF dans ksqlDB ?", options:["User Defined Function (fonction personnalisée)","Unité de données","Update Function","Universal Data Format"], correctAnswer:"User Defined Function (fonction personnalisée)", explanation:"Vous pouvez écrire vos propres fonctions en Java.", tip:"Chargez les UDFs via le classpath." },
+    { thematic:"Débutant", question:"Comment voir les détails d'une requête (plan d'exécution) ?", options:["EXPLAIN query_id;","DESCRIBE QUERY query_id;","SHOW PLAN query_id;","ANALYZE query_id;"], correctAnswer:"EXPLAIN query_id;", explanation:"EXPLAIN affiche le plan physique et logique.", tip:"Utile pour optimiser les performances." },
+    { thematic:"Débutant", question:"Quelle est la fonction pour arrondir un nombre ?", options:["ROUND(col, decimal)","CEIL(col)","FLOOR(col)","TRUNC(col)"], correctAnswer:"ROUND(col, decimal)", explanation:"ROUND(12.345, 2) -> 12.35", tip:"Sans second argument, arrondi à l'entier." },
+    { thematic:"Débutant", question:"Comment spécifier le nombre de réplicas d'un topic créé par ksqlDB ?", options:["REPLICAS=3 dans la clause WITH","REPLICATION_FACTOR=3","PARTITIONS 3 REPLICAS 3","Avec une propriété"], correctAnswer:"REPLICAS=3 dans la clause WITH", explanation:"Exemple : WITH (KAFKA_TOPIC='t', REPLICAS=3, PARTITIONS=6).", tip:"Valeur par défaut = 1." },
+    { thematic:"Débutant", question:"Que signifie 'ksql.query.pull.table.scan.enabled' ?", options:["Autorise les pull queries sur toute la table (scan complet)","Active les push queries","Désactive les jointures","Limite les résultats"], correctAnswer:"Autorise les pull queries sur toute la table (scan complet)", explanation:"Par défaut, les pull queries nécessitent une condition sur la clé. Cette propriété permet les scans.", tip:"À utiliser avec précaution sur les grandes tables." },
+    { thematic:"Débutant", question:"Comment tester une requête sans la rendre persistante ?", options:["SELECT ... EMIT CHANGES (non persistante)","CREATE STREAM AS SELECT (persistante)","INSERT INTO ... SELECT","TEST QUERY"], correctAnswer:"SELECT ... EMIT CHANGES (non persistante)", explanation:"Les requêtes non persistantes s'exécutent dans le CLI ou l'API et ne créent pas de topic.", tip:"Idéal pour l'exploration." },
+    { thematic:"Débutant", question:"Que fait la fonction ARRAY_LENGTH(arr) ?", options:["Retourne le nombre d'éléments d'un tableau","Retourne la taille en octets","Convertit en chaîne","Extrait un élément"], correctAnswer:"Retourne le nombre d'éléments d'un tableau", explanation:"Exemple : ARRAY_LENGTH(ARRAY[1,2,3]) = 3", tip:"Utile avec COLLECT_LIST." },
+    { thematic:"Débutant", question:"Quelle commande permet de réinitialiser un stream ou une table ?", options:["Il faut recréer le stream ou table","RESET STREAM","TRUNCATE STREAM","CLEAR STREAM"], correctAnswer:"Il faut recréer le stream ou table", explanation:"ksqlDB ne fournit pas de commande TRUNCATE. Pour réinitialiser, supprimez et recréez le stream.", tip:"Vous pouvez aussi supprimer les topics sous-jacents." },
+    { thematic:"Débutant", question:"Qu'est-ce que le mode 'executable' de ksqlDB ?", options:["Mode headless (fichier de requêtes)","Mode interactif","Mode cluster","Mode debug"], correctAnswer:"Mode headless (fichier de requêtes)", explanation:"Le mode executable (ou headless) démarre le serveur avec une liste de requêtes persistantes.", tip:"Utilisé en production." },
+    { thematic:"Débutant", question:"Comment afficher les propriétés de session ?", options:["SHOW PROPERTIES;","LIST SESSION;","DESCRIBE SESSION;","GET SESSION;"], correctAnswer:"SHOW PROPERTIES;", explanation:"Affiche les configurations de la session courante.", tip:"Modifiez-les avec SET." },
+
+    // ------------------------- 10 AVANCÉ -------------------------
+    { thematic:"Avancé", question:"Comment implémenter une déduplication exacte (exactly-once) dans ksqlDB ?", options:["Utiliser une table avec une clé unique et INSERT IGNORE","Utiliser DISTINCT","Utiliser GROUP BY","Utiliser une fenêtre"], correctAnswer:"Utiliser une table avec une clé unique et INSERT IGNORE", explanation:"En créant une table avec la clé comme identifiant, les INSERTs en double sont ignorés.", tip:"Combine avec exactly-once semantics de Kafka." },
+    { thematic:"Avancé", question:"Quelle configuration permet d'augmenter la taille maximale d'un message traité ?", options:["SET 'ksql.streams.producer.max.request.size'='10485760';","SET 'ksql.message.max.bytes'","SET 'max.message.bytes'","SET 'ksql.sink.max.records'"], correctAnswer:"SET 'ksql.streams.producer.max.request.size'='10485760';", explanation:"Cette propriété contrôle la taille max des messages produits par ksqlDB.", tip:"Augmentez aussi chez le broker." },
+    { thematic:"Avancé", question:"Comment créer une UDF personnalisée ?", options:["Écrire une classe Java avec @UDF","Utiliser CREATE FUNCTION","Utiliser une procédure stockée","Ajouter un plugin"], correctAnswer:"Écrire une classe Java avec @UDF", explanation:"Les UDFs sont des fonctions Java annotées, placées dans le classpath du serveur.", tip:"Redémarrez ksqlDB après ajout." },
+    { thematic:"Avancé", question:"Quelle est la meilleure pratique pour les jointures entre plusieurs streams à fort volume ?", options:["Co-partitionnement (même nombre de partitions et même clé)","Utiliser des tables intermédiaires","Réduire le nombre de fenêtres","Utiliser GlobalKTable"], correctAnswer:"Co-partitionnement (même nombre de partitions et même clé)", explanation:"Pour éviter les repartitionings coûteux, les streams doivent avoir le même nombre de partitions et le même partitionnement.", tip:"Vérifiez avec DESCRIBE EXTENDED." },
+    { thematic:"Avancé", question:"Comment gérer les données tardives (late events) dans une fenêtre ?", options:["Ajouter GRACE PERIOD","Augmenter la taille de la fenêtre","Utiliser une fenêtre HOPPING","Ignorer les tardives"], correctAnswer:"Ajouter GRACE PERIOD", explanation:"Exemple : WINDOW TUMBLING (SIZE 10 SECONDS, GRACE PERIOD 5 SECONDS)", tip:"Les messages arrivant après le grace period sont ignorés." },
+    { thematic:"Avancé", question:"Quel est l'impact de 'ksql.streams.cache.max.bytes.buffering' sur les tables ?", options:["Réduit les mises à jour intermédiaires en tamponnant","Augmente la latence","Diminue le débit","Ne fait rien"], correctAnswer:"Réduit les mises à jour intermédiaires en tamponnant", explanation:"Le cache regroupe les mises à jour d'une table avant de les écrire dans le changelog.", tip:"Augmentez pour moins d'écritures." },
+    { thematic:"Avancé", question:"Comment migrer un schéma Avro avec évolution ?", options:["Schema Registry + compatibilité backward","Changer toutes les requêtes","Recréer les streams","Utiliser JSON"], correctAnswer:"Schema Registry + compatibilité backward", explanation:"Le Schema Registry permet d'ajouter des champs sans casser les anciens consommateurs.", tip:"Testez les évolutions avec des versions." },
+    { thematic:"Avancé", question:"Quelle est l'utilité de 'ksql.streams.processing.guarantee' ?", options:["Exactly-once semantics","At-least-once","Idempotence","Compression"], correctAnswer:"Exactly-once semantics", explanation:"Peut être 'exactly_once_v2' pour garantir l'absence de perte/duplication.", tip:"Activez-le pour les transactions critiques." },
+    { thematic:"Avancé", question:"Comment surveiller les lag des requêtes ksqlDB ?", options:["JMX métriques (ksql.query.lag)","SHOW QUERIES;","DESCRIBE QUERY;","EXPLAIN"], correctAnswer:"JMX métriques (ksql.query.lag)", explanation:"ksqlDB expose des métriques via JMX, notamment le lag par requête.", tip:"Utilisez Prometheus + Grafana." },
+    { thematic:"Avancé", question:"Comment partitionner un stream pour une jointure efficace ?", options:["Définir PARTITIONS dans WITH et s'assurer que la clé est bien choisie","Augmenter le nombre de threads","Utiliser une table","Faire un repartition explicite"], correctAnswer:"Définir PARTITIONS dans WITH et s'assurer que la clé est bien choisie", explanation:"Le co-partitionnement est essentiel. Le nombre de partitions doit être identique entre les streams joints.", tip:"Vérifiez la clé avec PARTITION BY." },
+
+    // ------------------------- 10 CERTIFICATION (ENGLISH) -------------------------
+    { thematic:"Certification (EN)", question:"What is the default value format in ksqlDB if not specified?", options:["JSON","AVRO","DELIMITED","KAFKA"], correctAnswer:"JSON", explanation:"Default is JSON. You can change with VALUE_FORMAT.", tip:"Always specify VALUE_FORMAT explicitly." },
+    { thematic:"Certification (EN)", question:"Which clause turns a SELECT into a persistent query?", options:["CREATE STREAM AS SELECT","CREATE STREAM","SELECT INTO","INSERT INTO"], correctAnswer:"CREATE STREAM AS SELECT", explanation:"Persistent queries create new streams/tables and run indefinitely.", tip:"They are materialized views in Kafka." },
+    { thematic:"Certification (EN)", question:"How do you perform a pull query on a table?", options:["SELECT ... FROM table WHERE key=value (without EMIT CHANGES)","SELECT ... FROM table EMIT CHANGES","SELECT ... FROM stream","DESCRIBE table"], correctAnswer:"SELECT ... FROM table WHERE key=value (without EMIT CHANGES)", explanation:"Pull queries query the current state and terminate.", tip:"They require a key condition by default." },
+    { thematic:"Certification (EN)", question:"What is the purpose of 'ksql.schema.registry.url'?", options:["To integrate with Schema Registry for Avro/Protobuf","To define the Kafka broker","To set the service ID","To configure the REST API"], correctAnswer:"To integrate with Schema Registry for Avro/Protobuf", explanation:"Required when using VALUE_FORMAT='AVRO' or 'PROTOBUF'.", tip:"Set to http://schema-registry:8081" },
+    { thematic:"Certification (EN)", question:"Which window type is best for detecting user sessions?", options:["SESSION","TUMBLING","HOPPING","SLIDING"], correctAnswer:"SESSION", explanation:"Session windows close after a period of inactivity.", tip:"Define gap size in seconds." },
+    { thematic:"Certification (EN)", question:"What does 'EMIT CHANGES' do in a SELECT statement?", options:["Turns it into a continuous push query","Makes it a pull query","Materializes the result","Creates a new topic"], correctAnswer:"Turns it into a continuous push query", explanation:"Without EMIT CHANGES, the query terminates after returning current results.", tip:"Used for real-time dashboards." },
+    { thematic:"Certification (EN)", question:"How to drop a persistent query?", options:["TERMINATE query_id;","DROP QUERY query_id;","STOP query_id;","CANCEL query_id;"], correctAnswer:"TERMINATE query_id;", explanation:"TERMINATE stops the query and releases resources.", tip:"List queries with LIST QUERIES;" },
+    { thematic:"Certification (EN)", question:"What is the function to convert a string to a timestamp?", options:["STRINGTOTIMESTAMP(str, format)","TIMESTAMPTOSTRING","TO_TIMESTAMP","CAST(str AS TIMESTAMP)"], correctAnswer:"STRINGTOTIMESTAMP(str, format)", explanation:"Example: STRINGTOTIMESTAMP('2024-01-01', 'yyyy-MM-dd')", tip:"Use with TIMESTAMP column in WITH clause." },
+    { thematic:"Certification (EN)", question:"Which property sets the number of threads for stream processing?", options:["ksql.streams.num.stream.threads","ksql.streams.threads","num.stream.threads","ksql.threads"], correctAnswer:"ksql.streams.num.stream.threads", explanation:"Controls parallelism for ksqlDB queries.", tip:"Default is 4." },
+    { thematic:"Certification (EN)", question:"What is the purpose of 'ksql.service.id'?", options:["Prefix for internal topics and consumer group","Service name for REST API","Cluster identifier","Node ID"], correctAnswer:"Prefix for internal topics and consumer group", explanation:"Isolates multiple ksqlDB clusters on the same Kafka cluster.", tip:"Change for each environment (dev, prod)." }
+];
+
+// Vérification du nombre (doit être 80)
+console.log("Banque de questions KSQLDB chargée : " + QUESTIONS_BANK.length);
+
+// ======================= LOGIQUE DU QUIZ =======================
+let currentQuestions = [];
+let userAnswers = [];
+let currentIdx = 0;
+let score = 0;
+
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function filterByDomains() {
+    const domains = [];
+    if (document.getElementById("dom-beginner").checked) domains.push("Débutant");
+    if (document.getElementById("dom-advanced").checked) domains.push("Avancé");
+    if (document.getElementById("dom-cert").checked) domains.push("Certification (EN)");
+    if (domains.length === 0) return QUESTIONS_BANK;
+    return QUESTIONS_BANK.filter(q => domains.includes(q.thematic));
+}
+
+function startQuiz() {
+    let count = parseInt(document.getElementById("question-count").value);
+    let filtered = filterByDomains();
+    if (filtered.length < count) count = filtered.length;
+    currentQuestions = shuffle(filtered).slice(0, count);
+    userAnswers = new Array(currentQuestions.length).fill(null);
+    score = 0;
+    currentIdx = 0;
+    document.getElementById("settings-panel").classList.add("d-none");
+    document.getElementById("quiz-content").classList.remove("d-none");
+    updateScore();
+    displayQuestion(0);
+}
+
+function displayQuestion(idx) {
+    const q = currentQuestions[idx];
+    document.getElementById("question-text").innerText = q.question;
+    const badgeSpan = document.getElementById("thematic-badge");
+    badgeSpan.innerText = q.thematic;
+    let badgeClass = "badge-beginner";
+    if (q.thematic === "Avancé") badgeClass = "badge-advanced";
+    if (q.thematic === "Certification (EN)") badgeClass = "badge-cert";
+    badgeSpan.className = "thematic-badge " + badgeClass;
+    
+    const container = document.getElementById("options-container");
+    container.innerHTML = "";
+    const shuffledOpts = shuffle([...q.options]);
+    shuffledOpts.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.className = "btn option-btn";
+        btn.onclick = () => selectAnswer(btn, opt, idx);
+        container.appendChild(btn);
+    });
+    document.getElementById("explanation-box").classList.add("d-none");
+    if (userAnswers[idx] !== null) showFeedback(idx);
+    updateProgress();
+    updateNav();
+}
+
+function selectAnswer(btn, selected, idx) {
+    if (userAnswers[idx] !== null) return;
+    const q = currentQuestions[idx];
+    const isCorrect = (selected === q.correctAnswer);
+    if (isCorrect) score++;
+    userAnswers[idx] = { selected, correct: q.correctAnswer, isCorrect };
+    updateScore();
+    showFeedback(idx);
+}
+
+function showFeedback(idx) {
+    const ans = userAnswers[idx];
+    if (!ans) return;
+    const q = currentQuestions[idx];
+    const btns = document.querySelectorAll(".option-btn");
+    btns.forEach(btn => {
+        btn.disabled = true;
+        if (btn.innerText === ans.correct) btn.classList.add("correct");
+        if (btn.innerText === ans.selected && !ans.isCorrect) btn.classList.add("incorrect");
+    });
+    document.getElementById("explanation-text").innerHTML = q.explanation;
+    document.getElementById("explanation-title").innerHTML = ans.isCorrect ? "✅ Correct !" : "❌ Incorrect";
+    document.getElementById("explanation-box").classList.remove("d-none");
+    const tipDiv = document.getElementById("tip-box");
+    if (q.tip) {
+        document.getElementById("tip-text").innerHTML = q.tip;
+        tipDiv.classList.remove("d-none");
+    } else {
+        tipDiv.classList.add("d-none");
+    }
+}
+
+function updateProgress() {
+    const perc = ((currentIdx + 1) / currentQuestions.length) * 100;
+    document.getElementById("progress-bar").style.width = perc + "%";
+    document.getElementById("question-counter").innerText = `Question ${currentIdx+1}/${currentQuestions.length}`;
+}
+
+function updateScore() {
+    document.getElementById("current-score").innerText = `Score: ${score}/${currentQuestions.length}`;
+}
+
+function updateNav() {
+    document.getElementById("prev-btn").disabled = (currentIdx === 0);
+    const isLast = (currentIdx === currentQuestions.length - 1);
+    document.getElementById("next-btn").classList.toggle("d-none", isLast);
+    document.getElementById("finish-btn").classList.toggle("d-none", !isLast);
+}
+
+function next() {
+    if (currentIdx < currentQuestions.length - 1) {
+        currentIdx++;
+        displayQuestion(currentIdx);
+    }
+}
+
+function prev() {
+    if (currentIdx > 0) {
+        currentIdx--;
+        displayQuestion(currentIdx);
+    }
+}
+
+function finish() {
+    showModal();
+}
+
+function showModal() {
+    const percent = (score / currentQuestions.length) * 100;
+    document.getElementById("final-score-percentage").innerText = `${percent.toFixed(0)}%`;
+    document.getElementById("final-score-text").innerHTML = `${score}/${currentQuestions.length} bonnes réponses`;
+    
+    let beginnerCorrect = 0, advancedCorrect = 0, certCorrect = 0;
+    let beginnerTotal = 0, advancedTotal = 0, certTotal = 0;
+    userAnswers.forEach((a, i) => {
+        if (a) {
+            const theme = currentQuestions[i].thematic;
+            if (theme === "Débutant") { beginnerTotal++; if (a.isCorrect) beginnerCorrect++; }
+            else if (theme === "Avancé") { advancedTotal++; if (a.isCorrect) advancedCorrect++; }
+            else { certTotal++; if (a.isCorrect) certCorrect++; }
+        }
+    });
+    const beginnerPct = beginnerTotal ? (beginnerCorrect / beginnerTotal) * 100 : 0;
+    const advancedPct = advancedTotal ? (advancedCorrect / advancedTotal) * 100 : 0;
+    const certPct = certTotal ? (certCorrect / certTotal) * 100 : 0;
+    document.getElementById("beginner-skill").style.width = beginnerPct + "%";
+    document.getElementById("advanced-skill").style.width = advancedPct + "%";
+    document.getElementById("cert-skill").style.width = certPct + "%";
+    
+    let recos = "";
+    if (percent >= 80) recos = "Excellent ! Vous maîtrisez ksqlDB. Prêt pour la certification.";
+    else if (percent >= 60) recos = "Bien, mais revoyez les concepts avancés et les jointures.";
+    else recos = "Reprenez les bases (STREAM vs TABLE, fenêtres, push/pull) puis réessayez.";
+    document.getElementById("final-recommendations").innerHTML = `<div class="alert alert-info">${recos}</div>`;
+    document.getElementById("short-term").innerHTML = "Pratiquez avec ksqlDB CLI sur des exemples simples (pageviews, orders).";
+    document.getElementById("long-term").innerHTML = "Pour la certification, étudiez les UDF, les fenêtres avancées et l'optimisation des jointures.";
+    
+    new bootstrap.Modal(document.getElementById("resultsModal")).show();
+}
+
+function restart() {
+    document.getElementById("settings-panel").classList.remove("d-none");
+    document.getElementById("quiz-content").classList.add("d-none");
+    const modal = bootstrap.Modal.getInstance(document.getElementById("resultsModal"));
+    if (modal) modal.hide();
+}
+
+// Événements
+document.getElementById("start-quiz-btn").onclick = startQuiz;
+document.getElementById("next-btn").onclick = next;
+document.getElementById("prev-btn").onclick = prev;
+document.getElementById("finish-btn").onclick = finish;
+document.getElementById("restart-quiz-btn").onclick = restart;
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
