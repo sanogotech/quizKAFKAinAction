@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCDAK v5 · Apache Kafka Exam · 80 Fresh Questions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:linear-gradient(145deg,#0b1120,#1a2639);padding:1.5rem;min-height:100vh;}
+        .quiz-wrapper{max-width:1200px;margin:0 auto;}
+        .quiz-card{background:rgba(255,255,255,0.98);border-radius:2rem;overflow:hidden;box-shadow:0 25px 45px -12px rgba(0,0,0,0.4);}
+        .quiz-header{background:linear-gradient(135deg,#1a1e2c,#2d3e50);padding:2rem;color:white;border-bottom:4px solid #e63946;}
+        .badge-kafka{background:#e63946;padding:0.3rem 1.2rem;border-radius:40px;font-weight:600;font-size:0.85rem;display:inline-block;}
+        .progress-container{background:#f1f5f9;margin:1.5rem;padding:1rem;border-radius:1rem;}
+        .progress-bar-custom{background:linear-gradient(90deg,#f4a261,#e63946);}
+        .thematic-badge{display:inline-flex;align-items:center;gap:0.4rem;padding:0.4rem 1rem;border-radius:50px;font-weight:600;font-size:0.8rem;margin-bottom:1rem;}
+        .badge-fund{background:#e0f2fe;color:#0369a1;}
+        .badge-dev{background:#dcfce7;color:#166534;}
+        .badge-streams{background:#fae8ff;color:#86198f;}
+        .badge-connect{background:#fff3e3;color:#b45309;}
+        .badge-test{background:#e0e7ff;color:#3730a3;}
+        .badge-obs{background:#ffedea;color:#c2410c;}
+        .option-btn{width:100%;text-align:left;padding:0.9rem 1.2rem;margin-bottom:0.7rem;border:1.5px solid #e2e8f0;border-radius:1rem;background:white;font-weight:500;transition:0.2s;}
+        .option-btn:hover:not([disabled]){border-color:#e63946;background:#fff5f5;transform:translateY(-2px);}
+        .option-btn.correct{background:#ecfdf5;border-color:#10b981;color:#065f46;}
+        .option-btn.incorrect{background:#fef2f2;border-color:#f97316;color:#7f1d1d;}
+        .explanation-box{padding:1rem;border-radius:1rem;background:#f8fafc;border-left:5px solid #e63946;margin-top:1.2rem;}
+        .tip-box{background:#fffbeb;border-left:4px solid #f4a261;padding:0.7rem;border-radius:0.8rem;margin-top:0.8rem;}
+        .vocab-box{background:#eef2ff;border-left:4px solid #3b82f6;padding:0.7rem;border-radius:0.8rem;margin-top:0.8rem;font-size:0.9rem;}
+        .btn-kafka{background:#e63946;color:white;border:none;}
+        .btn-kafka:hover{background:#b91c1c;transform:translateY(-2px);}
+        .final-score{font-size:3.5rem;font-weight:800;background:linear-gradient(135deg,#e63946,#f4a261);-webkit-background-clip:text;background-clip:text;color:transparent;}
+        @media (max-width:768px){body{padding:0.8rem;}.quiz-header h1{font-size:1.5rem;}}
+    </style>
+</head>
+<body>
+<div class="quiz-wrapper">
+    <div class="quiz-card">
+        <div class="quiz-header">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div><h1><i class="fab fa-java me-2"></i> CCDAK v5 · Apache Kafka</h1><p class="mb-0 opacity-75">80 brand new questions · exam mode · detailed explanations & key English vocabulary</p></div>
+                <div><span class="badge-kafka"><i class="fas fa-microchip"></i> Confluent Certified</span></div>
+            </div>
+        </div>
+
+        <!-- Configuration panel -->
+        <div id="settings-panel" class="p-4">
+            <h4><i class="fas fa-sliders-h"></i> Quiz configuration</h4>
+            <div class="row g-3 mt-2">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Number of questions</label>
+                    <select id="question-count" class="form-select">
+                        <option value="30">30 questions (quick)</option>
+                        <option value="50">50 questions (standard)</option>
+                        <option value="80" selected>80 questions (full CCDAK v5)</option>
+                    </select>
+                </div>
+                <div class="col-md-7 d-flex align-items-end"><button id="start-quiz-btn" class="btn btn-kafka w-100 py-2"><i class="fas fa-play"></i> Start exam</button></div>
+            </div>
+            <div class="mt-4">
+                <h6><i class="fas fa-tags"></i> Topics (filters)</h6>
+                <div class="row">
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-fund" checked> <label>📘 Fundamentals (23%)</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-dev" checked> <label>⚙️ Development (28%)</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-streams" checked> <label>🌊 Kafka Streams (12%)</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-connect" checked> <label>🔌 Kafka Connect (15%)</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-test" checked> <label>🧪 Application Testing (8%)</label></div></div>
+                    <div class="col-md-4"><div class="form-check"><input class="form-check-input" type="checkbox" id="dom-obs" checked> <label>📊 Observability (13%)</label></div></div>
+                </div>
+            </div>
+            <div class="row mt-4 text-center g-2">
+                <div class="col-6 col-md-3"><div class="border rounded p-2"><i class="fas fa-database fa-2x text-danger"></i><div class="fw-bold">Topics / ISR</div></div></div>
+                <div class="col-6 col-md-3"><div class="border rounded p-2"><i class="fas fa-exchange-alt fa-2x text-success"></i><div class="fw-bold">Producer / Consumer</div></div></div>
+                <div class="col-6 col-md-3"><div class="border rounded p-2"><i class="fas fa-stream fa-2x text-primary"></i><div class="fw-bold">Streams / KTable</div></div></div>
+                <div class="col-6 col-md-3"><div class="border rounded p-2"><i class="fas fa-chart-line fa-2x text-warning"></i><div class="fw-bold">Lag / Monitoring</div></div></div>
+            </div>
+        </div>
+
+        <!-- Quiz area -->
+        <div id="quiz-content" class="d-none">
+            <div class="progress-container">
+                <div class="d-flex justify-content-between"><span id="question-counter" class="fw-bold">Question 1 / 80</span><span id="current-score" class="fw-bold text-danger">Score: 0</span></div>
+                <div class="progress mt-2" style="height: 10px;"><div id="progress-bar" class="progress-bar progress-bar-custom" style="width:0%"></div></div>
+            </div>
+            <div class="px-4 pb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div id="thematic-badge" class="thematic-badge">Fundamentals</div>
+                        <h3 id="question-text" class="fs-4 fw-semibold mb-4"></h3>
+                        <div id="options-container"></div>
+                        <div id="explanation-box" class="explanation-box d-none">
+                            <h5 id="explanation-title"><i class="fas fa-info-circle"></i> Explanation</h5>
+                            <p id="explanation-text"></p>
+                            <div id="tip-box" class="tip-box d-none"><i class="fas fa-lightbulb text-warning"></i> <strong>💡 Tip:</strong> <span id="tip-text"></span></div>
+                            <div id="vocab-box" class="vocab-box d-none"><i class="fas fa-language"></i> <strong>📚 Key English terms for this question:</strong><br><span id="vocab-list"></span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-between mt-4 gap-2">
+                    <button id="prev-btn" class="btn btn-outline-secondary" disabled><i class="fas fa-chevron-left"></i> Previous</button>
+                    <button id="next-btn" class="btn btn-kafka">Next <i class="fas fa-chevron-right"></i></button>
+                    <button id="finish-btn" class="btn btn-outline-success d-none">Finish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results modal -->
+<div class="modal fade" id="resultsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white"><h5 class="modal-title"><i class="fab fa-apache"></i> CCDAK v5 Results</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body p-4 text-center"><div class="final-score" id="final-score-percentage">0%</div><p id="final-score-text" class="lead"></p>
+            <div class="row"><div class="col-md-6"><div class="bg-light p-2 rounded"><div class="progress"><div id="tech-skills" class="progress-bar bg-danger" style="width:0%"></div></div><p id="tech-skills-text" class="mt-1 small"></p></div></div>
+            <div class="col-md-6"><div class="bg-light p-2 rounded"><div class="progress"><div id="strat-skills" class="progress-bar bg-warning" style="width:0%"></div></div><p id="strat-skills-text" class="mt-1 small"></p></div></div></div>
+            <hr><div id="final-recommendations"></div><p id="short-term" class="mt-2"></p><p id="long-term"></p></div>
+            <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button id="restart-quiz-btn" class="btn btn-kafka">Restart</button></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ======================== 80 NEW QUESTIONS (CCDAK v5) ========================
+const questionsBank = [
+    // FUNDAMENTALS (18)
+    { thematic:"Fundamentals", question:"What is the purpose of `log.cleaner.min.compaction.lag.ms`?", options:["Minimum time a message must wait before being eligible for compaction","Maximum compaction lag","Delay before compaction starts","Time between compaction cycles"], correctAnswer:"Minimum time a message must wait before being eligible for compaction", explanation:"Prevents messages from being compacted too soon. Useful for keeping recent updates.", tip:"Set to a few minutes for fast-changing keys." },
+    { thematic:"Fundamentals", question:"What does `broker.id.generation.enable` do?", options:["Automatically assign broker IDs when not specified","Generate broker IDs manually","Disable broker ID","Use UUID"], correctAnswer:"Automatically assign broker IDs when not specified", explanation:"When enabled, brokers without a configured `broker.id` get automatically assigned IDs from ZooKeeper/KRaft.", tip:"Use for dynamic environments." },
+    { thematic:"Fundamentals", question:"What is the default `log.cleaner.dedupe.buffer.size`?", options:["128 MB","64 MB","256 MB","32 MB"], correctAnswer:"128 MB", explanation:"Total memory used by log cleaner for deduplication. Larger improves compaction speed.", tip:"Increase if compaction falls behind." },
+    { thematic:"Fundamentals", question:"What does `kafka-replica-verification.sh` do?", options:["Verify replica consistency across brokers","Check consumer lag","List topics","Describe partitions"], correctAnswer:"Verify replica consistency across brokers", explanation:"Compares logs between leader and follower replicas to detect divergence.", tip:"Use after unusual broker failures." },
+    { thematic:"Fundamentals", question:"What is the effect of `log.index.interval.bytes`?", options:["How often to add an entry to the offset index","Index file size","Segment size","Compaction interval"], correctAnswer:"How often to add an entry to the offset index", explanation:"Controls index granularity. Lower values improve lookup speed but increase index size.", tip:"Default 4096 bytes (add entry every 4KB)." },
+    { thematic:"Fundamentals", question:"What does `num.partitions` affect when auto-creating topics?", options:["Default partition count for auto-created topics","Maximum partitions","Minimum partitions","Replication factor"], correctAnswer:"Default partition count for auto-created topics", explanation:"When a producer or consumer targets a non-existent topic, Kafka creates it with this many partitions.", tip:"Set based on expected throughput." },
+    { thematic:"Fundamentals", question:"What is a `controller` in Kafka?", options:["Broker responsible for administrative tasks (partition assignment, leader election)","Broker handling all client requests","Broker storing offsets","Broker managing consumer groups"], correctAnswer:"Broker responsible for administrative tasks (partition assignment, leader election)", explanation:"One broker acts as controller, managing partition state and broker failures.", tip:"Monitor `ActiveControllerCount` (should be 1)." },
+    { thematic:"Fundamentals", question:"What does `delete.topic.enable` control?", options:["Allow topic deletion via CLI/API","Disable topic creation","Enable log deletion","Enable compaction"], correctAnswer:"Allow topic deletion via CLI/API", explanation:"If false, topics cannot be deleted (safety). Set to true for production.", tip:"Set to true for normal operations." },
+    { thematic:"Fundamentals", question:"What is the purpose of `zookeeper.set.acl`?", options:["Enable ZooKeeper ACLs for secure access","Set ZooKeeper ACLs","Disable ZooKeeper","Enable KRaft"], correctAnswer:"Enable ZooKeeper ACLs for secure access", explanation:"When true, Kafka sets ACLs on ZooKeeper znodes to restrict access.", tip:"Use with Kerberos for security." },
+    { thematic:"Fundamentals", question:"What does `kafka-get-offsets.sh` do?", options:["Get earliest or latest offsets for a topic","Get consumer group offsets","Get broker offsets","Get partition leader"], correctAnswer:"Get earliest or latest offsets for a topic", explanation:"Shows beginning or end offsets for partitions. Useful for calculating lag.", tip:"Use `--time -1` for latest, `--time -2` for earliest." },
+    { thematic:"Fundamentals", question:"What is a `tiered storage` remote log segment?", options:["Log segment moved to external storage (S3, HDFS)","Compressed segment","Encrypted segment","Deleted segment"], correctAnswer:"Log segment moved to external storage (S3, HDFS)", explanation:"Tiered storage offloads old segments to cheaper remote storage, reducing local disk usage.", tip:"Configure `remote.log.storage.ms`." },
+    { thematic:"Fundamentals", question:"What does `log.message.timestamp.type` configure?", options:["Timestamp type: CreateTime or LogAppendTime","Timestamp format","Timestamp precision","Timestamp offset"], correctAnswer:"Timestamp type: CreateTime or LogAppendTime", explanation:"CreateTime uses producer timestamp; LogAppendTime overwrites with broker append time.", tip:"LogAppendTime prevents timestamp tampering." },
+    { thematic:"Fundamentals", question:"What is the default `log.segment.bytes`?", options:["1 GB (1073741824 bytes)","512 MB","2 GB","256 MB"], correctAnswer:"1 GB (1073741824 bytes)", explanation:"Maximum size of a single log segment before rolling.", tip:"Smaller segments improve compaction but increase file handle usage." },
+    { thematic:"Fundamentals", question:"What does `kafka-dump-log.sh --print-data-log` do?", options:["Print actual message data from log segments","Print only index","Print only offset","Print only timestamp"], correctAnswer:"Print actual message data from log segments", explanation:"Displays message contents, not just metadata. Useful for debugging.", tip:"Use with `--files` to specify segment." },
+    { thematic:"Fundamentals", question:"What is the purpose of `socket.request.max.bytes`?", options:["Maximum size of a request the broker will accept","Maximum response size","Maximum socket buffer","Maximum message size"], correctAnswer:"Maximum size of a request the broker will accept", explanation:"Protects broker from oversized requests. Should be at least `message.max.bytes`.", tip:"Default 100 MB." },
+    { thematic:"Fundamentals", question:"What does `controlled.shutdown.enable` default to?", options:["true","false","depends on version","null"], correctAnswer:"true", explanation:"Graceful shutdown migrates leadership before broker stops, reducing client impact.", tip:"Keep true for production." },
+    { thematic:"Fundamentals", question:"What is `KRaft` metadata log directory?", options:["Directory storing metadata (__cluster_metadata)","Directory storing topic data","Directory storing consumer offsets","Directory storing configuration"], correctAnswer:"Directory storing metadata (__cluster_metadata)", explanation:"In KRaft, metadata is stored in a dedicated log directory, not ZooKeeper.", tip:"Format with `kafka-storage.sh format`." },
+    { thematic:"Fundamentals", question:"What does `unclean.leader.election.enable` set to true risk?", options:["Potential data loss (messages missing from non-ISR leader)","No risk","Higher availability","Better performance"], correctAnswer:"Potential data loss (messages missing from non-ISR leader)", explanation:"Allowing a non-ISR replica to become leader may lose messages that were never replicated.", tip:"Keep false unless you accept data loss." },
+    // DEVELOPMENT (22)
+    { thematic:"Development", question:"What does `producer.flush()` do?", options:["Wait for all pending sends to complete","Clear buffer","Reset producer","Close producer"], correctAnswer:"Wait for all pending sends to complete", explanation:"Blocks until all buffered records have been sent and acknowledgments received.", tip:"Call before close() to ensure delivery." },
+    { thematic:"Development", question:"How to set a custom partitioner class in producer config?", options:["partitioner.class","custom.partitioner","partition.class","key.partitioner"], correctAnswer:"partitioner.class", explanation:"Provide fully qualified class name implementing `Partitioner`.", tip:"Extend `DefaultPartitioner` for convenience." },
+    { thematic:"Development", question:"What does `consumer.wakeup()` do?", options:["Interrupt an active poll() to exit","Stop consumer","Pause consumer","Close consumer"], correctAnswer:"Interrupt an active poll() to exit", explanation:"WakeupException is thrown from poll(). Use for graceful shutdown.", tip:"Call in another thread." },
+    { thematic:"Development", question:"What is the default `request.timeout.ms` for consumer?", options:["30 seconds (30000 ms)","10 seconds","60 seconds","5 seconds"], correctAnswer:"30 seconds (30000 ms)", explanation:"Maximum time to wait for a response to a consumer request (join group, sync group, etc.).", tip:"Increase for large groups." },
+    { thematic:"Development", question:"How to get the current position (next offset to read) for a consumer?", options:["position()","offset()","currentOffset()","getOffset()"], correctAnswer:"position()", explanation:"`consumer.position(partition)` returns the offset of the next record to be fetched.", tip:"Use after seek() to verify." },
+    { thematic:"Development", question:"What does `ConsumerRebalanceListener.onPartitionsAssigned()` allow?", options:["Initialize state for newly assigned partitions","Commit offsets","Pause partitions","Close consumer"], correctAnswer:"Initialize state for newly assigned partitions", explanation:"Called after partitions are assigned. Restore local state, seek to positions.", tip:"Use for stateful processing." },
+    { thematic:"Development", question:"What is the effect of `max.poll.records=1`?", options:["Process one record per poll","Process all records","Reduce throughput","Increase latency"], correctAnswer:"Process one record per poll", explanation:"Useful when each record is expensive to process and you want fine control.", tip:"Combine with manual offset commit." },
+    { thematic:"Development", question:"How to disable auto commit and commit manually?", options:["enable.auto.commit=false, then commitSync()","auto.commit=false","manual.commit=true","commit.mode=manual"], correctAnswer:"enable.auto.commit=false, then commitSync()", explanation:"Disable auto commit, then call `commitSync()` or `commitAsync()` after processing.", tip:"Commit after successful processing." },
+    { thematic:"Development", question:"What does `record.serialization.exception` mean?", options:["Serialization error, record cannot be sent","Network error","Broker error","Timeout"], correctAnswer:"Serialization error, record cannot be sent", explanation:"Occurs when custom serializer throws exception. Record is not sent.", tip:"Handle with callback's onCompletion." },
+    { thematic:"Development", question:"What is `AdminClient.alterPartitionReassignments()` used for?", options:["Change partition replica assignments","Increase partitions","Delete partitions","Describe partitions"], correctAnswer:"Change partition replica assignments", explanation:"Programmatic partition reassignment for load balancing.", tip:"Use `ListPartitionReassignments` to check progress." },
+    { thematic:"Development", question:"How to set headers when sending a message?", options:["ProducerRecord(headers)","record.setHeader()","message.headers()","send(..., headers)"], correctAnswer:"ProducerRecord(headers)", explanation:"Pass `Iterable<Header>` to ProducerRecord constructor.", tip:"Headers are key-value byte pairs." },
+    { thematic:"Development", question:"What does `metrics.recording.level` control?", options:["Level of metrics detail (INFO, DEBUG, TRACE)","Metric export interval","Metric retention","Metric aggregation"], correctAnswer:"Level of metrics detail (INFO, DEBUG, TRACE)", explanation:"Higher levels produce more metrics but more overhead.", tip:"Use DEBUG for troubleshooting." },
+    { thematic:"Development", question:"What is `KafkaProducer.sendOffsetsToTransaction()` used for?", options:["Commit consumer offsets within transaction","Send offsets as message","Commit producer offsets","Commit transaction"], correctAnswer:"Commit consumer offsets within transaction", explanation:"Part of exactly-once: commit consumer offsets atomically with produce results.", tip:"Requires `transactional.id`." },
+    { thematic:"Development", question:"What does `reconnect.backoff.max.ms` limit?", options:["Maximum backoff between reconnection attempts","Minimum backoff","Timeout","Retry count"], correctAnswer:"Maximum backoff between reconnection attempts", explanation:"Exponential backoff increases up to this limit.", tip:"Default 1000 ms." },
+    { thematic:"Development", question:"How to get partition leader for a topic using AdminClient?", options:["describeTopics() returns PartitionInfo with leader","getLeader()","describeCluster()","listTopics()"], correctAnswer:"describeTopics() returns PartitionInfo with leader", explanation:"`DescribeTopicsResult` contains `PartitionInfo` which includes leader node id.", tip:"Use `partitions.get(partition).leader()`." },
+    { thematic:"Development", question:"What is the default `key.deserializer` in consumer?", options:["ByteArrayDeserializer","StringDeserializer","IntegerDeserializer","No default, must specify"], correctAnswer:"ByteArrayDeserializer", explanation:"If not configured, consumer defaults to ByteArrayDeserializer for both key and value.", tip:"Always configure explicitly for your data type." },
+    { thematic:"Development", question:"What does `commitAsync()` callback provide?", options:["Offset commit result (success/failure)","No callback","Only success","Only failure"], correctAnswer:"Offset commit result (success/failure)", explanation:"Callback receives `OffsetCommitMetadata` or exception. Non-blocking.", tip:"Use for best-effort commits." },
+    { thematic:"Development", question:"How to use `MockProducer` with `send()` and `history()`?", options:["history() returns list of sent ProducerRecords","getHistory()","sentRecords()","recordHistory()"], correctAnswer:"history() returns list of sent ProducerRecords", explanation:"MockProducer tracks all sent records for verification.", tip:"Call `clear()` to reset history." },
+    { thematic:"Development", question:"What does `producer.partitionsFor()` return?", options:["List of partition metadata for a topic","Number of partitions","Partition leader only","Partition ISR"], correctAnswer:"List of partition metadata for a topic", explanation:"Returns `PartitionInfo` array containing leader, replicas, ISR for each partition.", tip:"Useful for dynamic routing." },
+    { thematic:"Development", question:"What is the default `session.timeout.ms` for consumer?", options:["45 seconds (45000 ms)","30 seconds","10 seconds","60 seconds"], correctAnswer:"45 seconds (45000 ms)", explanation:"Maximum time without heartbeat before consumer is considered dead.", tip:"Lower for faster failure detection." },
+    { thematic:"Development", question:"What does `transactional.id` uniqueness guarantee?", options:["Exactly-once across producer sessions","Idempotence only","Ordering only","Compression"], correctAnswer:"Exactly-once across producer sessions", explanation:"Same transactional.id across restarts ensures incomplete transactions are aborted and state is recovered.", tip:"Use unique ID per producer instance." },
+    { thematic:"Development", question:"How to enable idempotence for existing producer without changing code?", options:["Set enable.idempotence=true in config","Not possible","Enable in broker","Enable in topic"], correctAnswer:"Set enable.idempotence=true in config", explanation:"Add `props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true)`.", tip:"Also set `acks=all`." },
+    // KAFKA STREAMS (10)
+    { thematic:"Kafka Streams", question:"What is `KGroupedTable` used for?", options:["Grouping and aggregating KTable","Grouping KStream","Windowed aggregation","Joining tables"], correctAnswer:"Grouping and aggregating KTable", explanation:"`KGroupedTable` results from `groupBy()` on a KTable, used for aggregations like `count()`.", tip:"Follow with `aggregate()`." },
+    { thematic:"Kafka Streams", question:"What does `StreamsConfig.NUM_STREAM_THREADS_CONFIG` control?", options:["Number of threads for stream processing","Number of state stores","Number of tasks","Number of processors"], correctAnswer:"Number of threads for stream processing", explanation:"Each thread runs multiple tasks. Increase parallelism.", tip:"Set based on CPU cores." },
+    { thematic:"Kafka Streams", question:"What is a `repartition` operation?", options:["Forces data redistribution across partitions via an internal topic","Changes key","Filters records","Merges streams"], correctAnswer:"Forces data redistribution across partitions via an internal topic", explanation:"Operations like `groupByKey()` after key change require repartitioning.", tip:"Avoid unnecessary repartitions for performance." },
+    { thematic:"Kafka Streams", question:"What does `KStream.flatTransform()` do?", options:["One-to-many transformation with ability to forward","One-to-one transformation","Filter transformation","Join transformation"], correctAnswer:"One-to-many transformation with ability to forward", explanation:"Similar to flatMap but uses Processor API with punctuation support.", tip:"Return `Iterable<KeyValue>`." },
+    { thematic:"Kafka Streams", question:"What is the default `cache.max.bytes.buffering` in Streams?", options:["10 MB (10485760 bytes)","0 (disabled)","1 MB","50 MB"], correctAnswer:"10 MB (10485760 bytes)", explanation:"Buffer for caching intermediate results to reduce downstream updates.", tip:"Larger cache reduces writes but increases memory." },
+    { thematic:"Kafka Streams", question:"What does `KTable.toStream()` do?", options:["Convert KTable to KStream (emitting each update)","Convert to GlobalKTable","Convert to KGroupedTable","Convert to windowed"], correctAnswer:"Convert KTable to KStream (emitting each update)", explanation:"Each KTable change (insert, update, delete) becomes a record in the stream.", tip:"Use `toStream((key, value) -> ...)` to map." },
+    { thematic:"Kafka Streams", question:"What is `Windowed` type in Kafka Streams?", options:["Key with window information for windowed aggregations","Time window only","Partition window","Session window"], correctAnswer:"Key with window information for windowed aggregations", explanation:"When using windowed aggregations, the key is wrapped in `Windowed<K>` containing start/end timestamps.", tip:"Use `windowed.key()` to get original key." },
+    { thematic:"Kafka Streams", question:"What does `StreamsBuilder.build()` return?", options:["Topology object","StreamsConfig","KafkaStreams","ProcessorSupplier"], correctAnswer:"Topology object", explanation:"`Topology` describes the processing graph (sources, processors, sinks).", tip:"Can be visualized with `describe()`." },
+    { thematic:"Kafka Streams", question:"How to handle late events in windowed aggregation?", options:["Grace period via `.grace()`","Ignore late events","Increase window size","Use session windows"], correctAnswer:"Grace period via `.grace()`", explanation:"`.grace(Duration)` specifies how long to accept late events after window end.", tip:"Set based on expected lateness." },
+    { thematic:"Kafka Streams", question:"What is `StreamsConfig.PROCESSING_GUARANTEE_CONFIG` exactly_once_v2 advantage?", options:["Better performance than exactly_once","Exactly-once with less overhead","No transactions","At-least-once"], correctAnswer:"Better performance than exactly_once", explanation:"`exactly_once_v2` uses new transaction protocol with lower latency and higher throughput.", tip:"Recommended for all exactly-once use cases." },
+    // KAFKA CONNECT (12)
+    { thematic:"Kafka Connect", question:"What is the `Connector` method `taskConfigs()` used for?", options:["Define configuration for each task","Define connector config","Start tasks","Stop tasks"], correctAnswer:"Define configuration for each task", explanation:"Returns a list of configs, one per task, based on partition assignment.", tip:"Number of tasks = `tasks.max`." },
+    { thematic:"Kafka Connect", question:"What does `errors.retry.timeout` control?", options:["Max time to retry failed operations","Number of retries","Retry backoff","Timeout for retry"], correctAnswer:"Max time to retry failed operations", explanation:"If a failure persists beyond this time, record goes to DLQ or fails.", tip:"Default 5 minutes." },
+    { thematic:"Kafka Connect", question:"What is the purpose of `Connector.start()`?", options:["Initialize connector with properties","Stop connector","Validate configuration","Create tasks"], correctAnswer:"Initialize connector with properties", explanation:"Called when connector is created. Validate config and initialize resources.", tip:"Throw ConfigException for invalid config." },
+    { thematic:"Kafka Connect", question:"How to implement a source connector that tracks offset?", options:["Use `OffsetStorageReader` to read previous offsets","Use `SourceTask.commit()`","Use `SinkTask`","Use `Transformation`"], correctAnswer:"Use `OffsetStorageReader` to read previous offsets", explanation:"Source tasks call `context.offsetStorageReader()` to get last committed offset for a source partition.", tip:"Store map of source position." },
+    { thematic:"Kafka Connect", question:"What does `errors.tolerance=none` mean?", options:["Stop connector on first error","Ignore all errors","Log only","Retry indefinitely"], correctAnswer:"Stop connector on first error", explanation:"Connector fails when any error occurs. Opposite of `all`.", tip:"Use for critical pipelines." },
+    { thematic:"Kafka Connect", question:"What is `HeaderConverter` used for?", options:["Convert Kafka headers to Connect data","Convert key","Convert value","Convert schemas"], correctAnswer:"Convert Kafka headers to Connect data", explanation:"Headers can be serialized/deserialized with custom converter.", tip:"Use `SimpleHeaderConverter`." },
+    { thematic:"Kafka Connect", question:"How to add custom SMT (Single Message Transform)?", options:["Implement `Transformation` interface","Implement `Converter`","Implement `Connector`","Implement `Task`"], correctAnswer:"Implement `Transformation` interface", explanation:"Override `apply()` to modify record.", tip:"Package JAR in `plugin.path`." },
+    { thematic:"Kafka Connect", question:"What does `config.storage.replication.factor` default to?", options:["3","1","2","5"], correctAnswer:"3", explanation:"Internal config topic uses replication factor 3 by default.", tip:"Ensure sufficient brokers." },
+    { thematic:"Kafka Connect", question:"What is the `Task` lifecycle method `stop()` used for?", options:["Clean up resources before task termination","Start task","Pause task","Commit offsets"], correctAnswer:"Clean up resources before task termination", explanation:"Called when task is stopped. Close connections, flush buffers.", tip:"Do not throw exceptions in stop()." },
+    { thematic:"Kafka Connect", question:"How to check connector status using JMX?", options:["kafka.connect:type=connector-metrics,name=status","kafka.connect:type=task-metrics","kafka.consumer:type=connect","kafka.producer:type=connect"], correctAnswer:"kafka.connect:type=connector-metrics,name=status", explanation:"MBean exposes `status` attribute (unassigned, running, paused, failed).", tip:"Use for monitoring." },
+    { thematic:"Kafka Connect", question:"What does `producer.override.compression.type` do in sink connector?", options:["Override compression for sink's producer","Enable compression","Disable compression","Set compression level"], correctAnswer:"Override compression for sink's producer", explanation:"Passes `compression.type` to the internal producer.", tip:"Use 'snappy' or 'lz4'." },
+    { thematic:"Kafka Connect", question:"What is the purpose of `Transformation. ConfigDef`?", options:["Define configuration parameters for the SMT","Define connector config","Define task config","Define worker config"], correctAnswer:"Define configuration parameters for the SMT", explanation:"Each SMT can have its own config (e.g., field name to drop).", tip:"Use `ConfigDef.define()`." },
+    // APPLICATION TESTING (6)
+    { thematic:"Application Testing", question:"What is `TestUtils` in Kafka?", options:["Test utilities for brokers and clients","Mock producer","Mock consumer","Mock streams"], correctAnswer:"Test utilities for brokers and clients", explanation:"`kafka.utils.TestUtils` provides methods like `waitUntilTrue()` for integration tests.", tip:"Found in `kafka_2.13:test` jar." },
+    { thematic:"Application Testing", question:"How to test producer idempotence in unit test?", options:["Enable idempotence, simulate retries, verify no duplicates","Send once","Use acks=0","Use MockProducer"], correctAnswer:"Enable idempotence, simulate retries, verify no duplicates", explanation:"MockProducer can be configured to simulate duplicate sends and check deduplication.", tip:"Set `enable.idempotence=true` in mock config." },
+    { thematic:"Application Testing", question:"What does `MemoryRecords` test utility do?", options:["Create in-memory record batches","Compress records","Serialize records","Deserialize records"], correctAnswer:"Create in-memory record batches", explanation:"Used to generate test record batches without serialization overhead.", tip:"Use `MemoryRecords.withRecords()`." },
+    { thematic:"Application Testing", question:"How to simulate consumer group rebalance in integration test?", options:["Add/remove consumer instances dynamically","Call rebalance()","Use MockConsumer","Use EmbeddedKafka"], correctAnswer:"Add/remove consumer instances dynamically", explanation:"Start more consumers or stop existing ones to trigger rebalance.", tip:"Monitor rebalance callbacks." },
+    { thematic:"Application Testing", question:"What is `kafka.tools.VerifiableConsumer` used for?", options:["Consume and report message IDs for validation","Produce messages","Compress messages","Monitor lag"], correctAnswer:"Consume and report message IDs for validation", explanation:"Part of system testing: verifies message ordering, duplicates, and loss.", tip:"Used with VerifiableProducer." },
+    { thematic:"Application Testing", question:"How to test connector task failure recovery?", options:["Kill task process, verify task restarts","Stop connector","Pause connector","Delete connector"], correctAnswer:"Kill task process, verify task restarts", explanation:"Simulate task crash and check that Connect framework restarts it.", tip:"Monitor status endpoint." },
+    // OBSERVABILITY (12)
+    { thematic:"Observability", question:"What does `kafka.controller:type=ControllerChannelManager` metric `RequestQueueSize` indicate?", options:["Number of pending controller requests","Number of partitions","Number of brokers","Number of topics"], correctAnswer:"Number of pending controller requests", explanation:"High queue size may indicate controller overload.", tip:"Check controller logs." },
+    { thematic:"Observability", question:"What is `kafka.server:type=DelayedOperationPurgatory` attribute `PurgatorySize`?", options:["Number of delayed produce/fetch requests","Number of partitions","Number of replicas","Number of consumers"], correctAnswer:"Number of delayed produce/fetch requests", explanation:"Large purgatory indicates slow followers or consumers.", tip:"Monitor `delayed.operation.rate`." },
+    { thematic:"Observability", question:"How to monitor Kafka Connect task restart counts?", options:["kafka.connect:type=task-metrics","kafka.consumer metrics","kafka.producer metrics","kafka.streams metrics"], correctAnswer:"kafka.connect:type=task-metrics", explanation:"Attributes like `restart.total` show how many times tasks restarted.", tip:"High restarts indicate instability." },
+    { thematic:"Observability", question:"What does `kafka.log:type=LogCleanerManager` metric `cleaning-paused` mean?", options:["Log compaction is paused (e.g., throttled)","Cleaner is running","Cleaner failed","Cleaner stopped"], correctAnswer:"Log compaction is paused (e.g., throttled)", explanation:"Cleaner may be paused due to rate limiting or disk issues.", tip:"Check cleaner configuration." },
+    { thematic:"Observability", question:"What is the `kafka.server:type=BrokerTopicMetrics` metric `TotalProduceRequestsPerSec`?", options:["Total produce requests per second","Total fetch requests","Total bytes in","Total bytes out"], correctAnswer:"Total produce requests per second", explanation:"Number of produce requests (not records).", tip:"Divide by batch size for record rate." },
+    { thematic:"Observability", question:"How to monitor garbage collection for Kafka Connect workers?", options:["JVM GC metrics via JMX","Connect REST API","Connect logs","Consumer metrics"], correctAnswer:"JVM GC metrics via JMX", explanation:"`java.lang:type=GarbageCollector` MBeans provide GC time and count.", tip:"High GC time impacts throughput." },
+    { thematic:"Observability", question:"What does `kafka.consumer:type=consumer-metrics` attribute `connection-close-total` measure?", options:["Total connections closed","Total connections opened","Total rebalances","Total errors"], correctAnswer:"Total connections closed", explanation:"Frequent closures may indicate network issues or misconfiguration.", tip:"Monitor with `connection-creation-total`." },
+    { thematic:"Observability", question:"What is the `kafka.server:type=ReplicaFetcherManager` metric `ReplicaFetcherThreadCount`?", options:["Number of fetcher threads for replication","Number of replicas","Number of partitions","Number of ISRs"], correctAnswer:"Number of fetcher threads for replication", explanation:"Each thread replicates from one leader. High count may indicate many partitions.", tip:"Tune `num.replica.fetchers`." },
+    { thematic:"Observability", question:"How to monitor consumer group rebalance time?", options:["kafka.consumer:type=consumer-coordinator-metrics attribute rebalance-latency-avg","kafka.server metrics","kafka.controller metrics","kafka.network metrics"], correctAnswer:"kafka.consumer:type=consumer-coordinator-metrics attribute rebalance-latency-avg", explanation:"Average time for rebalance completion. High values indicate group issues.", tip:"Check `rebalance-total` as well." },
+    { thematic:"Observability", question:"What does `kafka.server:type=BrokerTopicMetrics` metric `FailedFetchRequestsPerSec` indicate?", options:["Failed fetch requests rate","Failed produce rate","Failed replication rate","Failed compaction rate"], correctAnswer:"Failed fetch requests rate", explanation:"Non-zero indicates errors (e.g., offset out of range).", tip:"Check consumer configuration." },
+    { thematic:"Observability", question:"What is the purpose of `kafka.log:type=LogCleaner` metric `cleaner-io-ratio`?", options:["IO busy ratio for cleaner threads","Compaction speed","Dirty ratio","Cleaner threads count"], correctAnswer:"IO busy ratio for cleaner threads", explanation:"High ratio (near 1.0) indicates cleaner is saturated.", tip:"Increase cleaner threads or throttle." },
+    { thematic:"Observability", question:"How to monitor active Kafka Streams tasks?", options:["kafka.streams:type=stream-thread-metrics attribute active-tasks","kafka.consumer","kafka.producer","kafka.connect"], correctAnswer:"kafka.streams:type=stream-thread-metrics attribute active-tasks", explanation:"Number of tasks currently assigned to the thread.", tip:"Monitor for skew across threads." }
+];
+
+console.log("Loaded v5 questions:", questionsBank.length);
+
+// Quiz logic (standard across versions)
+let currentQuestions = [], userAnswers = [], currentIdx = 0, score = 0;
+const badgeMap = {"Fundamentals":"badge-fund","Development":"badge-dev","Kafka Streams":"badge-streams","Kafka Connect":"badge-connect","Application Testing":"badge-test","Observability":"badge-obs"};
+function shuffle(arr) { for(let i=arr.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+function filterByDomains() {
+    let domains=[];
+    if(document.getElementById("dom-fund").checked) domains.push("Fundamentals");
+    if(document.getElementById("dom-dev").checked) domains.push("Development");
+    if(document.getElementById("dom-streams").checked) domains.push("Kafka Streams");
+    if(document.getElementById("dom-connect").checked) domains.push("Kafka Connect");
+    if(document.getElementById("dom-test").checked) domains.push("Application Testing");
+    if(document.getElementById("dom-obs").checked) domains.push("Observability");
+    if(domains.length===0) return questionsBank;
+    return questionsBank.filter(q => domains.includes(q.thematic));
+}
+const vocabDict = {
+    "partition": "partition", "offset": "offset (décalage)", "ISR": "In-Sync Replicas", "broker": "broker (courtier)", "consumer group": "groupe de consommateurs", "producer": "producteur", "idempotence": "idempotence", "transaction": "transaction", "lag": "retard (lag)", "connector": "connecteur", "sink": "récepteur (sink)", "source": "source", "KTable": "KTable (table matérialisée)", "state store": "magasin d'état", "topology": "topologie", "exactly-once": "exactement une fois", "KRaft": "KRaft (Raft sans ZooKeeper)", "replica": "réplica", "leader": "leader", "ack": "accusé de réception", "batch": "lot", "serializer": "sérialiseur", "deserializer": "désérialiseur", "rebalance": "rééquilibrage", "stream": "flux", "window": "fenêtre", "join": "jointure", "SMT": "Single Message Transform", "dead letter queue": "file d'attente des messages morts", "JMX": "Java Management Extensions", "compaction": "compaction", "segment": "segment", "tiered storage": "stockage à plusieurs niveaux", "controller": "contrôleur", "cleaner": "nettoyeur (compaction)"
+};
+function extractKeyTerms(text) {
+    let terms = [];
+    for (let [eng, fr] of Object.entries(vocabDict)) {
+        if (text.toLowerCase().includes(eng.toLowerCase())) {
+            terms.push(`<strong>${eng}</strong> → ${fr}`);
+        }
+    }
+    return terms.slice(0,6);
+}
+function showVocabularyForCurrent() {
+    let q = currentQuestions[currentIdx];
+    let fullText = q.question + " " + q.explanation + (q.tip || "");
+    let terms = extractKeyTerms(fullText);
+    let vocabDiv = document.getElementById("vocab-box");
+    let vocabListSpan = document.getElementById("vocab-list");
+    if (terms.length > 0) {
+        vocabListSpan.innerHTML = terms.join("<br>");
+        vocabDiv.classList.remove("d-none");
+    } else {
+        vocabDiv.classList.add("d-none");
+    }
+}
+function startQuiz() {
+    let count = parseInt(document.getElementById("question-count").value);
+    let filtered = filterByDomains();
+    if(filtered.length < count) count = filtered.length;
+    currentQuestions = shuffle(filtered).slice(0, count);
+    userAnswers = new Array(currentQuestions.length).fill(null);
+    score = 0; currentIdx = 0;
+    document.getElementById("settings-panel").classList.add("d-none");
+    document.getElementById("quiz-content").classList.remove("d-none");
+    updateScore();
+    displayQuestion(0);
+}
+function displayQuestion(idx) {
+    let q = currentQuestions[idx];
+    document.getElementById("question-text").innerText = q.question;
+    let badgeSpan = document.getElementById("thematic-badge");
+    badgeSpan.innerText = q.thematic;
+    badgeSpan.className = "thematic-badge " + (badgeMap[q.thematic] || "badge-fund");
+    let container = document.getElementById("options-container");
+    container.innerHTML = "";
+    let shuffledOpts = shuffle([...q.options]);
+    shuffledOpts.forEach(opt => {
+        let btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.className = "btn option-btn";
+        btn.onclick = () => selectAnswer(btn, opt, idx);
+        container.appendChild(btn);
+    });
+    document.getElementById("explanation-box").classList.add("d-none");
+    if(userAnswers[idx] !== null) showFeedback(idx);
+    updateProgress();
+    updateNav();
+}
+function selectAnswer(btn, selected, idx) {
+    if(userAnswers[idx] !== null) return;
+    let q = currentQuestions[idx];
+    let isCorrect = (selected === q.correctAnswer);
+    if(isCorrect) score++;
+    userAnswers[idx] = { selected, correct: q.correctAnswer, isCorrect };
+    updateScore();
+    showFeedback(idx);
+}
+function showFeedback(idx) {
+    let ans = userAnswers[idx];
+    if(!ans) return;
+    let q = currentQuestions[idx];
+    let btns = document.querySelectorAll(".option-btn");
+    btns.forEach(btn => { btn.disabled = true; if(btn.innerText === ans.correct) btn.classList.add("correct"); if(btn.innerText === ans.selected && !ans.isCorrect) btn.classList.add("incorrect"); });
+    document.getElementById("explanation-text").innerHTML = q.explanation;
+    document.getElementById("explanation-title").innerHTML = ans.isCorrect ? "✅ Correct!" : "❌ Incorrect";
+    document.getElementById("explanation-box").classList.remove("d-none");
+    let tipDiv = document.getElementById("tip-box");
+    if(q.tip) { document.getElementById("tip-text").innerHTML = q.tip; tipDiv.classList.remove("d-none"); }
+    else tipDiv.classList.add("d-none");
+    showVocabularyForCurrent();
+}
+function updateProgress() { let perc = ((currentIdx+1)/currentQuestions.length)*100; document.getElementById("progress-bar").style.width=perc+"%"; document.getElementById("question-counter").innerText=`Question ${currentIdx+1}/${currentQuestions.length}`; }
+function updateScore() { document.getElementById("current-score").innerText=`Score: ${score}/${currentQuestions.length}`; }
+function updateNav() { document.getElementById("prev-btn").disabled = (currentIdx===0); let isLast = (currentIdx===currentQuestions.length-1); document.getElementById("next-btn").classList.toggle("d-none", isLast); document.getElementById("finish-btn").classList.toggle("d-none", !isLast); }
+function next() { if(currentIdx < currentQuestions.length-1) { currentIdx++; displayQuestion(currentIdx); } }
+function prev() { if(currentIdx > 0) { currentIdx--; displayQuestion(currentIdx); } }
+function finish() { showModal(); }
+function showModal() {
+    let percent = (score/currentQuestions.length)*100;
+    document.getElementById("final-score-percentage").innerText = `${percent.toFixed(0)}%`;
+    document.getElementById("final-score-text").innerHTML = `${score}/${currentQuestions.length} correct answers`;
+    let tech=0, strat=0, tot=0;
+    userAnswers.forEach((a,i)=>{ if(a){ tot++; if(["Fundamentals","Development","Kafka Streams"].includes(currentQuestions[i].thematic)) { if(a.isCorrect) tech++; } else { if(a.isCorrect) strat++; } } });
+    tech = tot? (tech/tot)*100:0; strat = tot? (strat/tot)*100:0;
+    document.getElementById("tech-skills").style.width=tech+"%"; document.getElementById("tech-skills-text").innerHTML=`Technical ${tech.toFixed(0)}%`;
+    document.getElementById("strat-skills").style.width=strat+"%"; document.getElementById("strat-skills-text").innerHTML=`Patterns/Observability ${strat.toFixed(0)}%`;
+    let recos = percent>=80 ? "Excellent, you are ready for certification!" : (percent>=60 ? "Good foundation, review streams/connect." : "Go back to fundamentals.");
+    document.getElementById("final-recommendations").innerHTML = `<div class="alert alert-info">${recos}</div>`;
+    document.getElementById("short-term").innerHTML = percent<70 ? "Practice with Confluent labs." : "Take practice exams.";
+    document.getElementById("long-term").innerHTML = percent>=85 ? "Goal: Kafka Architect." : "Achieve CCDAK certification.";
+    new bootstrap.Modal(document.getElementById("resultsModal")).show();
+}
+function restart() { document.getElementById("settings-panel").classList.remove("d-none"); document.getElementById("quiz-content").classList.add("d-none"); let modal = bootstrap.Modal.getInstance(document.getElementById("resultsModal")); if(modal) modal.hide(); }
+document.getElementById("start-quiz-btn").onclick = startQuiz;
+document.getElementById("next-btn").onclick = next;
+document.getElementById("prev-btn").onclick = prev;
+document.getElementById("finish-btn").onclick = finish;
+document.getElementById("restart-quiz-btn").onclick = restart;
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
