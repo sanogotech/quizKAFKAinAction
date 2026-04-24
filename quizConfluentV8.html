@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Kafka Developer · Series 8 · Fresh Questions · 90% pass threshold</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f4f7fc; font-family: system-ui, 'Segoe UI', 'Inter', sans-serif; padding: 2rem 1rem; }
+        .exam-card { max-width: 1100px; margin: 0 auto; background: #ffffff; border-radius: 28px; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.08); border: 1px solid #e9edf2; overflow: hidden; }
+        .exam-header { background: #ffffff; padding: 2rem 2rem 1rem; border-bottom: 2px solid #eff3f8; text-align: center; }
+        .exam-header h1 { font-size: 2rem; font-weight: 700; background: linear-gradient(145deg, #1e293b, #0f172a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .badge-domain { background: #eef2ff; color: #1e3a8a; border-radius: 40px; font-size: 0.75rem; font-weight: 600; display: inline-block; margin: 0.25rem; padding: 0.25rem 0.9rem; }
+        .settings-panel { background: #fafcff; padding: 1.8rem; border-bottom: 1px solid #eef2f8; }
+        .progress-header { background: #f8fafc; padding: 0.8rem 2rem; display: flex; justify-content: space-between; font-weight: 600; border-bottom: 1px solid #eef2f8; color: #0f172a; }
+        .question-area { padding: 2rem; }
+        .thematic-tag { display: inline-block; background: #eef2ff; color: #2563eb; border-radius: 30px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem; padding: 0.2rem 1rem; }
+        .question-text { font-size: 1.4rem; font-weight: 600; line-height: 1.4; color: #0a2540; margin-bottom: 1.8rem; }
+        .option-btn { width: 100%; text-align: left; background: white; border: 1px solid #e2e8f0; border-radius: 18px; padding: 0.9rem 1.2rem; margin-bottom: 0.8rem; font-weight: 500; transition: all 0.2s; font-size: 0.95rem; }
+        .option-btn:hover:not(:disabled) { background: #f8fafc; border-color: #3b82f6; transform: translateX(4px); }
+        .opt-correct { background: #ecfdf5; border-color: #10b981; color: #065f46; }
+        .opt-incorrect { background: #fef2f2; border-color: #f43f5e; color: #9f1239; }
+        .explanation-area { background: #f8fafc; border-radius: 20px; padding: 1.2rem 1.5rem; margin-top: 1.5rem; border-left: 4px solid #3b82f6; }
+        .tip-bubble { background: #fef9e3; border-radius: 16px; padding: 0.7rem 1rem; margin-top: 1rem; font-size: 0.85rem; color: #92400e; }
+        .btn-pro { background: #0f172a; border: none; border-radius: 40px; padding: 0.5rem 1.8rem; font-weight: 600; color: white; }
+        .btn-pro-outline { background: transparent; border: 1px solid #cbd5e1; border-radius: 40px; color: #1e293b; }
+        .btn-success-pro { background: #0d9488; border: none; border-radius: 40px; }
+    </style>
+</head>
+<body>
+<div class="exam-card">
+    <div class="exam-header">
+        <h1><i class="fab fa-kafka me-2" style="color:#e11d48;"></i> Kafka Developer · Series 8</h1>
+        <p class="text-muted mt-2">Weighted blueprint: 30% Core · 30% Producer/Consumer · 25% Streams/Connect · 15% Observability/Tools</p>
+        <div class="mt-2">
+            <span class="badge-domain">📘 Fundamentals 30%</span>
+            <span class="badge-domain">⚙️ Producer/Consumer 30%</span>
+            <span class="badge-domain">🔁 Streams & Connect 25%</span>
+            <span class="badge-domain">📊 Monitoring/Tools 15%</span>
+        </div>
+        <div class="mt-2 small text-secondary">✅ 60 brand new unique questions · 90% passing threshold (54/60)</div>
+    </div>
+
+    <div id="settingsPanel" class="settings-panel">
+        <div class="row align-items-end g-3">
+            <div class="col-md-5">
+                <label class="form-label fw-semibold">Questions quantity</label>
+                <select id="questionCountSelect" class="form-select border-secondary-subtle">
+                    <option value="60" selected>60 questions (full exam)</option>
+                    <option value="40">40 questions (rapid check)</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <div class="small text-secondary mt-2"><i class="fas fa-chart-pie"></i> Passing score: 90%</div>
+            </div>
+            <div class="col-md-3">
+                <button id="startExamBtn" class="btn btn-pro w-100 py-2"><i class="fas fa-rocket"></i> Start series 8</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="quizArea" class="d-none">
+        <div class="progress-header">
+            <span id="questionCounter">Question 1 / 60</span>
+            <span id="liveScore" class="fw-bold text-dark">Score: 0</span>
+        </div>
+        <div class="progress rounded-0" style="height: 4px;"><div id="quizProgressBar" class="progress-bar bg-primary" style="width: 0%;"></div></div>
+        <div class="question-area">
+            <div id="thematicBadge" class="thematic-tag">Fundamentals</div>
+            <div id="questionText" class="question-text">Loading...</div>
+            <div id="optionsArea"></div>
+            <div id="explanationContainer" class="explanation-area d-none">
+                <strong id="explanationTitle"><i class="fas fa-lightbulb"></i> Explanation</strong>
+                <p id="explanationText" class="mt-2 mb-0"></p>
+                <div id="tipContainer" class="tip-bubble d-none"><i class="fas fa-graduation-cap me-1"></i> <strong>Pro tip:</strong> <span id="tipText"></span></div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between px-4 pb-4 pt-2 gap-2">
+            <button id="prevBtn" class="btn btn-pro-outline" disabled><i class="fas fa-arrow-left"></i> Previous</button>
+            <button id="nextBtn" class="btn btn-pro">Next <i class="fas fa-arrow-right"></i></button>
+            <button id="finishBtn" class="btn btn-success-pro d-none">Finish & score</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="resultModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header bg-light border-0">
+                <h5 class="modal-title fw-bold"><i class="fab fa-kafka text-danger me-2"></i>Exam results</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <div class="display-2 fw-bold" id="finalPercent">0%</div>
+                <p><span id="finalCorrect">0</span> / <span id="finalTotal">0</span> correct answers</p>
+                <div id="passFeedback" class="mb-3"></div>
+                <div class="row mt-3">
+                    <div class="col-6"><div class="progress"><div id="coreSkillBar" class="progress-bar bg-info" style="width:0%"></div></div><small>Core & API mastery</small></div>
+                    <div class="col-6"><div class="progress"><div id="streamSkillBar" class="progress-bar bg-warning" style="width:0%"></div></div><small>Streams & Connect</small></div>
+                </div>
+                <div id="adviceBox" class="alert alert-light mt-3 border rounded-3"></div>
+                <p id="nextSteps" class="text-muted small mt-2"></p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button id="restartModalBtn" class="btn btn-pro px-4">⟳ Retake exam</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // ======================= 60 BRAND NEW UNIQUE QUESTIONS (SERIES 8) =======================
+    const questionBank = [
+        // FUNDAMENTALS (18 new) – Replication, log, configuration, KRaft details
+        { thematic: "Fundamentals", question: "What does `log.retention.bytes` control?", options: ["Maximum size of the log before deletion", "Segment size", "Index size", "Message max bytes"], correct: "Maximum size of the log before deletion", explanation: "When total log size exceeds this threshold, older segments are deleted.", tip: "Use together with retention.ms." },
+        { thematic: "Fundamentals", question: "What is the default `log.segment.delete.delay.ms`?", options: ["60000 ms (1 minute)", "30000 ms", "120000 ms", "0 ms"], correct: "60000 ms (1 minute)", explanation: "Time to wait before deleting a segment from the filesystem after it is marked as deleted.", tip: "Reducing may free space faster." },
+        { thematic: "Fundamentals", question: "What is `file.delete.delay.ms` used for?", options: ["Delay before deleting a file from the filesystem", "Segment delete delay", "Index delete delay", "Cache delete delay"], correct: "Delay before deleting a file from the filesystem", explanation: "Protects against deleting files that are still being read.", tip: "Keep default unless disk pressure." },
+        { thematic: "Fundamentals", question: "What does `controller.quorum.election.backoff.max.ms` control?", options: ["Max backoff between controller election retries", "Min backoff", "Leader election timeout", "Fetch timeout"], correct: "Max backoff between controller election retries", explanation: "Increases backoff when repeated election attempts fail.", tip: "Set high ~1 second." },
+        { thematic: "Fundamentals", question: "What is the purpose of `controller.quorum.append.linger.ms`?", options: ["Delay to batch metadata appends for Raft", "Commit delay", "Flush delay", "Snapshot delay"], correct: "Delay to batch metadata appends for Raft", explanation: "Increases throughput of metadata writes for KRaft.", tip: "Increase to 50ms on high‑write clusters." },
+        { thematic: "Fundamentals", question: "What does `kafka.controller:type=ControllerStats` metric `NewLeaderElectionRate` measure?", options: ["Rate of partition leader elections", "Rate of controller elections", "Reassignment rate", "ISR change rate"], correct: "Rate of partition leader elections", explanation: "High rate may indicate instability.", tip: "Alert if spikes above baseline." },
+        { thematic: "Fundamentals", question: "What is the purpose of `broker.heartbeat.interval.ms` in KRaft?", options: ["How often broker sends heartbeat to controller", "Consumer heartbeat", "Producer heartbeat", "Offset commit interval"], correct: "How often broker sends heartbeat to controller", explanation: "Heartbeat informs controller that broker is alive.", tip: "Keep at default 2 seconds." },
+        { thematic: "Fundamentals", question: "What does `broker.session.timeout.ms` in KRaft control?", options: ["Time after which controller marks broker dead without heartbeat", "Producer timeout", "Consumer session", "Transaction timeout"], correct: "Time after which controller marks broker dead without heartbeat", explanation: "If broker fails to send heartbeat, controller will mark it as failed.", tip: "Set 10 seconds or more." },
+        { thematic: "Fundamentals", question: "What is the purpose of `controller.quorum.request.timeout.ms`?", options: ["Timeout for Raft requests between controllers", "Broker to controller timeout", "Producer timeout", "Consumer timeout"], correct: "Timeout for Raft requests between controllers", explanation: "If exceeded, the Raft node may retry or suspect failure.", tip: "Increase for high‑latency networks." },
+        { thematic: "Fundamentals", question: "What does `KIP-848` propose?", options: ["New consumer rebalance protocol (next generation)", "KRaft optimizations", "Tiered storage", "Exactly‑once v3"], correct: "New consumer rebalance protocol (next generation)", explanation: "More efficient, reduces rebalance time and complexity.", tip: "Will be default in future Kafka versions." },
+        { thematic: "Fundamentals", question: "What does `KIP-664` deliver?", options: ["Add metadata for rack IDs in replica assignment", "Consumer lag metrics", "Producer metrics", "Connect metrics"], correct: "Add metadata for rack IDs in replica assignment", explanation: "Enables better rack‑aware replica spreading.", tip: "Set broker.rack to leverage." },
+        { thematic: "Fundamentals", question: "What is the role of `kafka-storage.sh random-uuid`?", options: ["Generate cluster ID for KRaft", "Generate broker ID", "Generate topic UUID", "Generate consumer group ID"], correct: "Generate cluster ID for KRaft", explanation: "Each KRaft cluster needs a unique cluster ID.", tip: "Run once during cluster setup." },
+        { thematic: "Fundamentals", question: "What does the `kafka-metadata-shell` tool do?", options: ["Inspect KRaft metadata directly", "Alter topics", "Alter ACLs", "Alter consumer groups"], correct: "Inspect KRaft metadata directly", explanation: "Low‑level debugging tool for KRaft metadata.", tip: "Use for forensic analysis." },
+        { thematic: "Fundamentals", question: "What is the purpose of `ssl.endpoint.identification.algorithm=HTTPS`?", options: ["Enable hostname verification for SSL", "Disable verification", "Set cipher suite", "Set protocol"], correct: "Enable hostname verification for SSL", explanation: "Prevents man‑in‑the‑middle attacks.", tip: "Keep enabled for production." },
+        { thematic: "Fundamentals", question: "What does `ssl.secure.random.implementation` allow?", options: ["Custom SecureRandom algorithm", "Default SHA1PRNG", "Native PRNG", "Windows PRNG"], correct: "Custom SecureRandom algorithm", explanation: "Overrides JVM default for SSL randomness.", tip: "Use for better performance on some JVMs." },
+        { thematic: "Fundamentals", question: "What is the default `ssl.truststore.type`?", options: ["JKS", "PKCS12", "PEM", "BC"], correct: "JKS", explanation: "Java KeyStore type for truststore.", tip: "Switch to PKCS12 for compatibility." },
+        { thematic: "Fundamentals", question: "What does `principal.builder.class` allow to build?", options: ["Principal from authenticated session", "SSL context", "Keystore", "Truststore"], correct: "Principal from authenticated session", explanation: "Custom mapping from authenticated user to principal name used in ACLs.", tip: "Implement to integrate external identity mapping." },
+        { thematic: "Fundamentals", question: "What is the default `zookeeper.set.acl` in ZooKeeper mode (deprecated)?", options: ["false", "true", "depends", "none"], correct: "false", explanation: "Enables ACL on ZooKeeper nodes if set true. In KRaft, no longer used.", tip: "Use KRaft instead." },
+
+        // PRODUCER/CONSUMER (18 new) – advanced error handling, offsets, partition assignment, transactions
+        { thematic: "Producer-Consumer", question: "What does `GroupAuthorizationException` mean?", options: ["Consumer not allowed to access group", "Topic not allowed", "Commit not allowed", "Offset not allowed"], correct: "Consumer not allowed to access group", explanation: "ACL violation on the consumer group.", tip: "Add ACL with `Group` resource type." },
+        { thematic: "Producer-Consumer", question: "How to get the end offsets (latest) for a partition?", options: ["consumer.endOffsets(partitions)", "consumer.position()", "consumer.committed()", "consumer.assignment()"], correct: "consumer.endOffsets(partitions)", explanation: "Returns the log end offset for each requested partition.", tip: "Use to compute lag." },
+        { thematic: "Producer-Consumer", question: "What does `consumer.beginningOffsets(partitions)` return?", options: ["Earliest available offset", "Latest offset", "Committed offset", "Current position"], correct: "Earliest available offset", explanation: "First valid offset for each partition.", tip: "Use for resets." },
+        { thematic: "Producer-Consumer", question: "What is the effect of `ConsumerConfig.CHECK_CRCS_CONFIG` false?", options: ["Disable CRC checks on consumed messages (improve performance)", "Enable CRC", "Skip deserialization", "Skip headers"], correct: "Disable CRC checks on consumed messages (improve performance)", explanation: "Increases throughput but may consume corrupted data.", tip: "Keep true for critical data." },
+        { thematic: "Producer-Consumer", question: "What does `ConsumerConfig.EXCLUDE_INTERNAL_TOPICS_CONFIG` do?", options: ["Prevent subscription patterns from including internal topics", "Include internal topics", "Only internal", "None"], correct: "Prevent subscription patterns from including internal topics", explanation: "Default true, hides `__consumer_offsets` etc.", tip: "Keep true for typical consumers." },
+        { thematic: "Producer-Consumer", question: "What is the role of `ConsumerPartitionAssignor` interface?", options: ["Implement custom partition assignment logic", "Implement serialization", "Implement deserialization", "Implement offset commit"], correct: "Implement custom partition assignment logic", explanation: "Used to define custom rebalance strategies.", tip: "Extend `AbstractPartitionAssignor`." },
+        { thematic: "Producer-Consumer", question: "What is a `CooperativeStickyAssignor` advantage?", options: ["Minimizes partition movement over rebalances", "Simplest implementation", "Best throughput", "Lowest latency"], correct: "Minimizes partition movement over rebalances", explanation: "Only reassigns a subset of partitions incrementally.", tip: "Recommended for large consumer groups." },
+        { thematic: "Producer-Consumer", question: "What does `LeaderNotAvailableException` indicate?", options: ["No leader elected for partition", "Leader down", "Partition not exists", "Broker down"], correct: "No leader elected for partition", explanation: "Usually transient during leader election.", tip: "Client retries internally." },
+        { thematic: "Producer-Consumer", question: "What does `NotEnoughReplicasException` mean for producer?", options: ["Number of in‑sync replicas less than min.insync.replicas", "Replication factor too low", "ISR empty", "Leader down"], correct: "Number of in‑sync replicas less than min.insync.replicas", explanation: "Producer cannot meet durability requirement.", tip: "Increase ISR count or reduce min.insync.replicas." },
+        { thematic: "Producer-Consumer", question: "What is `NotEnoughReplicasAfterAppendException`?", options: ["Message written to leader but not enough replicas after write", "Write timeout", "Leader not available", "Invalid ack"], correct: "Message written to leader but not enough replicas after write", explanation: "Write may be lost if leader fails before replication.", tip: "Monitor for frequent occurrences." },
+        { thematic: "Producer-Consumer", question: "What does `KafkaProducer.close()` without argument do?", options: ["Blocks until all in‑flight requests complete and close", "Forces close immediately", "Flush only", "Abort transactions"], correct: "Blocks until all in‑flight requests complete and close", explanation: "Graceful shutdown with indefinite wait.", tip: "Use `close(Duration)` for bounded wait." },
+        { thematic: "Producer-Consumer", question: "What is the default `max.in.flight.requests.per.connection`?", options: ["5", "1", "10", "3"], correct: "5", explanation: "Maximum number of unacknowledged requests on a connection.", tip: "With idempotence, safe." },
+        { thematic: "Producer-Consumer", question: "What effect does `metadata.max.age.ms` have on producer?", options: ["Forces metadata refresh periodically even if no changes", "Max age of metadata before evict", "Stale metadata timeout", "Discovery timeout"], correct: "Forces metadata refresh periodically even if no changes", explanation: "Useful to detect new partitions or brokers.", tip: "Set to 5 minutes." },
+        { thematic: "Producer-Consumer", question: "What is a `key.partitioner` alternative to `partitioner.class`?", options: ["Deprecated; use `partitioner.class`", "New interface", "Same", "Key serializer"], correct: "Deprecated; use `partitioner.class`", explanation: "Old config name; replaced by `partitioner.class`.", tip: "Use `partitioner.class`." },
+        { thematic: "Producer-Consumer", question: "What does `ProducerConfig.TRANSACTIONAL_ID_CONFIG` enable?", options: ["Exactly‑once transactional producer", "Idempotence only", "At‑least‑once", "At‑most‑once"], correct: "Exactly‑once transactional producer", explanation: "Required for transactions across partitions/topics.", tip: "Must be unique per producer." },
+        { thematic: "Producer-Consumer", question: "What is `ConsumerConfig.ALLOW_AUTO_CREATE_TOPICS_CONFIG` default?", options: ["true", "false", "depends on broker", "depends on consumer"], correct: "true", explanation: "Consumer may auto‑create topics when subscribing if broker allows.", tip: "Set false in production to avoid accidental topic creation." },
+        { thematic: "Producer-Consumer", question: "What is the purpose of `ConsumerConfig.FETCH_MAX_BYTES_CONFIG`?", options: ["Max bytes in a fetch response", "Max bytes per partition", "Max request size", "Max poll records"], correct: "Max bytes in a fetch response", explanation: "Upper bound for total data fetched in one poll.", tip: "Should be larger than `max.partition.fetch.bytes`." },
+        { thematic: "Producer-Consumer", question: "What does `fetch.max.bytes` being too low cause?", options: ["Consumer may miss large messages", "Increase latency", "More fetches", "Less throughput"], correct: "Consumer may miss large messages", explanation: "Messages larger than this are not fetched, causing error.", tip: "Set to at least maximum expected message size." },
+
+        // STREAMS & CONNECT (15 new) – state, joins, connectors, SMTs, error handling
+        { thematic: "Streams & Connect", question: "What is a `KGroupedStream` in Kafka Streams?", options: ["Stream grouped by a key for aggregation", "Group of streams", "Windowed stream", "Joined stream"], correct: "Stream grouped by a key for aggregation", explanation: "Result of `groupBy` or `groupByKey`.", tip: "Use `count`, `reduce`, `aggregate` on it." },
+        { thematic: "Streams & Connect", question: "What does `KGroupedTable` do?", options: ["Grouped table for aggregation", "Grouped stream", "Windowed table", "Joined table"], correct: "Grouped table for aggregation", explanation: "Intermediate state after grouping a KTable by key.", tip: "Used for `reduce` and `aggregate`." },
+        { thematic: "Streams & Connect", question: "What is the purpose of `SessionWindowedKStream`?", options: ["Aggregation over session windows", "Tumbling windows", "Hopping windows", "Sliding windows"], correct: "Aggregation over session windows", explanation: "Windows defined by gaps of inactivity.", tip: "Merge session windows with `SessionWindows.inactivityGap`." },
+        { thematic: "Streams & Connect", question: "What does `TimeWindowedKStream` support?", options: ["Tumbling and hopping windows", "Session windows", "Sliding windows", "Global windows"], correct: "Tumbling and hopping windows", explanation: "Fixed‑size windows that align to time.", tip: "Use `windowedBy(TimeWindows)`." },
+        { thematic: "Streams & Connect", question: "What is a `SlidingWindows` in Kafka Streams (KIP-617)?", options: ["Windows based on difference between record timestamps", "Fixed windows", "Session windows", "Hopping windows"], correct: "Windows based on difference between record timestamps", explanation: "Join records that are within a time difference.", tip: "Use for stream‑stream joins with explicit gap." },
+        { thematic: "Streams & Connect", question: "What does `JoinWindows.of(Duration)` create?", options: ["Stream‑stream join window", "Table‑table window", "KTable‑KStream window", "Windowed store"], correct: "Stream‑stream join window", explanation: "Defines time window for matching records from two streams.", tip: "Add `.grace()` to allow late records." },
+        { thematic: "Streams & Connect", question: "What is the purpose of `Joined` class in joins?", options: ["Specify serdes and store names for join", "Define window", "Define state store", "Define repartition"], correct: "Specify serdes and store names for join", explanation: "Used when serdes differ from default.", tip: "Always provide if keys/values have different types." },
+        { thematic: "Streams & Connect", question: "What does `KafkaStreams#metrics()` return?", options: ["All metrics as a Map", "Only lag", "Only rate", "Only state"], correct: "All metrics as a Map", explanation: "Programmatic access to metrics of the Streams application.", tip: "Use for custom monitoring." },
+        { thematic: "Streams & Connect", question: "What is the purpose of `Connector` `config()` method?", options: ["Return definition of configuration properties", "Start connector", "Stop connector", "Validate config"], correct: "Return definition of configuration properties", explanation: "Used by Connect framework to generate config UI/documentation.", tip: "Use `ConfigDef` to define type and validation." },
+        { thematic: "Streams & Connect", question: "What does `ConfigKey` in Connect represent?", options: ["Single configuration entry definition", "Connector key", "Task key", "Converter key"], correct: "Single configuration entry definition", explanation: "Includes name, type, default, importance, doc.", tip: "Define for each connector config." },
+        { thematic: "Streams & Connect", question: "What is a `Validator` in Connect config?", options: ["Custom validator for config values", "Key validator", "Value validator", "Connector validator"], correct: "Custom validator for config values", explanation: "Implement `Validator` to enforce business rules.", tip: "Throw `ConfigException` on invalid." },
+        { thematic: "Streams & Connect", question: "What does `SinkTask`'s `put(Collection<SinkRecord>)` do?", options: ["Write records to external system", "Commit offsets", "Flush data", "Close tasks"], correct: "Write records to external system", explanation: "Called by framework to deliver records to sink.", tip: "Batch for efficiency." },
+        { thematic: "Streams & Connect", question: "What is the purpose of `SourceTask.poll()`?", options: ["Return list of records from source system", "Commit offsets", "Stop task", "Reset offset"], correct: "Return list of records from source system", explanation: "Called periodically by Connect framework.", tip: "Return empty list if no data." },
+        { thematic: "Streams & Connect", question: "What does `TaskConfig` provide?", options: ["Configuration for a task", "Connector config", "Worker config", "Converter config"], correct: "Configuration for a task", explanation: "Passed to task during initialization.", tip: "Use to access task properties." },
+        { thematic: "Streams & Connect", question: "What is the purpose of `Transformation` chain order?", options: ["Applied in order defined", "Reversed order", "Any order", "Sorted by name"], correct: "Applied in order defined", explanation: "Each transformation's output becomes input to next.", tip: "Place masking SMTs after filtering." },
+
+        // MONITORING & TOOLS (9 new) – performance tools, log inspection, metric analysis
+        { thematic: "Monitoring & Tools", question: "What does `kafka.tools.DumpLogSegments --batch-size` do?", options: ["Limit number of messages displayed", "Batch file read", "Index batch", "Segment batch"], correct: "Limit number of messages displayed", explanation: "Prevents huge output when scanning large segments.", tip: "Use for debugging corrupted segments." },
+        { thematic: "Monitoring & Tools", question: "What is the purpose of `kafka.tools.JmxTool` with `--attributes`?", options: ["Select specific MBean attributes", "List all attributes", "Filter names", "Set attributes"], correct: "Select specific MBean attributes", explanation: "Reduce output to needed metrics.", tip: "Comma‑separated list." },
+        { thematic: "Monitoring & Tools", question: "How to verify connector status via REST?", options: ["GET /connectors/<name>/status", "GET /connectors", "POST /connectors", "DELETE /connectors/<name>"], correct: "GET /connectors/<name>/status", explanation: "Returns state, worker, and task info.", tip: "Monitor `state` field (RUNNING, FAILED)." },
+        { thematic: "Monitoring & Tools", question: "What does `kafka-reassign-partitions --verify` show?", options: ["Progress of ongoing reassignment", "Status of completed", "List of topics", "List of partitions"], correct: "Progress of ongoing reassignment", explanation: "Shows if reassignment is still in progress or finished.", tip: "Run after `--execute`." },
+        { thematic: "Monitoring & Tools", question: "What is the purpose of `kafka-leader-election --election-type preferred`?", options: ["Trigger preferred leader election on all partitions", "Force unclean election", "Controller re‑election", "Topic deletion"], correct: "Trigger preferred leader election on all partitions", explanation: "Balances leadership to preferred replicas.", tip: "Schedule daily off‑peak." },
+        { thematic: "Monitoring & Tools", question: "What does `kafka-verifiable-producer --enable-idempotence` test?", options: ["Idempotent producer behaviour", "Transactional producer", "Compression", "Retries"], correct: "Idempotent producer behaviour", explanation: "Validates that retries do not cause duplicates.", tip: "Use with `--acks -1`." },
+        { thematic: "Monitoring & Tools", question: "What does the metric `kafka.producer:type=producer-metrics,client-id=*` provide?", options: ["Overall producer metrics (request rate, batch size, compression rate)", "Consumer metrics", "Broker metrics", "Connect metrics"], correct: "Overall producer metrics (request rate, batch size, compression rate)", explanation: "Key metrics for producer health.", tip: "Monitor `request-latency-avg`." },
+        { thematic: "Monitoring & Tools", question: "What is `kafka-consumer-perf-test --topic` used for?", options: ["Measure consumer throughput and latency", "List topics", "Create topic", "Delete topic"], correct: "Measure consumer throughput and latency", explanation: "Reports records consumed per second, MB per second, latency.", tip: "Use with `--broker-list` and `--num-records`." },
+        { thematic: "Monitoring & Tools", question: "How to list all topics that have a specific config override?", options: ["kafka-configs --describe --all --topic-regex '.*'", "kafka-topics --describe", "kafka-consumer-groups", "kafka-dump-log"], correct: "kafka-configs --describe --all --topic-regex '.*'", explanation: "Show per‑topic configs that differ from broker defaults.", tip: "Filter with `grep` for specific property." }
+    ];
+
+    // Ensure uniqueness inside this bank
+    const uniqueMap = new Map();
+    for (const q of questionBank) {
+        if (!uniqueMap.has(q.question)) uniqueMap.set(q.question, q);
+    }
+    const storedBank = Array.from(uniqueMap.values());
+    // We have exactly 60 by construction, but slice to be safe
+    const finalBank = storedBank.slice(0, 60);
+    
+    let selectedQuestions = [], userAnswers = [], currentIdx = 0, totalQ = 60, userScore = 0;
+    const settingsDiv = document.getElementById('settingsPanel'), quizDiv = document.getElementById('quizArea');
+    const startBtn = document.getElementById('startExamBtn'), nextBtn = document.getElementById('nextBtn'), prevBtn = document.getElementById('prevBtn'), finishBtn = document.getElementById('finishBtn');
+    const qCounterSpan = document.getElementById('questionCounter'), liveScoreSpan = document.getElementById('liveScore'), progressFill = document.getElementById('quizProgressBar');
+    const questionTextDiv = document.getElementById('questionText'), thematicSpan = document.getElementById('thematicBadge'), optionsContainer = document.getElementById('optionsArea');
+    const explanationContainer = document.getElementById('explanationContainer'), explanationTitleSpan = document.getElementById('explanationTitle'), explanationTextSpan = document.getElementById('explanationText');
+    const tipContainer = document.getElementById('tipContainer'), tipTextSpan = document.getElementById('tipText');
+    const modal = new bootstrap.Modal(document.getElementById('resultModal'));
+    
+    function shuffleArray(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+    
+    function startExam() {
+        const qCount = parseInt(document.getElementById('questionCountSelect').value);
+        let shuffled = shuffleArray([...finalBank]);
+        selectedQuestions = shuffled.slice(0, qCount);
+        totalQ = selectedQuestions.length;
+        userAnswers = new Array(totalQ).fill(null);
+        userScore = 0;
+        currentIdx = 0;
+        updateScoreDisplay();
+        settingsDiv.classList.add('d-none');
+        quizDiv.classList.remove('d-none');
+        renderQuestion(0);
+    }
+    
+    function renderQuestion(idx) {
+        explanationContainer.classList.add('d-none');
+        tipContainer.classList.add('d-none');
+        const q = selectedQuestions[idx];
+        questionTextDiv.innerText = q.question;
+        thematicSpan.innerText = q.thematic;
+        optionsContainer.innerHTML = '';
+        const shuffledOpts = shuffleArray([...q.options]);
+        shuffledOpts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => selectAnswer(btn, opt, idx);
+            optionsContainer.appendChild(btn);
+        });
+        if (userAnswers[idx]) applySavedState(idx);
+        updateProgress();
+        updateNavButtons();
+    }
+    
+    function selectAnswer(btn, selected, idx) {
+        if (userAnswers[idx] !== null) return;
+        const q = selectedQuestions[idx];
+        const isCorrect = (selected === q.correct);
+        if (isCorrect) userScore++;
+        userAnswers[idx] = { selected, correct: q.correct, isCorrect };
+        updateScoreDisplay();
+        showExplanation(idx, isCorrect);
+        highlightOptions(idx);
+    }
+    
+    function showExplanation(idx, isCorrect) {
+        const q = selectedQuestions[idx];
+        explanationTextSpan.innerText = q.explanation;
+        explanationTitleSpan.innerHTML = isCorrect ? '✅ Correct – Explanation:' : '❌ Incorrect – Explanation:';
+        explanationContainer.classList.remove('d-none');
+        if (q.tip) { tipTextSpan.innerText = q.tip; tipContainer.classList.remove('d-none'); }
+        else tipContainer.classList.add('d-none');
+    }
+    
+    function highlightOptions(idx) {
+        const ans = userAnswers[idx];
+        if (!ans) return;
+        const btns = optionsContainer.querySelectorAll('.option-btn');
+        btns.forEach(btn => {
+            btn.disabled = true;
+            if (btn.innerText === ans.correct) btn.classList.add('opt-correct');
+            else if (btn.innerText === ans.selected && !ans.isCorrect) btn.classList.add('opt-incorrect');
+        });
+    }
+    
+    function applySavedState(idx) { highlightOptions(idx); showExplanation(idx, userAnswers[idx].isCorrect); }
+    function updateProgress() { const pct = ((currentIdx+1)/totalQ)*100; progressFill.style.width = `${pct}%`; qCounterSpan.innerText = `Question ${currentIdx+1} / ${totalQ}`; }
+    function updateScoreDisplay() { liveScoreSpan.innerText = `Score: ${userScore}/${totalQ}`; }
+    function updateNavButtons() { prevBtn.disabled = (currentIdx === 0); const isLast = (currentIdx === totalQ-1); nextBtn.classList.toggle('d-none', isLast); finishBtn.classList.toggle('d-none', !isLast); }
+    function nextQuestion() { if (currentIdx < totalQ-1) { currentIdx++; renderQuestion(currentIdx); } }
+    function prevQuestion() { if (currentIdx > 0) { currentIdx--; renderQuestion(currentIdx); } }
+    function finishExam() {
+        const percent = (userScore/totalQ)*100;
+        document.getElementById('finalPercent').innerHTML = `${percent.toFixed(1)}%`;
+        document.getElementById('finalCorrect').innerHTML = userScore;
+        document.getElementById('finalTotal').innerHTML = totalQ;
+        const passed = percent >= 90;
+        document.getElementById('passFeedback').innerHTML = passed ? '<span class="badge bg-success fs-6 p-2">✅ PASSED – Certified ready</span>' : '<span class="badge bg-danger p-2">❌ Below 90% – Review weak areas</span>';
+        const skillVal = (userScore/totalQ)*100;
+        document.getElementById('coreSkillBar').style.width = `${skillVal}%`;
+        document.getElementById('streamSkillBar').style.width = `${skillVal}%`;
+        document.getElementById('adviceBox').innerHTML = passed ? "🏆 Legendary! Eight series conquered — you are a Kafka master." : "📘 Focus on KRaft internals, exactly‑once transactional producers, and Connect task lifecycle.";
+        document.getElementById('nextSteps').innerHTML = passed ? "Now design a fault‑tolerant multi‑region Kafka architecture with MirrorMaker2 and tiered storage." : "Hands‑on: implement a transactional producer and consumer with `read_committed` isolation.";
+        modal.show();
+    }
+    function restartExam() { modal.hide(); settingsDiv.classList.remove('d-none'); quizDiv.classList.add('d-none'); }
+    startBtn.addEventListener('click', startExam);
+    nextBtn.addEventListener('click', nextQuestion);
+    prevBtn.addEventListener('click', prevQuestion);
+    finishBtn.addEventListener('click', finishExam);
+    document.getElementById('restartModalBtn').addEventListener('click', restartExam);
+</script>
+</body>
+</html>
