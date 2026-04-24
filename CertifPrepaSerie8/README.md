@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Les 8 séries de 60 questions que nous avons générées couvrent l’intégralité du programme de l’examen **Confluent Certified Kafka Developer**. Elles respectent toutes les mêmes proportions (30% fondamentaux, 30% producer/consumer, 25% streams/connect, 15% monitoring/tools).  
+Les 8 séries de 60 questions que nous avons  couvrent l’intégralité du programme de l’examen **Confluent Certified Kafka Developer**. Elles respectent toutes les mêmes proportions (30% fondamentaux, 30% producer/consumer, 25% streams/connect, 15% monitoring/tools).  
 
 **Mais faut-il absolument les faire toutes avant de se présenter à l’examen ?**  
 
